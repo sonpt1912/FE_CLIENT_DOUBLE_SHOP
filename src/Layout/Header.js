@@ -1,75 +1,75 @@
 import React from "react";
 import "../styles/Header.css";
-import { BsSearch, BsHeart, BsCart } from "react-icons/bs";
+import { FaSearch, FaHeart, FaShoppingCart, FaUser } from "react-icons/fa";
+import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Menu, Dropdown, Button } from "antd";
+import { DownOutlined } from "@ant-design/icons";
 
 const Header = () => {
+  const menu = (
+    <Menu>
+      <Menu.Item key="about">
+        <Link to="/about">About Us</Link>
+      </Menu.Item>
+      <Menu.Item key="shop-details">
+        <Link to="/shop-details">Shop Details</Link>
+      </Menu.Item>
+      <Menu.Item key="shopping-cart">
+        <Link to="/shopping-cart">Shopping Cart</Link>
+      </Menu.Item>
+      <Menu.Item key="checkout">
+        <Link to="/checkout">Check Out</Link>
+      </Menu.Item>
+      <Menu.Item key="blog-details">
+        <Link to="/blog-details">Blog Details</Link>
+      </Menu.Item>
+    </Menu>
+  );
   return (
     <header className="header">
       <div className="container">
         <div className="row">
           <div className="col-lg-3 col-md-3">
             <div className="header__logo">
-              <a href="./index.html">
+              <Link to="/home">
                 <img src={require("../assets/Untitled.png")} alt="Logo" />
-              </a>
+              </Link>
             </div>
           </div>
           <div className="col-lg-6 col-md-6">
             <nav className="header__menu mobile-menu">
               <ul className="nav">
                 <li className="nav-item">
-                  <a className="nav-link" href="./index.html">
+                  <Link to="/home" className="nav-link">
                     Home
-                  </a>
+                  </Link>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link" href="./shop.html">
+                  <Link className="nav-link" to="/shop">
                     Shop
-                  </a>
+                  </Link>
                 </li>
-                <li className="nav-item dropdown">
-                  <a
-                    className="nav-link dropdown-toggle"
-                    href="#"
-                    id="pagesDropdown"
-                    role="button"
-                    data-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                  >
-                    Pages
-                  </a>
-                  <div
-                    className="dropdown-menu"
-                    aria-labelledby="pagesDropdown"
-                  >
-                    <a className="dropdown-item" href="./about.html">
-                      About Us
-                    </a>
-                    <a className="dropdown-item" href="./shop-details.html">
-                      Shop Details
-                    </a>
-                    <a className="dropdown-item" href="./shopping-cart.html">
-                      Shopping Cart
-                    </a>
-                    <a className="dropdown-item" href="./checkout.html">
-                      Check Out
-                    </a>
-                    <a className="dropdown-item" href="./blog-details.html">
-                      Blog Details
-                    </a>
-                  </div>
+                <li className="nav-item ">
+                  <Dropdown overlay={menu}>
+                    <Link
+                      className="nav-link "
+                      id="pagesDropdown"
+                      role="button"
+                    >
+                      Pages <DownOutlined />
+                    </Link>
+                  </Dropdown>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link" href="./blog.html">
+                  <Link className="nav-link" to="/blog">
                     Blog
-                  </a>
+                  </Link>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link" href="./contact.html">
+                  <Link className="nav-link" to="/contact">
                     Contacts
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </nav>
@@ -77,13 +77,16 @@ const Header = () => {
           <div className="col-lg-3 col-md-3">
             <div className="header__nav__option">
               <a href="#" className="search-switch">
-                <BsSearch />
+                <FaSearch />
               </a>
               <a href="#">
-                <BsHeart />
+                <FaHeart />
               </a>
               <a href="#">
-                <BsCart />
+                <FaUser />
+              </a>
+              <a href="#">
+                <FaShoppingCart />{" "}
               </a>
               <div className="price">$0.00</div>
             </div>

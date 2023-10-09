@@ -1,0 +1,98 @@
+@import "./variable";
+@import "./mixin.scss";
+
+.footer {
+  background: #f0f0f0; /* Thay đổi màu nền của footer */
+  padding-top: 70px;
+}
+
+.footer__about {
+  margin-bottom: 30px;
+
+  .footer__logo {
+    margin-bottom: 30px;
+
+    a {
+      display: inline-block;
+    }
+  }
+
+  p {
+    color: #666; /* Thay đổi màu chữ trong phần about */
+    margin-bottom: 30px;
+  }
+}
+
+.footer__widget {
+  margin-bottom: 30px;
+
+  h6 {
+    color: #333; /* Thay đổi màu chữ tiêu đề widget */
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+  }
+
+  ul {
+    li {
+      line-height: 36px;
+      list-style: none;
+
+      a {
+        color: #666; /* Thay đổi màu chữ trong các liên kết */
+        font-size: 15px;
+      }
+    }
+  }
+
+  .footer__newslatter {
+    p {
+      color: #666; /* Thay đổi màu chữ trong phần newsletter */
+    }
+
+    form {
+      position: relative;
+
+      input {
+        width: 100%;
+        font-size: 15px;
+        color: #333; /* Thay đổi màu chữ trong input */
+        background: transparent;
+        border: none;
+        padding: 15px 0;
+        border-bottom: 2px solid #f0f0f0; /* Thay đổi màu đường line */
+      }
+
+      button {
+        color: #666; /* Thay đổi màu chữ của nút */
+        font-size: 16px;
+        position: absolute;
+        right: 5px;
+        top: 0;
+        height: 100%;
+        background: transparent;
+        border: none;
+      }
+    }
+  }
+}
+
+.footer__copyright__text {
+  border-top: 1px solid rgba(0, 0, 0, 0.1); /* Thay đổi màu border top */
+  padding: 20px 0;
+  margin-top: 40px;
+
+  p {
+    color: #666; /* Thay đổi màu chữ trong phần copyright text */
+
+    i {
+      color: #f44336; /* Thay đổi màu của icon i */
+    }
+
+    a {
+      color: #f44336; /* Thay đổi màu chữ của các liên kết trong phần copyright */
+    }
+  }
+}

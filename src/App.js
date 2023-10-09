@@ -1,11 +1,19 @@
 import "./App.css";
 import Header from "./Layout/Header";
+import Content from "./Layout/Content";
+import Footer from "./Layout/Footer";
+
+import { BrowserRouter as Router } from "react-router-dom";
 
 function App() {
   return (
-    <div className="App">
-      <Header />
-    </div>
+    <Router>
+      <div className="App">
+        <Header />
+        <Content />
+        <Footer />
+      </div>
+    </Router>
   );
 }
 

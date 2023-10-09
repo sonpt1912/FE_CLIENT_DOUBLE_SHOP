@@ -204,6 +204,15 @@
 }
 .header__logo img {
   padding-top: 0px;
-  max-width: 90%; /* Ensure the logo doesn't exceed its parent container's width */
-  height: auto; /* Maintain the aspect ratio of the logo */
+  max-width: 90%;
+  height: auto;
+}
+svg {
+  font-size: 20px;
+  color: rgb(0, 0, 0);
+  margin-right: 10px;
+}
+.anticon svg {
+  display: inline-block;
+  font-size: medium;
 }
