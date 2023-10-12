@@ -1,5 +1,5 @@
 import React from "react";
-import "../styles/Header.css";
+import "../styles/Header.scss";
 import { FaSearch, FaHeart, FaShoppingCart, FaUser } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -50,17 +50,6 @@ const Header = () => {
                     Shop
                   </Link>
                 </li>
-                <li className="nav-item ">
-                  <Dropdown overlay={menu}>
-                    <Link
-                      className="nav-link "
-                      id="pagesDropdown"
-                      role="button"
-                    >
-                      Pages <DownOutlined />
-                    </Link>
-                  </Dropdown>
-                </li>
                 <li className="nav-item">
                   <Link className="nav-link" to="/blog">
                     Blog
@@ -79,12 +68,12 @@ const Header = () => {
               <a href="#" className="search-switch">
                 <FaSearch />
               </a>
-              <a href="#">
+              <Link className="nav-link" to="/userProfile">
                 <FaHeart />
-              </a>
-              <a href="#">
+              </Link>
+              <Link className="nav-link" to="/userProfile">
                 <FaUser />
-              </a>
+              </Link>
               <a href="#">
                 <FaShoppingCart />{" "}
               </a>

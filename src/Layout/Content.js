@@ -5,6 +5,7 @@ import Pages from "../page/Pages";
 import Blog from "../page/Blog";
 import Contact from "../page/Contact";
 import Shop from "../page/Shop";
+import UserProfile from "../page/UserProfile";
 
 const Content = () => {
   return (
@@ -14,6 +15,7 @@ const Content = () => {
       <Route path="/pages" element={<Pages />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/blog" element={<Blog />} />
+      <Route path="/userProfile" element={<UserProfile />} />
     </Routes>
   );
 };
