@@ -65,9 +65,6 @@ const Header = () => {
           </div>
           <div className="col-lg-3 col-md-3">
             <div className="header__nav__option">
-              <a href="#" className="search-switch">
-                <FaSearch />
-              </a>
               <Link className="nav-link" to="/userProfile">
                 <FaHeart />
               </Link>
@@ -77,7 +74,6 @@ const Header = () => {
               <a href="#">
                 <FaShoppingCart />{" "}
               </a>
-              <div className="price">$0.00</div>
             </div>
           </div>
         </div>
