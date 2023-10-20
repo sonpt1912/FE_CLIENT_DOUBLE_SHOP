@@ -4,13 +4,15 @@ import HeartIcon from "../img/icon/heart.png";
 import compareIcon from "../img/icon/compare.png";
 import searchIcon from "../img/icon/search.png";
 import productImage1 from "../img/product/product-1.jpg";
+import { Card } from "antd";
+const { Meta } = Card;
 
 const ProductItem = (props) => {
   const { imageUrl, label, name, price } = props;
 
   return (
     <div className="col-lg-3 col-md-6 col-sm-6 col-md-6 col-sm-6 mix new-arrivals">
-      <div className="product__item">
+      <Card className="product__item">
         <div
           className="product__item__pic set-bg"
           style={{ backgroundImage: `url(${imageUrl})` }}
@@ -22,7 +24,7 @@ const ProductItem = (props) => {
                 <img src={HeartIcon} alt="Heart Icon" />{" "}
               </a>
             </li>
-            <li>
+            {/* <li>
               <a href="#">
                 <img src={compareIcon} alt="Compare Icon" />
                 <span>Compare</span>
@@ -32,14 +34,14 @@ const ProductItem = (props) => {
               <a href="#">
                 <img src={searchIcon} alt="Search Icon" />
               </a>
-            </li>
+            </li> */}
           </ul>
         </div>
         <div className="product__item__text">
           <h6>{name}</h6>
-          <a href="#" className="add-cart">
+          {/* <a href="#" className="add-cart">
             + Add To Cart
-          </a>
+          </a> */}
           <div className="rating">
             <i className="fa fa-star-o"></i>
             <i className="fa fa-star-o"></i>
@@ -48,7 +50,7 @@ const ProductItem = (props) => {
             <i className="fa fa-star-o"></i>
           </div>
           <h5>{price}</h5>
-          <div className="product__color__select">
+          {/* <div className="product__color__select">
             <label htmlFor="pc-1">
               <input type="radio" id="pc-1" />
             </label>
@@ -57,10 +59,10 @@ const ProductItem = (props) => {
             </label>
             <label className="grey" htmlFor="pc-3">
               <input type="radio" id="pc-3" />
-            </label>
-          </div>
+            </label> */}
+          {/* </div> */}
         </div>
-      </div>
+      </Card>
     </div>
   );
 };

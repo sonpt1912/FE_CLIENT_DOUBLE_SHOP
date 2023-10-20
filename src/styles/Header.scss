@@ -94,7 +94,7 @@
 
 .header__menu {
   text-align: center;
-  padding: 26px 30px 25px;
+  padding: 26px 200px 25px;
 }
 
 .header__menu ul li {
@@ -215,4 +215,7 @@ svg {
 .anticon svg {
   display: inline-block;
   font-size: medium;
+}
+ul.nav {
+  justify-content: center;
 }

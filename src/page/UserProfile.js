@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import UserProfileNavbar from "../Component/UserProfile/UserProfileNavbar";
-import UserProfileContent from "../Component/UserProfile/UserProfileContent";
+import UserProfileNavbar from "../component/UserProfile/UserProfileNavbar";
+import UserProfileContent from "../component/UserProfile/UserProfileContent";
 import "../styles/UserProfile.scss";
 
 const UserProfile = () => {
