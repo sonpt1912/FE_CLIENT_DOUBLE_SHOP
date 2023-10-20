@@ -67,9 +67,6 @@
         visibility: visible;
       }
 
-      h6 {
-        opacity: 0;
-      }
 
       .product__color__select {
         opacity: 1;
@@ -239,4 +236,7 @@
       }
     }
   }
+}
+.product__filter{
+  padding: 0 50px 0 50px
 }

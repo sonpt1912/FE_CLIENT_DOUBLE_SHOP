@@ -28,7 +28,7 @@ const Header = () => {
   );
   return (
     <header className="header">
-      <div className="container">
+      <div className="container-fluid">
         <div className="row">
           <div className="col-lg-3 col-md-3">
             <div className="header__logo">

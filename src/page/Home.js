@@ -1,6 +1,6 @@
 import React from "react";
-import HeroSection from "../Component/HeroSection"; // Đường dẫn tới HeroSection.js
-import ProductSection from "../Component/ProductItem";
+import HeroSection from "../component/HeroSection"; // Đường dẫn tới HeroSection.js
+import ProductSection from "../component/ProductItem";
 import { Carousel } from "antd";
 
 const contentStyle: React.CSSProperties = {
