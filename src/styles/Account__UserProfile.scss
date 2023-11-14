@@ -1,0 +1,67 @@
+.account__container {
+  display: flex;
+  justify-content: space-around;
+}
+.account__left {
+  border-radius: 20px;
+  margin-top: 0px;
+  background-color: #e4e4e4;
+  height: 43rem;
+  width: 73%;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); /* Đổ bóng */
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.account__right {
+  border-radius: 20px;
+  margin-top: 0px;
+  background-color: #e4e4e4;
+  height: fit-content;
+  width: 22%;
+  box-shadow: 0 10px 20px rgba(186, 186, 186, 0.3); /* Đổ bóng */
+  transition: transform 0.2s, box-shadow 0.2s;
+  h3 {
+    margin-top: 20px;
+  }
+}
+
+.avatar__profile {
+  display: flex;
+}
+.avatar__image {
+  width: 15%;
+  border-radius: 45%;
+  margin: 3rem 0 0 5rem;
+  object-fit: cover;
+}
+.user__name {
+  font-size: 1.5rem;
+  margin: 4rem 0 0 2rem;
+  text-align: center;
+  color: #333;
+}
+form {
+  padding: 3rem 2rem 2rem 2rem;
+}
+.form__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.form__row label {
+  font-weight: bold;
+  flex-basis: 30%;
+}
+
+.form__row .ant-input {
+  flex-grow: 1;
+  padding: 6px;
+}
+.right__Address {
+  padding: 1rem;
+}
+.btn__primary {
+  margin-bottom: 20px;
+}

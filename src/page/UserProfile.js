@@ -4,7 +4,7 @@ import UserProfileContent from "../component/UserProfile/UserProfileContent";
 import "../styles/UserProfile.scss";
 
 const UserProfile = () => {
-  const [selectedMenuItem, setSelectedMenuItem] = useState(null);
+  const [selectedMenuItem, setSelectedMenuItem] = useState(1);
 
   const handleMenuItemClick = (index) => {
     setSelectedMenuItem(index);
