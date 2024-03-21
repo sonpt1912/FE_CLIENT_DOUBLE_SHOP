@@ -1,0 +1,79 @@
+@import "./variable";
+@import "./mixin.scss";
+
+.footer {
+  background: #111111; /* Thay đổi màu nền của footer */
+  padding-top: 70px;
+}
+
+.footer__about {
+  margin-bottom: 30px;
+
+  .footer__logo {
+    margin-bottom: 30px;
+
+    a {
+      display: inline-block;
+    }
+  }
+
+  p {
+    color: #b7b7b7; /* Thay đổi màu chữ trong phần about */
+    margin-bottom: 30px;
+  }
+}
+
+.footer__widget {
+  margin-bottom: 30px;
+
+  h6 {
+    text-align: left;
+    color: #ffffff; /* Thay đổi màu chữ tiêu đề widget */
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+  }
+
+  ul {
+    text-align: left;
+    padding: 0;
+    margin: 0;
+    li {
+      line-height: 36px;
+      list-style: none;
+
+      a {
+        color: #b7b7b7;
+        font-size: 15px;
+        text-decoration: none;
+      }
+    }
+  }
+
+  .footer__newslatter {
+    p {
+      text-align: left;
+      color: #b7b7b7; /* Thay đổi màu chữ trong phần newsletter */
+    }
+  }
+}
+
+.footer__copyright__text {
+  border-top: 1px solid rgba(0, 0, 0, 0.1); /* Thay đổi màu border top */
+  padding: 20px 0;
+  margin-top: 40px;
+
+  p {
+    color: #666; /* Thay đổi màu chữ trong phần copyright text */
+
+    i {
+      color: #f44336; /* Thay đổi màu của icon i */
+    }
+
+    a {
+      color: #f44336; /* Thay đổi màu chữ của các liên kết trong phần copyright */
+    }
+  }
+}

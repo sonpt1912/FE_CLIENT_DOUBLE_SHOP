@@ -1,0 +1,65 @@
+.user-profile {
+  display: flex;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+
+.user-profile-navbar-container {
+  width: 200px;
+  padding: 20px;
+  margin: 0 10px 0 10px;
+  border-radius: 10px;
+  border: 1px dashed #b1154a;
+}
+
+.user-profile-navbar ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.user-profile-navbar li {
+  padding: 10px 20px;
+  cursor: pointer;
+  text-align: left;
+}
+.user-profile-navbar li:last-child {
+  background-color: #b1154a;
+  margin-top: 29rem;
+}
+.user-profile-navbar li:hover {
+  background-color: #ccc;
+  border-radius: 5px;
+}
+
+.user-profile-navbar li a {
+  text-decoration: none;
+  color: white;
+}
+
+.user-profile-content-container {
+  flex: 1;
+
+  border-radius: 10px;
+  margin-right: 20px;
+  min-height: 43rem;
+}
+
+.user-profile-content-container h6 {
+  margin-bottom: 10px;
+}
+
+.user-profile-content-container p {
+  margin-bottom: 5px;
+}
+
+.modal-content {
+  border-radius: 10px;
+}
+
+.modal-title {
+  color: #e70000;
+}
+
+.modal-footer button {
+  border-radius: 5px;
+}
