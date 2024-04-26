@@ -41,9 +41,9 @@ function SignIn(props) {
                 password
             }
 
-            const query = '?' + queryString.stringify(params)
+            const response = await User.Get_Detail_User(params)
 
-            const response = await User.Get_Detail_User(query)
+            console.log("Response: ", response);
 
             if (response === "Khong Tìm Thấy User"){
                 set_error_username(true)
