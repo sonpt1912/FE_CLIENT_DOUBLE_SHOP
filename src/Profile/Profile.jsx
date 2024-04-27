@@ -111,14 +111,23 @@ function Profile(props) {
     };
     // Hàm này dùng để render html cho từng loại edit profile hoặc change password
     // Tùy theo người dùng chọn
-    const [edit_status, set_edit_status] = useState('edit_profile')
+    const [edit_status, set_edit_status] = useState('thong_tin_ca_nhan')
+    const [showDangXuat, setShowDangXuat] = useState(false);
 
     const handler_Status = (value) => {
-
         set_edit_status(value)
-
+        if (value === 'dang_xuat') {
+            setShowDangXuat(true);
+        }
     }
 
+    const toggleModal = () => {
+        setShowDangXuat(!showDangXuat); // Đảo ngược trạng thái hiển thị modal
+    };
+
+    const huyDangXuat = () => {
+        setShowDangXuat(false);
+    };
 
     const [user, set_user] = useState({})
 
@@ -184,7 +193,7 @@ function Profile(props) {
     };
 
     return (
-        <div className="container mt-5 pt-4" style={{ paddingBottom: '4rem' }}>
+        <div className="m-5 mt-5 pt-4" style={{ paddingBottom: '4rem' }}>
 
             <div className="group_profile w-100">
                 <div className="group_setting mt-3">
@@ -211,7 +220,27 @@ function Profile(props) {
                             <a className={edit_status === 'quen_mat_khau' ? 'a_setting_active' : ''}
                                 style={{ fontSize: '1.1rem' }}>Đổi mật khẩu</a>
                         </div>
-
+                        <div className={edit_status === 'dang_xuat' ? 'setting_item setting_item_active' : 'setting_item'}
+                            onClick={() => handler_Status('dang_xuat')}>
+                            <a className={edit_status === 'dang_xuat' ? 'a_setting_active' : ''}
+                                style={{ fontSize: '1.1rem' }}>Đăng xuất</a>
+                        </div>
+                        <Modal
+                            title="Thông báo"
+                            style={{height: "500px"}}
+                            visible={showDangXuat}
+                            onCancel={toggleModal}
+                            footer={[
+                                <Button key="cancel" onClick={toggleModal}>
+                                    Không
+                                </Button>,
+                                <Button key="submit" type="primary" onClick={toggleModal}>
+                                    Đồng ý
+                                </Button>,
+                            ]}
+                        >
+                            <h1 style={{textAlign: "center"}}>Bạn có muốn đăng xuất không?</h1>
+                        </Modal>
                     </div>
                     <div className="setting_right">
                         {
@@ -541,7 +570,7 @@ function Profile(props) {
                                         <button className="btn btn-secondary" onClick={handler_update}>Lưu</button>
                                     </div>
                                 </div>
-                            ) : (
+                            ) : edit_status === 'dia_chi' ? (
                                 <div>
                                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                                         <h4 className='m-3' style={{ alignSelf: "flex-start" }}>Địa chỉ của tôi</h4>
@@ -650,6 +679,10 @@ function Profile(props) {
                                         </div>
                                         <hr className="" style={{ marginTop: "0px", marginBottom: "0px" }} />
                                     </div>
+                                </div>
+                            ) : (
+                                <div>
+
                                 </div>
                             )
                         }
