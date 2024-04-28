@@ -20,7 +20,7 @@ function Contact(props) {
             </div>
             <div className="contact-main-page mt-60 mb-40 mb-md-40 mb-sm-40 mb-xs-40">
                 <div className="container mb-60">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.4602324215048!2d106.66521371480079!3d10.776019492321794!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752edba026cb75%3A0xb2a9aab49da1c58f!2zMTU1IFPGsCBW4bqhbiBI4bqhbmgsIFBoxrDhu51uZyAxMiwgUXXhuq1uIDEwLCBUaMOgbmggcGjhu5EgSOG7kyBDaMOtIE1pbmg!5e0!3m2!1sen!2s!4v1616422635333!5m2!1sen!2s" width="600" height="450" style={{ border: '0' }} allowfullscreen="" loading="lazy"></iframe>
+                <iframe src="https://www.google.com/maps/embed?pb=!1m23!1m12!1m3!1d119143.32204950476!2d105.86219177455887!3d21.06352148758177!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m8!3e6!4m0!4m5!1s0x3135ac8443b0ef6b%3A0x35324efdaaf13f7f!2zNjM0IMSQLiBUcsaw4budbmcgQ2hpbmgsIE5nw6MgVMawIFPhu58sIMSQ4buRbmcgxJBhLCBIw6AgTuG7mWk!3m2!1d21.002774!2d105.821202!5e0!3m2!1sen!2s!4v1714318528037!5m2!1sen!2s" width="600" height="450" style={{border:'0'}}allowfullscreen="" loading="lazy" ></iframe>
                 </div>
                 <div className="container">
                     <div className="row">
@@ -28,21 +28,21 @@ function Contact(props) {
                             <div className="contact-page-side-content">
                                 <h3 className="contact-page-title">Contact Us</h3>
                                 <p className="contact-page-message mb-25">
-                                    Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quidem sapiente ab cum accusantium, incidunt nihil fugit similique? Reiciendis ex dignissimos libero iusto quos, consequuntur nobis tenetur a minima! Voluptatum, ab?
+
                                 </p>
                                 <div className="single-contact-block">
                                     <h4><i className="fa fa-fax"></i> Address</h4>
-                                    <p>155 Sư Vạn Hạnh, Phường 12, Quận 10, Thành phố Hồ Chí Minh</p>
+                                    <p>634 Truong Chinh Street, Thanh Xuan District, Ha Noi Capital</p>
                                 </div>
                                 <div className="single-contact-block">
                                     <h4><i className="fa fa-phone"></i> Phone</h4>
-                                    <p>Mobile: 0763557366</p>
-                                    <p>Hotline: 1900100 Biết</p>
+                                    <p>Mobile: 0964886840</p>
+                                    <p>Hotline: 1900100 </p>
                                 </div>
                                 <div className="single-contact-block last-child">
                                     <h4><i className="fa fa-envelope-o"></i> Email</h4>
-                                    <p>tienkim9920@gmail.com</p>
-                                    <p>hahadaubo@gmail.com</p>
+                                    <p>thanhph28937@gmail.com</p>
+                                    <p>thanhhd@gmail.com</p>
                                 </div>
                             </div>
                         </div>

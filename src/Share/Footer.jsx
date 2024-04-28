@@ -69,27 +69,27 @@ function Footer(props) {
                                 <div className="footer-logo">
                                     <img src={Global.Logo} style={{ width: '20rem'}} alt="Footer Logo" />
                                     <p className="info">
-                                        We are a team of designers and developers that create high quality HTML Template & Woocommerce, Shopify Theme.
+                                    Our mission is to empower individuals to express themselves confidently through fashion. We believe that clothing is more than just fabric; it's a form of self-expression and identity. At Double Store, we strive to curate a diverse range of high-quality clothing that reflects the unique personalities and styles of our customers. 
                                 </p>
                                 </div>
                                 <ul className="des">
                                     <li>
                                         <span>Address: </span>
-                                    828 Sư Vạn Hạnh, Quận 10, TP.HCM
+                                    634 Truong Chinh Street, Thanh Xuan District, Ha Noi Capital.
                                 </li>
                                     <li>
                                         <span>Phone: </span>
-                                        <a href="#">0763557366</a>
+                                        <a href="#">0964886840</a>
                                     </li>
                                     <li>
                                         <span>Email: </span>
-                                        <a href="mailto://tienkim9920@gmail.com">tienkim9920@gmail.com</a>
+                                        <a href="mailto://tienkim9920@gmail.com">thanhph28937@gmail.com</a>
                                     </li>
                                 </ul>
                             </div>
                                 <div className="col-lg-2 col-md-3 col-sm-6">
                                     <div className="footer-block">
-                                        <h3 className="footer-block-title">Product</h3>
+                                        <h3 className="footer-block-title">Clothes</h3>
                                         <ul>
                                             <li><a href="#">Prices drop</a></li>
                                             <li><a href="#">New products</a></li>
@@ -100,11 +100,11 @@ function Footer(props) {
                                 </div>
                             <div className="col-lg-2 col-md-3 col-sm-6">
                                 <div className="footer-block">
-                                    <h3 className="footer-block-title">Our company</h3>
+                                    <h3 className="footer-block-title">Our store</h3>
                                         <ul>
                                             <li><a href="#">Delivery</a></li>
                                             <li><a href="#">Legal Notice</a></li>
-                                            <li><a href="#">About us</a></li>
+                                          
                                             <li><a href="#">Contact us</a></li>
                                       </ul>
                                 </div>

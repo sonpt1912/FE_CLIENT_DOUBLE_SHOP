@@ -11,7 +11,6 @@ import queryString from "query-string";
 import Product from "../API/Product";
 import { addSearch } from "../Redux/Action/ActionSearch";
 import CartsLocal from "./CartsLocal";
-
 function Header(props) {
   // State count of cart
   const [count_cart, set_count_cart] = useState(0);
@@ -265,92 +264,24 @@ function Header(props) {
                       <li>
                         <Link to="/contact">Contact</Link>
                       </li>
-                      <li>
-                        <ul className="hm-menu">
-                          <li className="hm-wishlist d-flex">
-                            <li className="hm-minicart">
-                              <div
-                                className="hm-minicart-trigger"
-                                data-toggle="collapse"
-                                data-target="#collapse_carts"
-                                aria-expanded="false"
-                                aria-controls="collapse_carts"
-                              >
-                                <span className="item-icon"></span>
-                                <span className="item-text">
-                                  {new Intl.NumberFormat("vi-VN", {
-                                    style: "decimal",
-                                    decimal: "VND",
-                                  }).format(total_price) + " VNĐ"}
-                                  <span className="cart-item-count">
-                                    {count_cart}
-                                  </span>
-                                </span>
-                              </div>
-                              <span></span>
-                              <div
-                                className="minicart collapse"
-                                id="collapse_carts"
-                              >
-                                <ul className="minicart-product-list">
-                                  {carts_mini &&
-                                    carts_mini.map((value, index) => (
-                                      <li key={index}>
-                                        <Link
-                                          to={`/detail/${value.id_product}`}
-                                          className="minicart-product-image"
-                                        >
-                                          <img
-                                            src={value.image}
-                                            alt="cart products"
-                                          />
-                                        </Link>
-                                        <div className="minicart-product-details">
-                                          <h6>
-                                            <a>{value.name_product}</a>
-                                          </h6>
-                                          <span>
-                                            {new Intl.NumberFormat("vi-VN", {
-                                              style: "decimal",
-                                              decimal: "VND",
-                                            }).format(value.price_product) +
-                                              " VNĐ"}{" "}
-                                            x {value.count}, {value.size}
-                                          </span>
-                                        </div>
-                                        <a
-                                          className="close"
-                                          onClick={() =>
-                                            handler_delete_mini(value.id_cart)
-                                          }
-                                        >
-                                          <i className="fa fa-close"></i>
-                                        </a>
-                                      </li>
-                                    ))}
-                                </ul>
-                                <p className="minicart-total">
-                                  SUBTOTAL:{" "}
-                                  <span>
-                                    {new Intl.NumberFormat("vi-VN", {
-                                      style: "decimal",
-                                      decimal: "VND",
-                                    }).format(total_price) + " VNĐ"}
-                                  </span>
-                                </p>
-                                <div className="minicart-button">
-                                  <Link
-                                    to="/cart"
-                                    className="li-button li-button-fullwidth li-button-dark"
-                                  >
-                                    <span>View Full Cart</span>
-                                  </Link>
-                                </div>
-                              </div>
-                            </li>
-                          </li>
-                        </ul>
+
+                      <li style={{ display: "flex", alignItems: "center" }}>
+                        <Link to="/profile/:id" style={{ margin: "0 15px", fontSize: "20px" }}>
+                          <i className="fa fa-user" style={{color:"black" }}></i>
+                        </Link>
+                        <Link to="/favorite" style={{ margin: "0 15px", fontSize: "20px" }}>
+                          <i className="fa fa-heart" style={{ color:"black" }}></i>
+                        </Link>
+                        <Link to="/cart" style={{ margin: "0 15px", fontSize: "20px" }}>
+                          <i className="fa fa-shopping-cart" style={{ color:"black" }}></i>
+                          <span className="cart-item-count">
+                            {/* {count_cart} */}
+                          </span>
+                        </Link>
                       </li>
+
+
+
                       <li style={{ float: "right" }}>
                         <div className="ht-setting-trigger">
                           {active_user ? (
