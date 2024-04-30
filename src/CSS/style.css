@@ -2104,12 +2104,10 @@ textarea:focus {
   transition: all 300ms ease-in 0s;
 }
 .single-product-wrap:hover {
-  margin: 0 0 -75px;
-  padding: 0 0 75px;
-  z-index: 9;
+  
 }
 .single-product-wrap.mt-40:hover {
-  margin: 40px 0 -85px;
+  
 }
 .single-product-wrap::before {
 	background: #ffffff none repeat scroll 0 0;
@@ -2129,17 +2127,14 @@ textarea:focus {
 	z-index: 0;
 }
 .single-product-wrap:hover:before{
-  opacity: 1;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
-  visibility: visible;
+ 
 }
 .product-image > a {
   display: block;
   position: relative;
 }
 .single-product-wrap:hover .secondary-image{
-  opacity: 1;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+
 }
 .product-image > span.sticker {
 	background: #0363cd;
@@ -5633,4 +5628,29 @@ span.required {
   .navbar-ul li.dropdown-holder:hover ul {
 	display: block; 
   }
+  .select-wrapper {
+	margin-top: 10px;
+  }
+  
+  .category-select {
+	width: 100%;
+	padding: 8px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	background-color: #fff;
+	font-size: 16px;
+	
+  }
+  
+  .category-select:focus {
+	outline: none;
+	border-color: #fed700;
+  }
+  .color-button.active {
+    background-color: #fed700; /* Màu nền cho nút được chọn */
+}
+.color-button {
+    background-color: white; /* Màu nền mặc định */
+    color: black; /* Màu chữ mặc định */
+}
   

@@ -11,6 +11,7 @@ import queryString from "query-string";
 import Product from "../API/Product";
 import { addSearch } from "../Redux/Action/ActionSearch";
 import CartsLocal from "./CartsLocal";
+
 function Header(props) {
   // State count of cart
   const [count_cart, set_count_cart] = useState(0);
@@ -203,15 +204,17 @@ function Header(props) {
   };
 
   return (
-    <header>
-      <div>
+    <header >
+      <div >
         <div className={header_navbar}>
           <div>
             <div className="row">
               <div className="col-lg-12">
                 <div className="hb-menu">
                   <nav>
-                    <ul className="navbar-ul">
+                    <ul  className="navbar-ul"
+                    //  style={{ backgroundColor: "white !important", borderBottom: "2px solid red" }}
+                    >
                       <li>
                         <Link to="/">
                           <img
@@ -221,64 +224,35 @@ function Header(props) {
                           />
                         </Link>
                       </li>
-                      <li className="dropdown-holder">
-                        <Link to="/">Home</Link>
-                      </li>
-                      <li className="megamenu-holder">
-                        <Link to="/shop/all">Menu</Link>
-                        <ul class="megamenu hb-megamenu">
-                          <li>
-                            <Link to="/shop/all">Male</Link>
-                            <ul>
-                              {male &&
-                                male.map((value) => (
-                                  <li key={value._id}>
-                                    <Link
-                                      to={`/shop/${value._id}`}
-                                      style={{ cursor: "pointer" }}
-                                    >
-                                      {value.category}
-                                    </Link>
-                                  </li>
-                                ))}
-                            </ul>
-                          </li>
-                          <li>
-                            <Link to="/shop">Female</Link>
-                            <ul>
-                              {female &&
-                                female.map((value) => (
-                                  <li key={value._id}>
-                                    <Link
-                                      to={`/shop/${value._id}`}
-                                      style={{ cursor: "pointer" }}
-                                    >
-                                      {value.category}
-                                    </Link>
-                                  </li>
-                                ))}
-                            </ul>
-                          </li>
-                        </ul>
-                      </li>
-                      <li>
-                        <Link to="/contact">Contact</Link>
-                      </li>
+                      <ul style={{ display: 'flex', listStyleType: 'none', padding: 0 }}>
+                        <li style={{ marginRight: '10px' }}>
+                          <Link to="/" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>Home</Link>
+                        </li>
+                        <li style={{ marginRight: '10px' }}>
+                          <Link to="/shop/all" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>Menu</Link>
+                        </li>
+                        <li>
+                          <Link to="/contact" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>Contact</Link>
+                        </li>
+                      </ul>
+
 
                       <li style={{ display: "flex", alignItems: "center" }}>
                         <Link to="/profile/:id" style={{ margin: "0 15px", fontSize: "20px" }}>
-                          <i className="fa fa-user" style={{color:"black" }}></i>
+                          <span style={{ color: "black" }}>&#x1F464;</span> {/* Unicode của biểu tượng user */}
                         </Link>
                         <Link to="/favorite" style={{ margin: "0 15px", fontSize: "20px" }}>
-                          <i className="fa fa-heart" style={{ color:"black" }}></i>
+                          <span style={{ color: "black" }}>&#x2764;</span> {/* Unicode của biểu tượng heart */}
                         </Link>
                         <Link to="/cart" style={{ margin: "0 15px", fontSize: "20px" }}>
-                          <i className="fa fa-shopping-cart" style={{ color:"black" }}></i>
+                          <span style={{ color: "black" }}>&#x1F6D2;</span> {/* Unicode của biểu tượng shopping cart */}
                           <span className="cart-item-count">
                             {/* {count_cart} */}
                           </span>
                         </Link>
+
                       </li>
+
 
 
 
@@ -302,10 +276,10 @@ function Header(props) {
                               style={{
                                 display: "flex",
                                 color: "#242424",
-                                textTransform: "uppercase",
-                                fontSize: "14px",
+
+                                fontSize: "18px",
                                 lineHeight: "35px",
-                                fontWeight: "600",
+                                fontWeight: "400",
                                 padding: "8px 0",
                               }}
                             >

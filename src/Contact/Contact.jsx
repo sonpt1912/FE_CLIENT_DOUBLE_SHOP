@@ -18,7 +18,7 @@ function Contact(props) {
                     </div>
                 </div>
             </div>
-            <div className="contact-main-page mt-60 mb-40 mb-md-40 mb-sm-40 mb-xs-40">
+            <div className="contact-main-page mt-20 mb-40 mb-md-40 mb-sm-40 mb-xs-40">
                 <div className="container mb-60">
                 <iframe src="https://www.google.com/maps/embed?pb=!1m23!1m12!1m3!1d119143.32204950476!2d105.86219177455887!3d21.06352148758177!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m8!3e6!4m0!4m5!1s0x3135ac8443b0ef6b%3A0x35324efdaaf13f7f!2zNjM0IMSQLiBUcsaw4budbmcgQ2hpbmgsIE5nw6MgVMawIFPhu58sIMSQ4buRbmcgxJBhLCBIw6AgTuG7mWk!3m2!1d21.002774!2d105.821202!5e0!3m2!1sen!2s!4v1714318528037!5m2!1sen!2s" width="600" height="450" style={{border:'0'}}allowfullscreen="" loading="lazy" ></iframe>
                 </div>
