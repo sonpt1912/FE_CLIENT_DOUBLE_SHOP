@@ -182,6 +182,16 @@ function Shop(props) {
         console.log("Selected Category ID:", selectedCategoryId);
         // Thực hiện các hành động khác tại đây
     }
+    const handleMaterialChange = (selectedCategoryId) => {
+        // Thực hiện các hành động khi danh mục được chọn thay đổi, ví dụ: đổi route, gọi API để lấy sản phẩm, v.v.
+        console.log("Selected Category ID:", selectedCategoryId);
+        // Thực hiện các hành động khác tại đây
+    }
+    const handleCollarChange = (selectedCategoryId) => {
+        // Thực hiện các hành động khi danh mục được chọn thay đổi, ví dụ: đổi route, gọi API để lấy sản phẩm, v.v.
+        console.log("Selected Category ID:", selectedCategoryId);
+        // Thực hiện các hành động khác tại đây
+    }
     const [selectedColor, setSelectedColor] = useState('All');
     const handleColorChange = (color) => {
         setSelectedColor(color); // Cập nhật nút được chọn
@@ -192,6 +202,8 @@ function Shop(props) {
         setSelectedSize(size); // Cập nhật nút được chọn
         // Gọi hàm xử lý các thay đổi liên quan đến nút được chọn
     };
+   
+    
     return (
         <div >
             <div className="breadcrumb-area">
@@ -252,6 +264,37 @@ function Shop(props) {
                                         </select>
                                     </div>
                                 </div>
+
+                                <div className="li-blog-sidebar">
+                                    <h4 className="li-blog-sidebar-title">Collar</h4>
+                                    <ul className="li-blog-archive">
+
+                                    </ul>
+                                    <div className="select-wrapper" style={{ marginBottom: '25px' }}>
+                                        <select className="category-select" onChange={(e) => handleCollarChange(e.target.value)} >
+                                            <option value="">All</option>
+                                            <option value="fake1">Fake Collar 1</option>
+                                            <option value="fake2">Fake Collar 2</option>
+                                            <option value="fake3">Fake Collar 3</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="li-blog-sidebar">
+                                    <h4 className="li-blog-sidebar-title">Material</h4>
+                                    <ul className="li-blog-archive">
+
+                                    </ul>
+                                    <div className="select-wrapper" style={{ marginBottom: '25px' }}>
+                                        <select className="category-select" onChange={(e) => handleMaterialChange(e.target.value)} >
+                                            <option value="">All</option>
+                                            <option value="fake1">Fake Material 1</option>
+                                            <option value="fake2">Fake Material 2</option>
+                                            <option value="fake3">Fake Material 3</option>
+                                        </select>
+                                    </div>
+                                </div>
+
                                 <div className="li-blog-sidebar">
                                     <h4 className="li-blog-sidebar-title">Color</h4>
                                     <ul className="li-blog-archive">

@@ -11,6 +11,8 @@ import queryString from "query-string";
 import Product from "../API/Product";
 import { addSearch } from "../Redux/Action/ActionSearch";
 import CartsLocal from "./CartsLocal";
+import { FaUser, FaHeart, FaShoppingCart } from 'react-icons/fa';
+import { AiOutlineUser, AiOutlineHeart, AiOutlineShoppingCart } from 'react-icons/ai';
 
 function Header(props) {
   // State count of cart
@@ -213,7 +215,7 @@ function Header(props) {
                 <div className="hb-menu">
                   <nav>
                     <ul className="navbar-ul"
-                    //  style={{ backgroundColor: "white !important", borderBottom: "2px solid red" }}
+                     style={{ backgroundColor: "white", borderBottom: "1px solid red" ,borderTop: "1px solid red" }}
                     >
                       <li>
                         <Link to="/">
@@ -226,35 +228,32 @@ function Header(props) {
                       </li>
                       <ul style={{ display: 'flex', listStyleType: 'none', marginLeft: "-5px" }}>
                         <li style={{ marginRight: '10px' }}>
-                          <Link to="/" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>Home</Link>
+                          <Link to="/" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>HOME</Link>
                         </li>
                         <li style={{ marginRight: '10px' }}>
-                          <Link to="/shop/all" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>Menu</Link>
+                          <Link to="/shop/all" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>MENU</Link>
                         </li>
                         <li>
-                          <Link to="/contact" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>Contact</Link>
+                          <Link to="/contact" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>CONTACT</Link>
                         </li>
                         <li>
-                          <Link to="/about" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>About Us</Link>
+                          <Link to="/about" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>ABOUT US</Link>
                         </li>
                       </ul>
-
-
-                      <li style={{ display: "flex", alignItems: "center" }} >
-                        <Link to="/profile/:id" style={{ margin: "0 15px", fontSize: "20px" }}>
-                          <span style={{ color: "black" }}>&#x1F464;</span> {/* Unicode của biểu tượng user */}
-                        </Link>
-                        <Link to="/favorite" style={{ margin: "0 15px", fontSize: "20px" }}>
-                          <span style={{ color: "black" }}>&#x2764;</span> {/* Unicode của biểu tượng heart */}
-                        </Link>
-                        <Link to="/cart" style={{ margin: "0 15px", fontSize: "20px" }}>
-                          <span style={{ color: "black" }}>&#x1F6D2;</span> {/* Unicode của biểu tượng shopping cart */}
-                          <span className="cart-item-count">
-                            {/* {count_cart} */}
-                          </span>
-                        </Link>
-
-                      </li>
+                      <li style={{ display: "flex", alignItems: "center" }}>
+      <Link to="/profile/:id" style={{ margin: "0 15px", fontSize: "25px" }}>
+        <AiOutlineUser style={{ color: "black" }} /> {/* Biểu tượng user */}
+      </Link>
+      <Link to="/favorite" style={{ margin: "0 15px", fontSize: "25px" }}>
+        <AiOutlineHeart style={{ color: "black" }} /> {/* Biểu tượng heart */}
+      </Link>
+      <Link to="/cart" style={{ margin: "0 15px", fontSize: "25px" }}>
+        <AiOutlineShoppingCart style={{ color: "black" }} /> {/* Biểu tượng shopping cart */}
+        <span className="cart-item-count">
+          {/* {count_cart} */}
+        </span>
+      </Link>
+    </li>
 
 
 
