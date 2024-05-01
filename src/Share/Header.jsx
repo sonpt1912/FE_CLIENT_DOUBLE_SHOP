@@ -212,7 +212,7 @@ function Header(props) {
               <div className="col-lg-12">
                 <div className="hb-menu">
                   <nav>
-                    <ul  className="navbar-ul"
+                    <ul className="navbar-ul"
                     //  style={{ backgroundColor: "white !important", borderBottom: "2px solid red" }}
                     >
                       <li>
@@ -224,7 +224,7 @@ function Header(props) {
                           />
                         </Link>
                       </li>
-                      <ul style={{ display: 'flex', listStyleType: 'none', padding: 0 }}>
+                      <ul style={{ display: 'flex', listStyleType: 'none', marginLeft: "-5px" }}>
                         <li style={{ marginRight: '10px' }}>
                           <Link to="/" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>Home</Link>
                         </li>
@@ -234,10 +234,13 @@ function Header(props) {
                         <li>
                           <Link to="/contact" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>Contact</Link>
                         </li>
+                        <li>
+                          <Link to="/about" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>About Us</Link>
+                        </li>
                       </ul>
 
 
-                      <li style={{ display: "flex", alignItems: "center" }}>
+                      <li style={{ display: "flex", alignItems: "center" }} >
                         <Link to="/profile/:id" style={{ margin: "0 15px", fontSize: "20px" }}>
                           <span style={{ color: "black" }}>&#x1F464;</span> {/* Unicode của biểu tượng user */}
                         </Link>
@@ -257,7 +260,7 @@ function Header(props) {
 
 
                       <li style={{ float: "right" }}>
-                        <div className="ht-setting-trigger">
+                        <div className="ht-setting-trigger" style={{marginLeft:"-50px"}}>
                           {active_user ? (
                             <span
                               data-toggle="collapse"
