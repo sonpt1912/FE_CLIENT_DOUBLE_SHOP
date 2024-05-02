@@ -215,7 +215,7 @@ function Header(props) {
                 <div className="hb-menu">
                   <nav>
                     <ul className="navbar-ul"
-                     style={{ backgroundColor: "white", borderBottom: "1px solid red" ,borderTop: "1px solid red" }}
+                      style={{ backgroundColor: "white", borderBottom: "1px solid red", borderTop: "1px solid red" }}
                     >
                       <li>
                         <Link to="/">
@@ -241,25 +241,25 @@ function Header(props) {
                         </li>
                       </ul>
                       <li style={{ display: "flex", alignItems: "center" }}>
-      <Link to="/profile/:id" style={{ margin: "0 15px", fontSize: "25px" }}>
-        <AiOutlineUser style={{ color: "black" }} /> {/* Biểu tượng user */}
-      </Link>
-      <Link to="/favorite" style={{ margin: "0 15px", fontSize: "25px" }}>
-        <AiOutlineHeart style={{ color: "black" }} /> {/* Biểu tượng heart */}
-      </Link>
-      <Link to="/cart" style={{ margin: "0 15px", fontSize: "25px" }}>
-        <AiOutlineShoppingCart style={{ color: "black" }} /> {/* Biểu tượng shopping cart */}
-        <span className="cart-item-count">
-          {/* {count_cart} */}
-        </span>
-      </Link>
-    </li>
+                        <Link to="/profile/:id" style={{ margin: "0 15px", fontSize: "25px" }}>
+                          <AiOutlineUser style={{ color: "black" }} /> {/* Biểu tượng user */}
+                        </Link>
+                        <Link to="/favorite" style={{ margin: "0 15px", fontSize: "25px" }}>
+                          <AiOutlineHeart style={{ color: "black" }} /> {/* Biểu tượng heart */}
+                        </Link>
+                        <Link to="/cart" style={{ margin: "0 15px", fontSize: "25px" }}>
+                          <AiOutlineShoppingCart style={{ color: "black" }} /> {/* Biểu tượng shopping cart */}
+                          <span className="cart-item-count">
+                            {/* {count_cart} */}
+                          </span>
+                        </Link>
+                      </li>
 
 
 
 
                       <li style={{ float: "right" }}>
-                        <div className="ht-setting-trigger" style={{marginLeft:"-50px"}}>
+                        <div className="ht-setting-trigger" style={{ marginLeft: "-50px" }}>
                           {active_user ? (
                             <span
                               data-toggle="collapse"
@@ -270,23 +270,20 @@ function Header(props) {
                               {user.fullname}
                             </span>
                           ) : (
-                            <span
-                              data-toggle="collapse"
-                              data-target="#collapseExample"
-                              aria-expanded="false"
-                              aria-controls="collapseExample"
+                            <Link
+                              to="/signin"
                               style={{
                                 display: "flex",
                                 color: "#242424",
-
                                 fontSize: "18px",
                                 lineHeight: "35px",
                                 fontWeight: "400",
                                 padding: "8px 0",
+                                textDecoration: "none" // Thêm thuộc tính textDecoration để loại bỏ gạch chân mặc định của thẻ <a>
                               }}
                             >
-                              Setting
-                            </span>
+                              Sign In
+                            </Link>
                           )}
                         </div>
                         <div className="ul_setting">
@@ -297,9 +294,7 @@ function Header(props) {
                             >
                               <li className="li_setting">
                                 <Link
-                                  to={`/profile/${sessionStorage.getItem(
-                                    "id_user"
-                                  )}`}
+                                  to={`/profile/${sessionStorage.getItem("id_user")}`}
                                 >
                                   Profile
                                 </Link>
@@ -313,18 +308,10 @@ function Header(props) {
                                 </a>
                               </li>
                             </ul>
-                          ) : (
-                            <ul
-                              className="setting_ul collapse"
-                              id="collapseExample"
-                            >
-                              <li className="li_setting">
-                                <Link to="/signin">Sign In</Link>
-                              </li>
-                            </ul>
-                          )}
+                          ) : null}
                         </div>
                       </li>
+
                     </ul>
                   </nav>
                 </div>

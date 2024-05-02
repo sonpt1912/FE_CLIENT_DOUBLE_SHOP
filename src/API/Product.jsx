@@ -2,9 +2,9 @@ import axiosClient from './axiosClient'
 
 const Product = {
 
-    Get_All_Product: () => {
-        const url = '/api/Product'
-        return axiosClient.get(url)
+    Get_All_Product: (requestBody) => {
+        const url = '/public/product/get-all-by-condition'
+        return axiosClient.post(url,requestBody)
     },
 
     Get_Category_Product: (query) => {

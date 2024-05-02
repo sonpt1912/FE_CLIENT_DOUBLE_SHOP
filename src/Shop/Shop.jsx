@@ -28,137 +28,207 @@ function Shop(props) {
         category: id
     })
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(9);
 
     //Hàm này dùng để thay đổi state pagination.page
     //Nó sẽ truyền xuống Component con và nhận dữ liệu từ Component con truyền lên
-    const handlerChangePage = (value) => {
-        console.log("Value: ", value)
+    const handlerChangePage = async (value) => {
+        // Kiểm tra xem giá trị mới có phải là một số nguyên không
+        const newPageSize = calculatePageSize(value);
+            
 
-        //Sau đó set lại cái pagination để gọi chạy làm useEffect gọi lại API pagination
-        setPagination({
-            page: value,
-            count: pagination.count,
-            search: pagination.search,
-            category: pagination.category
-        })
-    }
-
-    //Gọi hàm để load ra sản phẩm theo pagination dữ vào id params 
-    useEffect(() => {
-
-        const fetchData = async () => {
-
-            const params = {
-                page: pagination.page,
-                count: pagination.count,
-                search: pagination.search,
-                category: id
+            // Cập nhật trạng thái của phân trang
+            setPagination(prevPagination => ({
+                ...prevPagination,
+                page: value,
+                
+            }));
+            try {
+                const requestBody = { page: value - 1, pageSize: newPageSize }; // Sử dụng pageSize mới
+                console.log(requestBody);
+                const response = await Product.Get_All_Product(requestBody);
+                console.log(response);
+    
+                setProducts(response.listData);
+                setTotalRecord(response.totalRecord);
+                setTotalPage(Math.ceil(response.totalRecord / 9));
+                setPageSize(newPageSize);
+                setCurrentPage(value)
+            } catch (error) {
+                console.error('Lỗi khi tải sản phẩm:', error);
             }
-
-            const query = '?' + queryString.stringify(params)
-
-            const response = await Product.Get_Pagination(query)
-            console.log(response)
-
-            setProducts(response)
-
-
-            // Gọi API để tính tổng số trang cho từng loại sản phẩm
-            const params_total_page = {
-                id_category: id
-            }
-
-            const query_total_page = '?' + queryString.stringify(params_total_page)
-
-            const response_total_page = await Product.Get_Category_Product(query_total_page)
-
-            //Tính tổng số trang = tổng số sản phẩm / số lượng sản phẩm 1 trang
-            const totalPage = Math.ceil(parseInt(response_total_page.length) / parseInt(pagination.count))
-            console.log(totalPage)
-
-            setTotalPage(totalPage)
-
+            
+    };
+    const calculatePageSize = (currentPage) => {
+        // Nếu chuyển về trang đầu tiên, đặt lại pageSize về 9
+        if (currentPage === 1) {
+            return 9;
+        } else {
+            // Tính toán số lượng phần tử cần hiển thị trong trang hiện tại
+            const startIndex = (currentPage - 1) * pageSize;
+            const remainingItems = totalRecord - startIndex;
+            return Math.min(pageSize, remainingItems);
         }
+    };
+    
 
-        fetchData()
-
-    }, [id])
-
-    //Gọi hàm để load ra sản phẩm theo pagination dữ vào id params 
     useEffect(() => {
+        // Set trang mặc định khi mới vào
+        setPagination(prevPagination => ({
+            ...prevPagination,
+            page: '1'
+        }));
+        // Gọi hàm xử lý khi trang thay đổi
+        handlerChangePage(1);
+        // Gọi fetchData để lấy dữ liệu
+        fetchData();
+    }, []);
+    
+    const [images, setImages] = useState([]);
 
-        const fetchData = async () => {
+    const fetchData = async () => {
+        try {
+            const requestBody = { page: currentPage - 1, pageSize };
+            console.log(requestBody);
+            const response = await Product.Get_All_Product(requestBody);
 
-            const params = {
-                page: pagination.page,
-                count: pagination.count,
-                search: pagination.search,
-                category: id
-            }
+          
+            // Trích xuất danh sách URL hình ảnh từ phản hồi
 
-            const query = '?' + queryString.stringify(params)
 
-            const response = await Product.Get_Pagination(query)
-            console.log(response)
 
-            setProducts(response)
-
+            // Cập nhật trạng thái dựa trên phản hồi
+            setProducts(response.listData);
+            setTotalRecord(response.totalRecord);
+            setTotalPage(Math.ceil(response.totalRecord / 9)); // Phép tính đã được sửa
+        } catch (error) {
+            // Xử lý lỗi
+            console.error('Lỗi khi tải sản phẩm:', error);
+            // Tuỳ chọn, bạn có thể cập nhật trạng thái để biểu thị lỗi
+            // setProducts([]);
+            // setTotalRecord(0);
+            // setTotalPage(0);
         }
+    };
 
-        fetchData()
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber); // Cập nhật trang hiện tại khi chuyển trang
+    };
+    const [totalRecord, setTotalRecord] = useState(0);
 
-    }, [pagination])
+    // useEffect(() => {
+
+    //     const fetchData = async () => {
+
+    //         const params = {
+    //             page: pagination.page,
+    //             count: pagination.count,
+    //             search: pagination.search,
+    //             category: id
+    //         }
+
+    //         const query = '?' + queryString.stringify(params)
+
+    //         const response = await Product.Get_Pagination(query)
+    //         console.log(response)
+
+    //         setProducts(response)
+
+
+    //         const params_total_page = {
+    //             id_category: id
+    //         }
+
+    //         const query_total_page = '?' + queryString.stringify(params_total_page)
+
+    //         const response_total_page = await Product.Get_Category_Product(query_total_page)
+
+    //         const totalPage = Math.ceil(parseInt(response_total_page.length) / parseInt(pagination.count))
+    //         console.log(totalPage)
+
+
+
+    //     }
+
+    //     fetchData()
+
+    // }, [id])
+
+    // useEffect(() => {
+
+    //     const fetchData = async () => {
+
+    //         const params = {
+    //             page: pagination.page,
+    //             count: pagination.count,
+    //             search: pagination.search,
+    //             category: id
+    //         }
+
+    //         const query = '?' + queryString.stringify(params)
+
+    //         const response = await Product.Get_Pagination(query)
+    //         console.log(response)
+
+    //         setProducts(response)
+
+    //     }
+
+    //     fetchData()
+
+    // }, [pagination])
 
 
     const [male, set_male] = useState([])
     const [female, set_female] = useState([])
 
-    // Gọi API theo phương thức GET để load category
-    useEffect(() => {
 
-        const fetchData = async () => {
+    // useEffect(() => {
 
-            // gender = male
-            const params_male = {
-                gender: 'male'
-            }
+    //     const fetchData = async () => {
 
-            const query_male = '?' + queryString.stringify(params_male)
 
-            const response_male = await Product.Get_Category_Gender(query_male)
+    //         const params_male = {
+    //             gender: 'male'
+    //         }
 
-            set_male(response_male)
+    //         const query_male = '?' + queryString.stringify(params_male)
 
-            // gender = female
-            const params_female = {
-                gender: 'female'
-            }
+    //         const response_male = await Product.Get_Category_Gender(query_male)
 
-            const query_female = '?' + queryString.stringify(params_female)
+    //         set_male(response_male)
 
-            const response_female = await Product.Get_Category_Gender(query_female)
 
-            set_female(response_female)
+    //         const params_female = {
+    //             gender: 'female'
+    //         }
 
-        }
+    //         const query_female = '?' + queryString.stringify(params_female)
 
-        fetchData()
+    //         const response_female = await Product.Get_Category_Gender(query_female)
 
-    }, [])
+    //         set_female(response_female)
 
-    useEffect(() => {
-        const fakeData = []
-        for (let i = 0; i < 9; i++) {
-            fakeData.push({
-                _id: `product_${i}`,
-                name: `Product ${i}`,
-                image: `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7JDQLmn016pSYDwyLcHbpA88Wk83h0nd2szdavgNzc0jWSE3tUL3WldrxFkjJ9YvuheM&usqp=CAU`,
-                price: Math.floor(Math.random() * 1000) + 1
-            })
-        }
-        setProducts(fakeData)
-        setTotalPage(1)
-    }, [id])
+    //     }
+
+    //     fetchData()
+
+    // }, [])
+
+    // useEffect(() => {
+    //     const fakeData = []
+    //     for (let i = 0; i < 9; i++) {
+    //         fakeData.push({
+    //             _id: `product_${i}`,
+    //             name: `Product ${i}`,
+    //             image: `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7JDQLmn016pSYDwyLcHbpA88Wk83h0nd2szdavgNzc0jWSE3tUL3WldrxFkjJ9YvuheM&usqp=CAU`,
+    //             price: Math.floor(Math.random() * 1000) + 1
+    //         })
+    //     }
+    //     setProducts(fakeData)
+    //     setTotalPage(1)
+    // }, [id])
     const handler_Search = (value) => {
         console.log("Search: ", value)
 
@@ -202,8 +272,8 @@ function Shop(props) {
         setSelectedSize(size); // Cập nhật nút được chọn
         // Gọi hàm xử lý các thay đổi liên quan đến nút được chọn
     };
-   
-    
+
+
     return (
         <div >
             <div className="breadcrumb-area">
@@ -364,19 +434,44 @@ function Shop(props) {
                                         <div className="product-area shop-product-area">
                                             <div className="row">
                                                 {products.map(product => (
-                                                    <div className="col-lg-4 col-md-6" key={product._id}>
+                                                    <div className="col-lg-4 col-md-6" key={product.id}>
                                                         <div className="single-product-wrap">
                                                             <div className="product-image">
-                                                                <Link to={`/detail/${product._id}`}>
-                                                                    <img src={product.image} alt={product.name} />
+                                                                <Link to={`/detail/${product.id}`}>
+
+                                                                    {product.listImages && product.listImages.resources.length > 0 ? (
+                                                                        // Sử dụng URL của hình ảnh đầu tiên trong mảng resources
+                                                                        <img src={product.listImages.resources[0].url} alt={product.name} />
+                                                                    ) : (
+                                                                        // Nếu không có hình ảnh, bạn có thể cung cấp một URL mặc định hoặc hình ảnh thay thế
+                                                                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7JDQLmn016pSYDwyLcHbpA88Wk83h0nd2szdavgNzc0jWSE3tUL3WldrxFkjJ9YvuheM&usqp=CAU" alt={product.name} />
+                                                                    )}
+
                                                                 </Link>
                                                             </div>
                                                             <div className="product-content">
                                                                 <h3>{product.name}</h3>
-                                                                <div className="product-price">
-                                                                    <span className="price">${product.price}</span>
+                                                                <div className="product-details">
+                                                                    <div className="detail">
+                                                                        <span>Brand:</span>
+                                                                        <span>{product.brand.name}</span>
+                                                                    </div>
+                                                                    <div className="detail">
+                                                                        <span>Category:</span>
+                                                                        <span>{product.category.name}</span>
+                                                                    </div>
+                                                                    <div className="detail">
+                                                                        <span>Material:</span>
+                                                                        <span>{product.material.name}</span>
+                                                                    </div>
+                                                                    <div className="detail">
+                                                                        <span>Collar:</span>
+                                                                        <span>{product.collar.name}</span>
+                                                                    </div>
                                                                 </div>
+
                                                             </div>
+
                                                         </div>
                                                     </div>
                                                 ))}
@@ -386,11 +481,25 @@ function Shop(props) {
                                     <div className="paginatoin-area">
                                         <div className="row">
                                             <div className="col-lg-6 col-md-6">
-
+                                                <p>Total products: {totalRecord}</p>
+                                                {/* <p>Page: {pagination.page}</p> */}
                                             </div>
-                                            <Pagination pagination={pagination} handlerChangePage={handlerChangePage} totalPage={totalPage} />
+                                            <div className="col-lg-6 col-md-6">
+                                                {Array.from({ length: totalPage }, (_, index) => (
+                                                    <button
+                                                        key={index}
+                                                        onClick={() => handlerChangePage(index + 1)}
+                                                        className={pagination.page === index + 1 ? "pagination-button current-page" : "pagination-button"}
+                                                    >
+                                                        {index + 1}
+                                                    </button>
+                                                ))}
+                                            </div>
                                         </div>
                                     </div>
+
+
+
                                 </div>
                             </div>
                         </div>
