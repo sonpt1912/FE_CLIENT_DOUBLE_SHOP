@@ -97,6 +97,12 @@ const SignUp = lazy(() => {
   });
 });
 
+const ForgetPassword = lazy(() => {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(import("./Auth/ForgetPassword")), 2000);
+  });
+});
+
 const History = lazy(() => {
   return new Promise((resolve) => {
     setTimeout(() => resolve(import("./History/History")), 2000);
@@ -150,6 +156,7 @@ function App() {
             <Route path="/contact" component={Contact} />
             <Route path="/signin" component={SignIn} />
             <Route path="/signup" component={SignUp} />
+            <Route path="/forgetpassword" component={ForgetPassword} />
             <Route path="/success" component={OrderSuccess} />
             <Route path="/fail" component={OrderFail} />
             <Route path="/momo" component={OrderMomo} />

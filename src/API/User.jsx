@@ -22,6 +22,21 @@ const User = {
     return axiosClient.post(url, data);
   },
 
+  Post_Register: (data) => {
+    const url = `/auth/register`;
+    return axiosClient.post(url, data);
+  },
+
+  Get_Check_Email_User: (data) => {
+    const url = `/auth/send-top-forgot-password`;
+    return axiosClient.post(url, data);
+  },
+
+  Forgot_Password_User: (data) => {
+    const url = `/auth/reset-password`;
+    return axiosClient.post(url, data);
+  },
+
   Post_User: (data) => {
     const url = "/api/User";
     return axiosClient.post(url, data);

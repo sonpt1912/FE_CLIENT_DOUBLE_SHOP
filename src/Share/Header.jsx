@@ -98,7 +98,7 @@ function Header(props) {
   // Phụ thuộc vào thằng redux count
   useEffect(() => {
     if (count) {
-      showData(JSON.parse(localStorage.getItem("carts")), 0, 0);
+      // showData(JSON.parse(localStorage.getItem("carts")), 0, 0);
 
       const action = changeCount(count);
       dispatch(action);
@@ -106,18 +106,18 @@ function Header(props) {
   }, [count]);
 
   // Hàm này là hàm con chia ra để xử lý
-  function showData(carts, sum, price) {
-    carts.map((value) => {
-      sum += value.count;
-      price += parseInt(value.price_product) * parseInt(value.count);
-    });
+  // function showData(carts, sum, price) {
+  //   carts.map((value) => {
+  //     sum += value.count;
+  //     price += parseInt(value.price_product) * parseInt(value.count);
+  //   });
 
-    set_count_cart(sum);
+  //   set_count_cart(sum);
 
-    set_total_price(price);
+  //   set_total_price(price);
 
-    set_carts_mini(carts);
-  }
+  //   set_carts_mini(carts);
+  // }
 
   // Hàm này dùng để xóa carts_mini
   const handler_delete_mini = (id_cart) => {

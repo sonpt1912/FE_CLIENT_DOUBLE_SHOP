@@ -1,242 +1,355 @@
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
-import User from '../API/User';
-import { useForm } from "react-hook-form";
-
-SignUp.propTypes = {
-
-};
+import React, { useEffect, useState } from "react";
+import { Link, Redirect } from "react-router-dom";
+import User from "../API/User";
+import { useDispatch, useSelector } from "react-redux";
+import { changeCount } from "../Redux/Action/ActionCount";
+import { Button, Form, Input, DatePicker, Radio, Select, Row, Col } from "antd";
+import "./Signin.css";
+import axios from "axios";
+import Title from "antd/es/skeleton/Title";
+const { Option } = Select;
 
 function SignUp(props) {
+  const dispatch = useDispatch();
 
-    const { register, handleSubmit, formState: { errors } } = useForm();
-    const onSubmit = data => console.log(data);
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("0");
+  const [name, setName] = useState("");
+  const [address, setAddress] = useState({
+    district: "",
+    province: "",
+    city: "",
+    description: "",
+  });
+  const [password, setPassword] = useState("");
+  const [birthDay, setBirthDay] = useState(null);
+  const [gender, setGender] = useState(0);
 
-    const [fullname, set_fullname] = useState('')
-    const [username, set_username] = useState('')
-    const [password, set_password] = useState('')
-    const [confirm, set_confirm] = useState('')
-    const [email, set_email] = useState('')
+  const [error, setError] = useState(false);
+  const [redirect, setRedirect] = useState(false);
 
-    const [show_success, set_show_success] = useState(false)
+  const count_change = useSelector((state) => state.Count.isLoad);
+  // Đia Chỉ
+  const [cityData, setCityData] = useState([]);
+  const [disData, setDisData] = useState([]);
+  const [warData, setWarData] = useState([]);
+  const [selectedCity, setSelectedCity] = useState("");
+  const [selectedDis, setSelectedDis] = useState("");
+  const [selectedWar, setSelectedWar] = useState("");
+  const [city, setCity] = useState("");
+  const [district, setDistrict] = useState("");
+  const [ward, setWard] = useState("");
 
-    const [errorEmail, setEmailError] = useState(false)
-    const [errorFullname, setFullnameError] = useState(false)
-    const [errorUsername, setUsernameError] = useState(false)
-    const [errorPassword, setPasswordError] = useState(false)
-    const [errorConfirm, setConfirmError] = useState(false)
-    const [errorCheckPass, setCheckPass] = useState(false)
+  useEffect(() => {
+    const fetchCityData = async () => {
+      try {
+        const response = await fetch(
+          `https://vapi.vnappmob.com/api/province`
+        ).then((res) => res.json());
+        setCityData(
+          response.results.map((city) => ({
+            label: city.province_name,
+            value: city.province_id,
+          }))
+        );
+      } catch (error) {
+        console.error("Error fetching city data:", error);
+      }
+    };
 
-    const [username_exist, set_username_exist] = useState(false)
+    fetchCityData();
+  }, []);
 
-    const handler_signup = (e) => {
-
-        e.preventDefault()
-
-        if (!email){
-            setEmailError(true)
-            return
-        }else{
-            setEmailError(false)
+  useEffect(() => {
+    const fetchDisData = async () => {
+      if (selectedCity) {
+        try {
+          const response = await axios.get(
+            `https://vapi.vnappmob.com/api/province/district/${selectedCity}`
+          );
+          setDisData(
+            response.data.results.map((dis) => ({
+              label: dis.district_name,
+              value: dis.district_id,
+            }))
+          );
+        } catch (error) {
+          console.error("Error fetching district data:", error);
         }
+      }
+    };
 
-        if (!fullname) {
-            setFullnameError(true)
-            setUsernameError(false)
-            setPasswordError(false)
-            setConfirmError(false)
-            return
+    fetchDisData();
+  }, [selectedCity]);
+
+  useEffect(() => {
+    const fetchWarData = async () => {
+      if (selectedDis) {
+        try {
+          const response = await axios.get(
+            `https://vapi.vnappmob.com/api/province/ward/${selectedDis}`
+          );
+          setWarData(
+            response.data.results.map((war) => ({
+              label: war.ward_name,
+              value: war.ward_id,
+            }))
+          );
+        } catch (error) {
+          console.error("Error fetching ward data:", error);
+        }
+      }
+    };
+
+    fetchWarData();
+  }, [selectedDis]);
+
+  const handleCityChange = (value) => {
+    setSelectedCity(value);
+    const selectedCityCode = cityData.find(
+      (city) => city.value === value
+    )?.value;
+    const selectedCityName = cityData.find(
+      (city) => city.value === value
+    )?.label;
+    setAddress((prevAddress) => ({
+      ...prevAddress,
+      province: selectedCityName,
+    }));
+    setCity(selectedCityName);
+    setSelectedDis("");
+    setSelectedWar("");
+  };
+
+  const handleDisChange = (value) => {
+    setSelectedDis(value);
+    const selectedDisCode = disData.find((dis) => dis.value === value)?.value;
+    const selectedDisName = disData.find((dis) => dis.value === value)?.label;
+    setDistrict(selectedDisName);
+    setAddress((prevAddress) => ({
+      ...prevAddress,
+      district: selectedDisName,
+    }));
+    setSelectedWar("");
+  };
+
+  const handleWarChange = (value) => {
+    setSelectedWar(value);
+    setAddress((prevAddress) => ({ ...prevAddress, ward: selectedWarName }));
+    const selectedWarName = warData.find((war) => war.value === value)?.label;
+    setWard(selectedWarName);
+  };
+
+  const handleSignUp = (e) => {
+    e.preventDefault();
+
+    const fetchData = async () => {
+      const params = {
+        email,
+        phone,
+        name,
+        address,
+        password,
+        birthDay: birthDay ? birthDay.format("YYYY-MM-DD") : null,
+        gender,
+      };
+
+      try {
+        const response = await User.Post_Register(params);
+        console.log("Response: ", response);
+
+        if (response === "SUCCESS") {
+          const action_count_change = changeCount(count_change);
+          dispatch(action_count_change);
+
+          setRedirect(true);
         } else {
-            setFullnameError(false)
-            setUsernameError(false)
-            setPasswordError(false)
-            setConfirmError(false)
-
-            if (!username){
-                setFullnameError(false)
-                setUsernameError(true)
-                setPasswordError(false)
-                setConfirmError(false)
-                return
-            }else{
-                setFullnameError(false)
-                setUsernameError(false)
-                setPasswordError(false)
-                setConfirmError(false)
-
-                if (!password){
-                    setFullnameError(false)
-                    setUsernameError(false)
-                    setPasswordError(true)
-                    setConfirmError(false)
-                    return
-                }else{
-                    setFullnameError(false)
-                    setUsernameError(false)
-                    setPasswordError(false)
-                    setConfirmError(false)
-
-                    if (!confirm){
-                        setFullnameError(false)
-                        setUsernameError(false)
-                        setPasswordError(false)
-                        setConfirmError(true)
-                        return
-                    }else{
-                        setFullnameError(false)
-                        setUsernameError(false)
-                        setPasswordError(false)
-                        setConfirmError(false)
-
-                        if (password !== confirm){
-                            setFullnameError(false)
-                            setUsernameError(false)
-                            setPasswordError(false)
-                            setConfirmError(false)
-                            setCheckPass(true)
-                            return
-                        }else{
-                            setConfirmError(false)
-                            setCheckPass(false)
-                            
-                            const fetchData = async () => {
-                                
-                                const data = {
-                                    email: email,
-                                    username: username,
-                                    password: password,
-                                    fullname: fullname,
-                                    id_permission: '6087dcb5f269113b3460fce4'
-                                }
-
-                                const response = await User.Post_User(data)
-
-                                console.log(response)
-
-                                if (response === 'User Da Ton Tai'){
-                                    set_username_exist(true)
-                                }else{
-                                    set_show_success(true)
-
-                                }  
-                            }
-
-                            fetchData()
-
-                            set_fullname('')
-                            set_username('')
-                            set_password('')
-                            set_fullname('')
-                            set_confirm('')
-
-                        }
-
-                    }
-                    
-                }
-            }
-
+          setError(true);
         }
-        
-        setTimeout(() => {
-            set_show_success(false)
-        }, 1500)
+      } catch (error) {
+        console.error("Error: ", error);
+        setError(true);
+      }
+    };
 
-    }
+    fetchData();
+  };
 
-
-    return (
-        <div>
-
-            {
-                show_success && 
-                    <div className="modal_success">
-                        <div className="group_model_success pt-3">
-                            <div className="text-center p-2">
-                                <i className="fa fa-bell fix_icon_bell" style={{ fontSize: '40px', color: '#fff' }}></i>
-                            </div>
-                            <h4 className="text-center p-3" style={{ color: '#fff' }}>Bạn Đã Đăng Ký Thành Công!</h4>
-                        </div>
-                    </div>
-            }
-
-            <div className="breadcrumb-area">
-                <div className="container">
-                    <div className="breadcrumb-content">
-                        <ul>
-                            <li><Link to="/">Home</Link></li>
-                            <li className="active">Register</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div className="page-section mb-60">
-                <div className="container">
-                    <div className="row">
-                        <div className="col-sm-12 col-md-12 col-lg-6 col-xs-12 mr_signin">
-                            <form action="#">
-                                <div className="login-form">
-                                    <h4 className="login-title">Register</h4>
-                                    <div className="row">
-                                        <div className="col-md-12 mb-20">
-                                            <label>Email *</label>
-                                            <input className="mb-0" type="text" placeholder="Email" value={email} onChange={(e) => set_email(e.target.value)} />
-                                            {
-                                                errorEmail && <span style={{ color: 'red' }}>* Email is required!</span>
-                                            }  
-                                        </div>
-                                        <div className="col-md-12 mb-20">
-                                            <label>Full Name *</label>
-                                            <input className="mb-0" type="text" placeholder="First Name" value={fullname} onChange={(e) => set_fullname(e.target.value)} />
-                                            {
-                                                errorFullname && <span style={{ color: 'red' }}>* Fullname is required!</span>
-                                            }  
-                                        </div>
-                                        <div className="col-md-12 mb-20">
-                                            <label>Username *</label>
-                                            <input className="mb-0" type="text" placeholder="Username" value={username} onChange={(e) => set_username(e.target.value)} />
-                                            {
-                                                errorUsername && <span style={{ color: 'red' }}>* Username is required!</span>
-                                            }
-                                            {
-                                                username_exist && <span style={{ color: 'red' }}>* Username is Existed!</span>
-                                            }
-                                        </div>
-                                        <div className="col-md-6 mb-20">
-                                            <label>Password *</label>
-                                            <input className="mb-0" type="password" placeholder="Password" value={password} onChange={(e) => set_password(e.target.value)} />
-                                            {
-                                                errorPassword && <span style={{ color: 'red' }}>* Password is required!</span>
-                                            }
-                                        </div>
-                                        <div className="col-md-6 mb-20">
-                                            <label>Confirm Password *</label>
-                                            <input className="mb-0" type="password" placeholder="Confirm Password" value={confirm} onChange={(e) => set_confirm(e.target.value)} />
-                                            {
-                                                errorConfirm && <span style={{ color: 'red' }}>* Confirm Password is required!</span>
-                                            }
-                                            {
-                                                errorCheckPass && <span style={{ color: 'red' }}>* Checking Again Confirm Password!</span>
-                                            }
-                                        </div>
-                                        <div className="col-md-12 mb-20">
-                                            <div className="d-flex justify-content-end">
-                                                <Link to="/signin">Do You Want To Login?</Link>
-                                            </div>
-                                        </div>
-                                        <div className="col-12">
-                                            <button className="register-button mt-0" style={{ cursor: 'pointer' }} onClick={handler_signup}>Register</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  return (
+    <div className="login-page">
+      <div className="login-box">
+        <div className="illustration-wrapper">
+          <img
+            src="https://mixkit.imgix.net/art/preview/mixkit-left-handed-man-sitting-at-a-table-writing-in-a-notebook-27-original-large.png?q=80&auto=format%2Ccompress&h=700"
+            alt="Signup"
+          />
         </div>
-    );
+        <Row justify="center">
+          <Form id="login-form" name="login-form" layout="vertical">
+            <p className="form-title"> Đăng ký tài khoản</p>
+            <div className="form-column">
+              <Form.Item
+                label="Email"
+                name="email"
+                rules={[{ required: true, message: "Vui lòng nhập email!" }]}
+              >
+                <Input
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </Form.Item>
+
+              <Form.Item
+                label="Số điện thoại"
+                name="phone"
+                rules={[
+                  { required: true, message: "Vui lòng nhập số điện thoại!" },
+                ]}
+              >
+                <Input
+                  placeholder="Số điện thoại"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  size="large"
+                />
+              </Form.Item>
+
+              <Form.Item
+                label="Tên"
+                name="name"
+                rules={[{ required: true, message: "Vui lòng nhập tên!" }]}
+              >
+                <Input
+                  placeholder="Tên"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  size="large"
+                />
+              </Form.Item>
+
+              <Form.Item
+                label="Mật khẩu"
+                name="password"
+                rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
+              >
+                <Input.Password
+                  placeholder="Mật khẩu"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  size="large"
+                />
+              </Form.Item>
+            </div>
+            <div className="form-column">
+              <Form.Item
+                label="Tỉnh/Thành phố"
+                name="city"
+                rules={[
+                  { required: true, message: "Vui lòng chọn tỉnh/thành phố" },
+                ]}
+              >
+                <Select onChange={handleCityChange} size="large">
+                  {cityData.map((city) => (
+                    <Option key={city.value} value={city.value}>
+                      {city.label}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                label="Quận/Huyện"
+                name="district"
+                rules={[
+                  { required: true, message: "Vui lòng chọn quận/huyện" },
+                ]}
+              >
+                <Select onChange={handleDisChange} size="large">
+                  {disData.map((dis) => (
+                    <Option key={dis.value} value={dis.value}>
+                      {dis.label}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                label="Phường/Xã"
+                name="ward"
+                rules={[{ required: true, message: "Vui lòng chọn phường/xã" }]}
+              >
+                <Select onChange={handleWarChange} size="large">
+                  {warData.map((war) => (
+                    <Option key={war.value} value={war.value}>
+                      {war.label}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                label="Ngày sinh"
+                name="birthDay"
+                rules={[
+                  { required: true, message: "Vui lòng nhập ngày sinh!" },
+                ]}
+              >
+                <DatePicker
+                  placeholder="Ngày sinh"
+                  value={birthDay}
+                  onChange={(date) => setBirthDay(date)}
+                  size="large"
+                />
+              </Form.Item>
+
+              <Form.Item
+                label="Giới tính"
+                name="gender"
+                rules={[
+                  { required: true, message: "Vui lòng chọn giới tính!" },
+                ]}
+              >
+                <Radio.Group
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
+                  size="large"
+                >
+                  <Radio value={0}>Nam</Radio>
+                  <Radio value={1}>Nữ</Radio>
+                </Radio.Group>
+              </Form.Item>
+            </div>
+
+            <Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                className="login-form-button"
+                onClick={handleSignUp}
+                block
+                size="large"
+              >
+                Đăng ký
+              </Button>
+              {error && (
+                <span style={{ color: "red" }}>
+                  Đã xảy ra lỗi trong quá trình đăng ký!
+                </span>
+              )}
+              {redirect && <Redirect to="/signin" />}
+            </Form.Item>
+            <div
+              className="already-have-account"
+              style={{ textAlign: "center" }}
+            >
+              <Link to="/login"> Đã có tài khoản? Đăng nhập</Link>
+            </div>
+          </Form>
+        </Row>
+      </div>
+    </div>
+  );
 }
 
 export default SignUp;
