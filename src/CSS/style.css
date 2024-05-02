@@ -5655,7 +5655,7 @@ span.required {
 }
 .product-image img {
     width: 300px;
-    height: 200px;
+    height: 250px;
     object-fit: cover; /* Hoặc "contain" tùy thuộc vào yêu cầu của bạn */
 }
 .pagination-button {

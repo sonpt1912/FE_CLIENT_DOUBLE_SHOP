@@ -63,7 +63,9 @@ function Header(props) {
   // const carts = useSelector(state => state.Cart.listCart)
 
   const [active_user, set_active_user] = useState(false);
-
+// Trong bất kỳ thành phần nào của ứng dụng, bạn có thể lấy accessToken từ localStorage như sau:
+const accessToken = localStorage.getItem('token');
+ console.log(accessToken);
   const [user, set_user] = useState({});
 
   // Hàm này dùng để hiện thị
@@ -228,23 +230,23 @@ function Header(props) {
                       </li>
                       <ul style={{ display: 'flex', listStyleType: 'none', marginLeft: "-5px" }}>
                         <li style={{ marginRight: '10px' }}>
-                          <Link to="/" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>HOME</Link>
+                          <Link to="/" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>TRANG CHỦ</Link>
                         </li>
                         <li style={{ marginRight: '10px' }}>
-                          <Link to="/shop/all" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>MENU</Link>
+                          <Link to="/shop/all" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>BỘ SƯU TẬP</Link>
                         </li>
                         <li>
-                          <Link to="/contact" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>CONTACT</Link>
+                          <Link to="/contact" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>LIÊN HỆ</Link>
                         </li>
                         <li>
-                          <Link to="/about" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>ABOUT US</Link>
+                          <Link to="/about" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>VỀ CHÚNG TÔI</Link>
                         </li>
                       </ul>
                       <li style={{ display: "flex", alignItems: "center" }}>
-                        <Link to="/profile/:id" style={{ margin: "0 15px", fontSize: "25px" }}>
+                        <Link to={accessToken ? "/profile/:id" : "/signin"} style={{ margin: "0 15px", fontSize: "25px" }}>
                           <AiOutlineUser style={{ color: "black" }} /> {/* Biểu tượng user */}
                         </Link>
-                        <Link to="/favorite" style={{ margin: "0 15px", fontSize: "25px" }}>
+                        <Link to={accessToken ? "/favorite" : "/signin"} style={{ margin: "0 15px", fontSize: "25px" }}>
                           <AiOutlineHeart style={{ color: "black" }} /> {/* Biểu tượng heart */}
                         </Link>
                         <Link to="/cart" style={{ margin: "0 15px", fontSize: "25px" }}>
@@ -258,7 +260,7 @@ function Header(props) {
 
 
 
-                      <li style={{ float: "right" }}>
+                      {/* <li style={{ float: "right" }}>
                         <div className="ht-setting-trigger" style={{ marginLeft: "-50px" }}>
                           {active_user ? (
                             <span
@@ -279,10 +281,10 @@ function Header(props) {
                                 lineHeight: "35px",
                                 fontWeight: "400",
                                 padding: "8px 0",
-                                textDecoration: "none" // Thêm thuộc tính textDecoration để loại bỏ gạch chân mặc định của thẻ <a>
+                                textDecoration: "none" 
                               }}
                             >
-                              Sign In
+                              SIGN IN
                             </Link>
                           )}
                         </div>
@@ -310,7 +312,7 @@ function Header(props) {
                             </ul>
                           ) : null}
                         </div>
-                      </li>
+                      </li> */}
 
                     </ul>
                   </nav>

@@ -121,10 +121,14 @@ function Profile(props) {
 
     const showModalDX = () => {
         setShowDangXuat(true);
+       
+        
     };
 
     const toggleModal = () => {
-        setShowDangXuat(!showDangXuat); // Đảo ngược trạng thái hiển thị modal
+       
+        localStorage.removeItem("token");
+        window.location.href = '/signin';
     };
 
     const huyDangXuat = () => {
@@ -236,9 +240,9 @@ function Profile(props) {
                             title="Thông báo"
                             style={{ height: "500px" }}
                             visible={showDangXuat}
-                            onCancel={toggleModal}
+                            onCancel={huyDangXuat}
                             footer={[
-                                <Button key="cancel" onClick={toggleModal}>
+                                <Button key="cancel" onClick={huyDangXuat}>
                                     Không
                                 </Button>,
                                 <Button key="submit" type="primary" onClick={toggleModal}>

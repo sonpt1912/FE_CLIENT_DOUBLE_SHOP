@@ -280,8 +280,8 @@ function Shop(props) {
                 <div className="container">
                     <div className="breadcrumb-content">
                         <ul>
-                            <li><a href="index.html">Home</a></li>
-                            <li className="active">Shop</li>
+                            <li><a href="index.html">Trang chủ</a></li>
+                            <li className="active">Cửa hàng</li>
                         </ul>
                     </div>
                 </div>
@@ -299,19 +299,19 @@ function Shop(props) {
                                     </div>
                                 </div>
                                 <div className="li-blog-sidebar pt-25">
-                                    <h4 className="li-blog-sidebar-title" style={{ marginBottom: '25px' }}>SHOP NAVIGATION</h4>
+                                    <h4 className="li-blog-sidebar-title" style={{ marginBottom: '25px' }}>DANH SÁCH SẢN PHẨM</h4>
 
                                 </div>
 
                                 <div className="li-blog-sidebar pt-25" >
-                                    <h4 className="li-blog-sidebar-title"  >Category</h4>
+                                    <h4 className="li-blog-sidebar-title"  >Loại sản phẩm</h4>
                                     <ul className="li-blog-archive">
 
                                     </ul>
 
                                     <div className="select-wrapper" style={{ marginBottom: '25px' }}>
                                         <select className="category-select" onChange={(e) => handleCategoryChange(e.target.value)} >
-                                            <option value="">All</option>
+                                            <option value="">Tất cả</option>
                                             <option value="fake1">Fake Cate 1</option>
                                             <option value="fake2">Fake Cate 2</option>
                                             <option value="fake3">Fake Cate 3</option>
@@ -321,13 +321,13 @@ function Shop(props) {
                                 </div>
 
                                 <div className="li-blog-sidebar">
-                                    <h4 className="li-blog-sidebar-title">Brand</h4>
+                                    <h4 className="li-blog-sidebar-title">Thương hiệu</h4>
                                     <ul className="li-blog-archive">
 
                                     </ul>
                                     <div className="select-wrapper" style={{ marginBottom: '25px' }}>
                                         <select className="category-select" onChange={(e) => handleBrandChange(e.target.value)} >
-                                            <option value="">All</option>
+                                            <option value="">Tất cả</option>
                                             <option value="fake1">Fake Brand 1</option>
                                             <option value="fake2">Fake Brand 2</option>
                                             <option value="fake3">Fake Brand 3</option>
@@ -336,13 +336,13 @@ function Shop(props) {
                                 </div>
 
                                 <div className="li-blog-sidebar">
-                                    <h4 className="li-blog-sidebar-title">Collar</h4>
+                                    <h4 className="li-blog-sidebar-title">Cổ áo</h4>
                                     <ul className="li-blog-archive">
 
                                     </ul>
                                     <div className="select-wrapper" style={{ marginBottom: '25px' }}>
                                         <select className="category-select" onChange={(e) => handleCollarChange(e.target.value)} >
-                                            <option value="">All</option>
+                                            <option value="">Tất cả</option>
                                             <option value="fake1">Fake Collar 1</option>
                                             <option value="fake2">Fake Collar 2</option>
                                             <option value="fake3">Fake Collar 3</option>
@@ -351,13 +351,13 @@ function Shop(props) {
                                 </div>
 
                                 <div className="li-blog-sidebar">
-                                    <h4 className="li-blog-sidebar-title">Material</h4>
+                                    <h4 className="li-blog-sidebar-title">Chất liệu</h4>
                                     <ul className="li-blog-archive">
 
                                     </ul>
                                     <div className="select-wrapper" style={{ marginBottom: '25px' }}>
                                         <select className="category-select" onChange={(e) => handleMaterialChange(e.target.value)} >
-                                            <option value="">All</option>
+                                            <option value="">Tất cả</option>
                                             <option value="fake1">Fake Material 1</option>
                                             <option value="fake2">Fake Material 2</option>
                                             <option value="fake3">Fake Material 3</option>
@@ -366,7 +366,7 @@ function Shop(props) {
                                 </div>
 
                                 <div className="li-blog-sidebar">
-                                    <h4 className="li-blog-sidebar-title">Color</h4>
+                                    <h4 className="li-blog-sidebar-title">Màu sắc</h4>
                                     <ul className="li-blog-archive">
                                     </ul>
                                     <div className="button-wrapper" style={{ marginBottom: '25px', display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -375,7 +375,7 @@ function Shop(props) {
                                             onClick={() => handleColorChange('All')}
                                             style={{ padding: '8px 15px', border: '1px solid #ccc', borderRadius: '5px', marginRight: '10px', marginBottom: '10px', cursor: 'pointer' }}
                                         >
-                                            All
+                                            Tất cả
                                         </button>
                                         {["Color 1", "Color 2", "Color 3", "Color 4", "Color 5"].map((color, index) => (
                                             <button
@@ -391,7 +391,7 @@ function Shop(props) {
                                 </div>
 
                                 <div className="li-blog-sidebar">
-                                    <h4 className="li-blog-sidebar-title">Size</h4>
+                                    <h4 className="li-blog-sidebar-title">Kích cỡ</h4>
                                     <ul className="li-blog-archive">
                                     </ul>
                                     <div className="button-wrapper" style={{ marginBottom: '25px', display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -400,7 +400,7 @@ function Shop(props) {
                                             onClick={() => handleColorChange('All')}
                                             style={{ padding: '8px 15px', border: '1px solid #ccc', borderRadius: '5px', marginRight: '10px', marginBottom: '10px', cursor: 'pointer' }}
                                         >
-                                            All
+                                            Tất cả
                                         </button>
                                         {["Size 1", "Size 2", "Size 3", "Size 4"].map((size, index) => (
                                             <button
@@ -423,7 +423,7 @@ function Shop(props) {
                             <div className="shop-top-bar">
                                 <div className="product-select-box">
                                     <div className="product-short">
-                                        <h1>Product</h1>
+                                        <h1>Sản phẩm</h1>
 
                                     </div>
                                 </div>
@@ -449,24 +449,24 @@ function Shop(props) {
 
                                                                 </Link>
                                                             </div>
-                                                            <div className="product-content">
+                                                            <div className="product-content" style={{marginTop:'10px'}}> 
                                                                 <h3>{product.name}</h3>
                                                                 <div className="product-details">
                                                                     <div className="detail">
-                                                                        <span>Brand:</span>
-                                                                        <span>{product.brand.name}</span>
+                                                                        <span>Thương hiệu : </span>
+                                                                        <span> {product.brand.name}</span>
                                                                     </div>
                                                                     <div className="detail">
-                                                                        <span>Category:</span>
-                                                                        <span>{product.category.name}</span>
+                                                                        <span>Loại sản phẩm : </span>
+                                                                        <span> {product.category.name}</span>
                                                                     </div>
                                                                     <div className="detail">
-                                                                        <span>Material:</span>
-                                                                        <span>{product.material.name}</span>
+                                                                        <span>Chất liệu : </span>
+                                                                        <span> {product.material.name}</span>
                                                                     </div>
-                                                                    <div className="detail">
-                                                                        <span>Collar:</span>
-                                                                        <span>{product.collar.name}</span>
+                                                                    <div className="detail" style={{marginBottom:'10px'}}>
+                                                                        <span>Cổ áo : </span>
+                                                                        <span> {product.collar.name}</span>
                                                                     </div>
                                                                 </div>
 
@@ -481,10 +481,10 @@ function Shop(props) {
                                     <div className="paginatoin-area">
                                         <div className="row">
                                             <div className="col-lg-6 col-md-6">
-                                                <p>Total products: {totalRecord}</p>
+                                                <p>Tổng số sản phẩm: {totalRecord}</p>
                                                 {/* <p>Page: {pagination.page}</p> */}
                                             </div>
-                                            <div className="col-lg-6 col-md-6">
+                                            <div className="col-lg-6 col-md-6" >
                                                 {Array.from({ length: totalPage }, (_, index) => (
                                                     <button
                                                         key={index}

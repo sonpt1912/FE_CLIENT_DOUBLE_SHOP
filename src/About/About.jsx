@@ -19,7 +19,7 @@ function AboutUs(props) {
                 <div className="container mb-60">
                     <div className="row">
                         <div className="col-lg-12">
-                            <img src="https://imagev3.vietnamplus.vn/w1000/Uploaded/2024/qrndqxjwp/2023_03_19/z41937132079502bad2c8c47dc228f8f0b37af5d8f2e62.jpg.webp" alt="About Us" width="800px" height="400px" style={{
+                            <img src="https://spacet-release.s3.ap-southeast-1.amazonaws.com/img/blog/2023-10-03/thoi-trang-chau-au-co-dien-ket-hop-voi-cach-trang-tri-co-dien-651beab8c9649b0ef5ad95a1.webp" alt="About Us" width="800px" height="400px" style={{
                                 display: 'block',
                                 marginLeft: 'auto',
                                 marginRight: 'auto',
