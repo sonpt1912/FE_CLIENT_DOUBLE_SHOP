@@ -4,9 +4,8 @@ import User from "../API/User";
 import { useDispatch, useSelector } from "react-redux";
 import { changeCount } from "../Redux/Action/ActionCount";
 import { Button, Form, Input, DatePicker, Radio, Select, Row, Col } from "antd";
-import "./Signin.css";
+import "./Signup.css";
 import axios from "axios";
-import Title from "antd/es/skeleton/Title";
 const { Option } = Select;
 
 function SignUp(props) {
@@ -23,7 +22,7 @@ function SignUp(props) {
   });
   const [password, setPassword] = useState("");
   const [birthDay, setBirthDay] = useState(null);
-  const [gender, setGender] = useState(0);
+  const [gender, setGender] = useState("0");
 
   const [error, setError] = useState(false);
   const [redirect, setRedirect] = useState(false);
@@ -187,140 +186,169 @@ function SignUp(props) {
         <Row justify="center">
           <Form id="login-form" name="login-form" layout="vertical">
             <p className="form-title"> Đăng ký tài khoản</p>
-            <div className="form-column">
-              <Form.Item
-                label="Email"
-                name="email"
-                rules={[{ required: true, message: "Vui lòng nhập email!" }]}
-              >
-                <Input
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </Form.Item>
-
-              <Form.Item
-                label="Số điện thoại"
-                name="phone"
-                rules={[
-                  { required: true, message: "Vui lòng nhập số điện thoại!" },
-                ]}
-              >
-                <Input
-                  placeholder="Số điện thoại"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  size="large"
-                />
-              </Form.Item>
-
-              <Form.Item
-                label="Tên"
-                name="name"
-                rules={[{ required: true, message: "Vui lòng nhập tên!" }]}
-              >
-                <Input
-                  placeholder="Tên"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  size="large"
-                />
-              </Form.Item>
-
-              <Form.Item
-                label="Mật khẩu"
-                name="password"
-                rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
-              >
-                <Input.Password
-                  placeholder="Mật khẩu"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  size="large"
-                />
-              </Form.Item>
-            </div>
-            <div className="form-column">
-              <Form.Item
-                label="Tỉnh/Thành phố"
-                name="city"
-                rules={[
-                  { required: true, message: "Vui lòng chọn tỉnh/thành phố" },
-                ]}
-              >
-                <Select onChange={handleCityChange} size="large">
-                  {cityData.map((city) => (
-                    <Option key={city.value} value={city.value}>
-                      {city.label}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-
-              <Form.Item
-                label="Quận/Huyện"
-                name="district"
-                rules={[
-                  { required: true, message: "Vui lòng chọn quận/huyện" },
-                ]}
-              >
-                <Select onChange={handleDisChange} size="large">
-                  {disData.map((dis) => (
-                    <Option key={dis.value} value={dis.value}>
-                      {dis.label}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-
-              <Form.Item
-                label="Phường/Xã"
-                name="ward"
-                rules={[{ required: true, message: "Vui lòng chọn phường/xã" }]}
-              >
-                <Select onChange={handleWarChange} size="large">
-                  {warData.map((war) => (
-                    <Option key={war.value} value={war.value}>
-                      {war.label}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-
-              <Form.Item
-                label="Ngày sinh"
-                name="birthDay"
-                rules={[
-                  { required: true, message: "Vui lòng nhập ngày sinh!" },
-                ]}
-              >
-                <DatePicker
-                  placeholder="Ngày sinh"
-                  value={birthDay}
-                  onChange={(date) => setBirthDay(date)}
-                  size="large"
-                />
-              </Form.Item>
-
-              <Form.Item
-                label="Giới tính"
-                name="gender"
-                rules={[
-                  { required: true, message: "Vui lòng chọn giới tính!" },
-                ]}
-              >
-                <Radio.Group
-                  value={gender}
-                  onChange={(e) => setGender(e.target.value)}
-                  size="large"
+            <p></p>
+            <Row gutter={[16, 16]}>
+              <Col span={12}>
+                <Form.Item
+                  label="Email"
+                  name="email"
+                  rules={[{ required: true, message: "Vui lòng nhập email!" }]}
                 >
-                  <Radio value={0}>Nam</Radio>
-                  <Radio value={1}>Nữ</Radio>
-                </Radio.Group>
-              </Form.Item>
-            </div>
+                  <Input
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </Form.Item>
 
+                <Form.Item
+                  label="Số điện thoại"
+                  name="phone"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập số điện thoại!" },
+                  ]}
+                >
+                  <Input
+                    placeholder="Số điện thoại"
+                    value={phone}
+                    style={{ height: "55px" }}
+                    onChange={(e) => setPhone(e.target.value)}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label="Tỉnh/Thành phố"
+                  name="city"
+                  rules={[
+                    { required: true, message: "Vui lòng chọn tỉnh/thành phố" },
+                  ]}
+                >
+                  <Select
+                    size="large"
+                    placeholder="Tỉnh/Thành phố"
+                    onChange={handleCityChange}
+                    style={{ width: "100%" }}
+                  >
+                    {cityData.map((city) => (
+                      <Option key={city.value} value={city.value}>
+                        {city.label}
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+
+                <Form.Item
+                  label="Quận/Huyện"
+                  name="district"
+                  rules={[
+                    { required: true, message: "Vui lòng chọn quận/huyện" },
+                  ]}
+                >
+                  <Select
+                    size="large"
+                    placeholder="Quận/Huyện"
+                    onChange={handleDisChange}
+                    style={{ width: "100%" }}
+                  >
+                    {disData.map((dis) => (
+                      <Option key={dis.value} value={dis.value}>
+                        {dis.label}
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+
+              <Col span={12}>
+                <Form.Item
+                  label="Tên"
+                  name="name"
+                  rules={[{ required: true, message: "Vui lòng nhập tên!" }]}
+                >
+                  <Input
+                    placeholder="Tên"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label="Mật khẩu"
+                  name="password"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập mật khẩu!" },
+                  ]}
+                >
+                  <Input.Password
+                    placeholder="Mật khẩu"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label="Phường/Xã"
+                  name="ward"
+                  rules={[
+                    { required: true, message: "Vui lòng chọn phường/xã" },
+                  ]}
+                >
+                  <Select
+                    size="large"
+                    placeholder="Phường/Xã"
+                    onChange={handleWarChange}
+                    style={{ width: "100%" }}
+                  >
+                    {warData.map((war) => (
+                      <Option key={war.value} value={war.value}>
+                        {war.label}
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+
+                <Form.Item
+                  label="Ngày sinh"
+                  name="birthDay"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập ngày sinh!" },
+                  ]}
+                >
+                  <DatePicker
+                    size="large"
+                    placeholder="Ngày sinh"
+                    value={birthDay}
+                    onChange={(date) => setBirthDay(date)}
+                    style={{ width: "100%" }}
+                  />
+                </Form.Item>
+              </Col>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginLeft: "10px",
+                  marginBottom: "1rem",
+                }}
+              >
+                <div style={{ marginRight: "8px" }}>Giới tính:</div>
+                <Form.Item
+                  name="gender"
+                  rules={[
+                    { required: true, message: "Vui lòng chọn giới tính!" },
+                  ]}
+                  style={{ marginBottom: 0 }}
+                >
+                  <Radio.Group
+                    value={gender}
+                    onChange={(e) => setGender(e.target.value)}
+                  >
+                    <Radio value={0}>Nam</Radio>
+                    <Radio value={1}>Nữ</Radio>
+                  </Radio.Group>
+                </Form.Item>
+              </div>
+            </Row>
             <Form.Item>
               <Button
                 type="primary"
@@ -328,7 +356,6 @@ function SignUp(props) {
                 className="login-form-button"
                 onClick={handleSignUp}
                 block
-                size="large"
               >
                 Đăng ký
               </Button>
@@ -343,7 +370,7 @@ function SignUp(props) {
               className="already-have-account"
               style={{ textAlign: "center" }}
             >
-              <Link to="/login"> Đã có tài khoản? Đăng nhập</Link>
+              <Link to="/signin"> Đã có tài khoản? Đăng nhập</Link>
             </div>
           </Form>
         </Row>
