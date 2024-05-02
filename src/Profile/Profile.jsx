@@ -116,10 +116,12 @@ function Profile(props) {
 
     const handler_Status = (value) => {
         set_edit_status(value)
-        if (value === 'dang_xuat') {
-            setShowDangXuat(true);
-        }
+
     }
+
+    const showModalDX = () => {
+        setShowDangXuat(true);
+    };
 
     const toggleModal = () => {
         setShowDangXuat(!showDangXuat); // Đảo ngược trạng thái hiển thị modal
@@ -196,8 +198,8 @@ function Profile(props) {
         <div className="m-5 mt-5 pt-4" style={{ paddingBottom: '4rem' }}>
 
             <div className="group_profile w-100">
-                <div className="group_setting mt-3">
-                    <div className="setting_left">
+                <div style={{ height: "400px" }} className="group_setting mt-3">
+                    <div style={{}} className="setting_left">
                         <div
                             className={edit_status === 'thong_tin_ca_nhan' ? 'setting_item setting_item_active' : 'setting_item'}
                             onClick={() => handler_Status('thong_tin_ca_nhan')}
@@ -220,14 +222,19 @@ function Profile(props) {
                             <a className={edit_status === 'quen_mat_khau' ? 'a_setting_active' : ''}
                                 style={{ fontSize: '1.1rem' }}>Đổi mật khẩu</a>
                         </div>
-                        <div className={edit_status === 'dang_xuat' ? 'setting_item setting_item_active' : 'setting_item'}
+                        {/* <div className={edit_status === 'dang_xuat' ? 'setting_item setting_item_active' : 'setting_item'}
                             onClick={() => handler_Status('dang_xuat')}>
                             <a className={edit_status === 'dang_xuat' ? 'a_setting_active' : ''}
                                 style={{ fontSize: '1.1rem' }}>Đăng xuất</a>
+                        </div> */}
+                        <div className={edit_status === 'dang_xuat' ? 'setting_item setting_item_active' : 'setting_item'}>
+                            <a className={edit_status === 'dang_xuat' ? 'a_setting_active' : ''}
+                                style={{ fontSize: '1.1rem' }} onClick={showModalDX}>Đăng xuất</a>
+                            {/* <Button onClick={showModalDX}></Button> */}
                         </div>
                         <Modal
                             title="Thông báo"
-                            style={{height: "500px"}}
+                            style={{ height: "500px" }}
                             visible={showDangXuat}
                             onCancel={toggleModal}
                             footer={[
@@ -239,7 +246,7 @@ function Profile(props) {
                                 </Button>,
                             ]}
                         >
-                            <h1 style={{textAlign: "center"}}>Bạn có muốn đăng xuất không?</h1>
+                            <h1 style={{ textAlign: "center" }}>Bạn có muốn đăng xuất không?</h1>
                         </Modal>
                     </div>
                     <div className="setting_right">
@@ -278,7 +285,7 @@ function Profile(props) {
                                             <span style={{ fontWeight: '600' }}>Họ và tên</span>
                                         </div>
                                         <div>
-                                            <input className="txt_input_edit" type="text" value={name}
+                                            <input className="txt_input_edit" type="text" value={"name"}
                                                 onChange={(e) => set_name(e.target.value)} />
                                         </div>
                                     </div>
@@ -287,7 +294,7 @@ function Profile(props) {
                                             <span style={{ fontWeight: '600' }}>Tên tài khoản</span>
                                         </div>
                                         <div>
-                                            <input className="txt_input_edit" type="text" disabled={true} value={username}
+                                            <input className="txt_input_edit" type="text" disabled={true} value={"username"}
                                                 onChange={(e) => set_username(e.target.value)} />
                                         </div>
                                     </div>
@@ -305,7 +312,7 @@ function Profile(props) {
                                             <span style={{ fontWeight: '600' }}>Email</span>
                                         </div>
                                         <div>
-                                            <input className="txt_input_edit" type="text" disabled={true} value={email}
+                                            <input className="txt_input_edit" type="text" disabled={true} value={"email"}
                                                 onChange={(e) => set_email(e.target.value)} />
                                         </div>
                                     </div>
@@ -314,7 +321,7 @@ function Profile(props) {
                                             <span style={{ fontWeight: '600' }}>Số điện thoại</span>
                                         </div>
                                         <div>
-                                            <input className="txt_input_edit" type="text" disabled={true} value={sdt}
+                                            <input className="txt_input_edit" type="text" disabled={true} value={"sdt"}
                                                 onChange={(e) => set_sdt(e.target.value)} />
                                         </div>
                                     </div>
@@ -570,7 +577,7 @@ function Profile(props) {
                                         <button className="btn btn-secondary" onClick={handler_update}>Lưu</button>
                                     </div>
                                 </div>
-                            ) : edit_status === 'dia_chi' ? (
+                            ) : (
                                 <div>
                                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                                         <h4 className='m-3' style={{ alignSelf: "flex-start" }}>Địa chỉ của tôi</h4>
@@ -652,7 +659,9 @@ function Profile(props) {
                                                 Phương Canh, Nam Từ Liêm, Hà Nội
                                             </p>
                                             <div style={{ textAlign: "center" }}>
-                                                <Button type='primary'>Chọn</Button>
+                                                <Button type='primary' disabled>Mặc định</Button>
+                                                <Button className='m-2' type='primary'>Cập nhật</Button>
+                                                <Button>Xóa</Button>
                                             </div>
                                         </div>
                                         <hr className="" style={{ marginTop: "0px", marginBottom: "0px" }} />
@@ -663,7 +672,9 @@ function Profile(props) {
                                                 Phúc lý, Bắc Từ Liêm, Hà Nội
                                             </p>
                                             <div style={{ textAlign: "center" }}>
-                                                <Button type='primary'>Chọn</Button>
+                                                <Button type='primary' >Mặc định</Button>
+                                                <Button className='m-2' type='primary'>Cập nhật</Button>
+                                                <Button>Xóa</Button>
                                             </div>
                                         </div>
                                         <hr className="" style={{ marginTop: "0px", marginBottom: "0px" }} />
@@ -674,15 +685,13 @@ function Profile(props) {
                                                 Núi trúc, Đống Đa, Hà Nội
                                             </p>
                                             <div style={{ textAlign: "center" }}>
-                                                <Button type='primary'>Chọn</Button>
+                                                <Button type='primary'>Mặc định</Button>
+                                                <Button className='m-2' type='primary'>Cập nhật</Button>
+                                                <Button >Xóa</Button>
                                             </div>
                                         </div>
                                         <hr className="" style={{ marginTop: "0px", marginBottom: "0px" }} />
                                     </div>
-                                </div>
-                            ) : (
-                                <div>
-
                                 </div>
                             )
                         }

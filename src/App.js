@@ -121,6 +121,12 @@ const Search = lazy(() => {
   });
 });
 
+const About = lazy(() => {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(import("./About/About")), 2000);
+  });
+});
+
 function App() {
   return (
     <div className="App">
@@ -163,6 +169,7 @@ function App() {
             <Route path="/history" component={History} />
             <Route path="/profile/:id" component={Profile} />
             <Route path="/search" component={Search} />
+            <Route path="/about" component={About} />
           </Switch>
         </Suspense>
         <Footer />

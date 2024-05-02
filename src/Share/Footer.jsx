@@ -63,13 +63,13 @@ function Footer(props) {
             </div> */}
             <div className="footer-static-middle">
                 <div className="container">
-                    <div className="footer-logo-wrap pt-50 pb-35">
+                    <div className="footer-logo-wrap pt-10 pb-0">
                         <div className="row">
                             <div className="col-lg-4 col-md-6">
                                 <div className="footer-logo">
                                     <img src={Global.Logo} style={{ width: '20rem'}} alt="Footer Logo" />
                                     <p className="info">
-                                    Our mission is to empower individuals to express themselves confidently through fashion. We believe that clothing is more than just fabric; it's a form of self-expression and identity. At Double Store, we strive to curate a diverse range of high-quality clothing that reflects the unique personalities and styles of our customers. 
+                                    Our mission is to empower individuals to express themselves confidently through fashion. We believe that clothing is more than just fabric; it's a form of self-expression and identity. 
                                 </p>
                                 </div>
                                 <ul className="des">
