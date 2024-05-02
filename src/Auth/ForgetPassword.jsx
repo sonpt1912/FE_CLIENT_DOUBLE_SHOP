@@ -38,9 +38,10 @@ function ForgetPassword(props) {
 
       try {
         const response = await User.Get_Check_Email_User(params);
+        console.log("Check email", response);
 
-        if (response.message === "Khong Tìm Thấy User") {
-          set_error_email(true);
+        if (response === "Authentication failed") {
+          message.error("Gửi mail thất bại! Vui lòng thử lại")
         } else {
           const action_count_change = changeCount(count_change);
           setTimeout(() => {
@@ -73,14 +74,14 @@ function ForgetPassword(props) {
 
       try {
         const response = await User.Forgot_Password_User(params);
+        console.log("Response cf", response);
 
-        if (response.message === "Khong Tìm Thấy User") {
-          set_error_email(true);
+        if (response.message === "otp khong chinh xac") {
+          message.error("Đã xảy ra lỗi! Vui lòng kiểm tra lại OTP");
         } else {
           const action_count_change = changeCount(count_change);
-          setTimeout(() => {
-            setCheckEmail(true);
-          }, 1000);
+          message.success("Đổi mật khẩu thành công!");
+          set_redirect(true)
           dispatch(action_count_change);
         }
       } catch (error) {
@@ -102,7 +103,7 @@ function ForgetPassword(props) {
         </div>
         {!checkEmail && (
           <Form id="login-form" name="login-form">
-            <p className="form-title">Forget Password</p>
+            <p className="form-title">Quên Mật Khẩu</p>
             <p></p>
             <Form.Item
               name="email"
@@ -141,7 +142,7 @@ function ForgetPassword(props) {
         {checkEmail && (
           <>
             <Form id="login-form" name="login-form">
-              <p className="form-title">Confirm Password</p>
+              <p className="form-title">Xác Nhận Mật Khẩu</p>
               <p></p>
               <Form.Item
                 rules={[{ required: true, message: "Vui lòng nhập mật khẩu" }]}
@@ -197,9 +198,9 @@ function ForgetPassword(props) {
                   className="login-form-button"
                   onClick={handler_confirm_email}
                 >
-                  Confirm
+                  Xác Nhận
                 </Button>
-                {redirect && <Redirect to="/" />}
+                {redirect && <Redirect to="/signin" />}
               </Form.Item>
 
               <div className="rigisterAndForget">
