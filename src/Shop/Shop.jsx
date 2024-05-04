@@ -323,7 +323,7 @@ function Shop(props) {
 
     const fetchCategoriesFromApi = async () => {
         try {
-            const response = await axios.get('http://localhost:8071/category/get-all-category');
+            const response = await axios.get('http://localhost:8071/public/category/get-all-category');
             console.log(response);
             return response.data; // Giả sử danh sách các loại sản phẩm được trả về dưới dạng mảng categories
         } catch (error) {
@@ -334,7 +334,7 @@ function Shop(props) {
 
     const fetchBrandFromApi = async () => {
         try {
-            const response = await axios.get('http://localhost:8071/brand/get-all-brand');
+            const response = await axios.get('http://localhost:8071/public/brand/get-all-brand');
             console.log(response);
             return response.data; // Giả sử danh sách các loại sản phẩm được trả về dưới dạng mảng categories
         } catch (error) {
@@ -344,7 +344,7 @@ function Shop(props) {
     };
     const fetchCollarFromApi = async () => {
         try {
-            const response = await axios.get('http://localhost:8071/collar/get-all-collar');
+            const response = await axios.get('http://localhost:8071/public/collar/get-all-collar');
             console.log(response);
             return response.data; // Giả sử danh sách các loại sản phẩm được trả về dưới dạng mảng categories
         } catch (error) {
@@ -355,7 +355,7 @@ function Shop(props) {
 
     const fetchMaterialFromApi = async () => {
         try {
-            const response = await axios.get('http://localhost:8071/material/get-all-material');
+            const response = await axios.get('http://localhost:8071/public/material/get-all-material');
             console.log(response);
             return response.data;
         } catch (error) {
@@ -365,7 +365,7 @@ function Shop(props) {
     };
     const fetchSizeFromApi = async () => {
         try {
-            const response = await axios.get('http://localhost:8071/size/get-all-size');
+            const response = await axios.get('http://localhost:8071/public/size/get-all-size');
             console.log(response);
             return response.data;
         } catch (error) {
@@ -375,7 +375,7 @@ function Shop(props) {
     };
     const fetchColorFromApi = async () => {
         try {
-            const response = await axios.get('http://localhost:8071/color/get-all-color');
+            const response = await axios.get('http://localhost:8071/public/color/get-all-color');
             console.log(response);
             return response.data;
         } catch (error) {
