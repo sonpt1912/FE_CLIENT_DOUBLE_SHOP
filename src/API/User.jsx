@@ -7,14 +7,14 @@ const User = {
     return axiosClient.get(url);
   },
 
-  Get_User: (id) => {
-    const url = `/api/User/${id}`;
-    return axiosClient.get(url);
+  Get_User: () => {
+    const url = `/customer/user-info`;
+    return axiosClient.post(url);
   },
 
-  Put_User: (data) => {
-    const url = `/api/User`;
-    return axiosClient.put(url, data);
+  Put_User: (requestBody) => {
+    const url = `/customer/update-user-infor`;
+    return axiosClient.post(url, requestBody);
   },
 
   Get_Detail_User: (data) => {

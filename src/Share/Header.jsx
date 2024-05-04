@@ -16,6 +16,8 @@ import { AiOutlineUser, AiOutlineHeart, AiOutlineShoppingCart } from 'react-icon
 
 function Header(props) {
   // State count of cart
+
+  
   const [count_cart, set_count_cart] = useState(0);
 
   const [total_price, set_total_price] = useState(0);
@@ -24,13 +26,13 @@ function Header(props) {
 
   // Hàm này để khởi tạo localStorage dùng để lưu trữ giỏ hàng
   // Và nó sẽ chạy lần đầu
-  useEffect(() => {
-    if (localStorage.getItem("carts") !== null) {
-      set_carts_mini(JSON.parse(localStorage.getItem("carts")));
-    } else {
-      localStorage.setItem("carts", JSON.stringify([]));
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (localStorage.getItem("carts") !== null) {
+  //     set_carts_mini(JSON.parse(localStorage.getItem("carts")));
+  //   } else {
+  //     localStorage.setItem("carts", JSON.stringify([]));
+  //   }
+  // }, []);
 
   // Xử lý thanh navigation
   const [header_navbar, set_header_navbar] = useState(
@@ -51,11 +53,11 @@ function Header(props) {
 
   //Sau khi F5 nó sẽ kiểm tra nếu phiên làm việc của Session vẫn còn thì nó sẽ tiếp tục
   // đưa dữ liệu vào Redux
-  if (sessionStorage.getItem("id_user")) {
-    const action = addSession(sessionStorage.getItem("id_user"));
-    dispatch(action);
-  }
-
+  // if (sessionStorage.getItem("id_user")) {
+  //   const action = addSession(sessionStorage.getItem("id_user"));
+  //   dispatch(action);
+  // }
+  
   //Get IdUser từ redux khi user đã đăng nhập
   var id_user = useSelector((state) => state.Session.idUser);
 
@@ -65,28 +67,28 @@ function Header(props) {
   const [active_user, set_active_user] = useState(false);
 // Trong bất kỳ thành phần nào của ứng dụng, bạn có thể lấy accessToken từ localStorage như sau:
 const accessToken = localStorage.getItem('token');
- console.log(accessToken);
+
   const [user, set_user] = useState({});
 
   // Hàm này dùng để hiện thị
-  useEffect(() => {
-    if (!id_user) {
-      // user chưa đăng nhâp
+  // useEffect(() => {
+  //   if (!id_user) {
+     
 
-      set_active_user(false);
-    } else {
-      // user đã đăng nhâp
+  //     set_active_user(false);
+  //   } else {
+    
 
-      const fetchData = async () => {
-        const response = await User.Get_User(sessionStorage.getItem("id_user"));
-        set_user(response);
-      };
+  //     const fetchData = async () => {
+  //       const response = await User.Get_User(sessionStorage.getItem("id_user"));
+  //       set_user(response);
+  //     };
 
-      fetchData();
+  //     fetchData();
 
-      set_active_user(true);
-    }
-  }, [id_user]);
+  //     set_active_user(true);
+  //   }
+  // }, [id_user]);
 
   // Hàm này dùng để xử lý phần log out
   const handler_logout = () => {
@@ -136,33 +138,31 @@ const accessToken = localStorage.getItem('token');
   const [female, set_female] = useState([]);
 
   // Gọi API theo phương thức GET để load category
-  useEffect(() => {
-    const fetchData = async () => {
-      // gender = male
-      const params_male = {
-        gender: "male",
-      };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const params_male = {
+  //       gender: "male",
+  //     };
 
-      const query_male = "?" + queryString.stringify(params_male);
+  //     const query_male = "?" + queryString.stringify(params_male);
 
-      const response_male = await Product.Get_Category_Gender(query_male);
+  //     const response_male = await Product.Get_Category_Gender(query_male);
 
-      set_male(response_male);
+  //     set_male(response_male);
 
-      // gender = female
-      const params_female = {
-        gender: "female",
-      };
+  //     const params_female = {
+  //       gender: "female",
+  //     };
 
-      const query_female = "?" + queryString.stringify(params_female);
+  //     const query_female = "?" + queryString.stringify(params_female);
 
-      const response_female = await Product.Get_Category_Gender(query_female);
+  //     const response_female = await Product.Get_Category_Gender(query_female);
 
-      set_female(response_female);
-    };
+  //     set_female(response_female);
+  //   };
 
-    fetchData();
-  }, []);
+  //   fetchData();
+  // }, []);
 
   // state keyword search
   const [keyword_search, set_keyword_search] = useState("");
@@ -172,7 +172,7 @@ const accessToken = localStorage.getItem('token');
   useEffect(() => {
     const fetchData = async () => {
       const response = await Product.Get_All_Product();
-
+      
       set_products(response);
     };
 
@@ -243,7 +243,7 @@ const accessToken = localStorage.getItem('token');
                         </li>
                       </ul>
                       <li style={{ display: "flex", alignItems: "center" }}>
-                        <Link to={accessToken ? "/profile/:id" : "/signin"} style={{ margin: "0 15px", fontSize: "25px" }}>
+                        <Link to={accessToken ? "/profile/1" : "/signin"} style={{ margin: "0 15px", fontSize: "25px" }}>
                           <AiOutlineUser style={{ color: "black" }} /> {/* Biểu tượng user */}
                         </Link>
                         <Link to={accessToken ? "/favorite" : "/signin"} style={{ margin: "0 15px", fontSize: "25px" }}>

@@ -6,7 +6,7 @@ import { Link, useParams } from 'react-router-dom';
 import Products from './Component/Products';
 import Pagination from './Component/Pagination';
 import Search from './Component/Search';
-
+import axios from 'axios';
 Shop.propTypes = {
 
 };
@@ -23,7 +23,7 @@ function Shop(props) {
     //Từng trang hiện tại
     const [pagination, setPagination] = useState({
         page: '1',
-        count: '9',
+        pageSize: '9',
         search: '',
         category: id
     })
@@ -36,64 +36,64 @@ function Shop(props) {
     const handlerChangePage = async (value) => {
         // Kiểm tra xem giá trị mới có phải là một số nguyên không
         const newPageSize = calculatePageSize(value);
-            
 
-            // Cập nhật trạng thái của phân trang
-            setPagination(prevPagination => ({
-                ...prevPagination,
-                page: value,
-                
-            }));
-            try {
-                const requestBody = { page: value - 1, pageSize: newPageSize }; // Sử dụng pageSize mới
-                console.log(requestBody);
-                const response = await Product.Get_All_Product(requestBody);
-                console.log(response);
-    
-                setProducts(response.listData);
-                setTotalRecord(response.totalRecord);
-                setTotalPage(Math.ceil(response.totalRecord / 9));
-                setPageSize(newPageSize);
-                setCurrentPage(value)
-            } catch (error) {
-                console.error('Lỗi khi tải sản phẩm:', error);
-            }
-            
+        // Cập nhật trạng thái của phân trang
+        setPagination(prevPagination => ({
+            ...prevPagination,
+            page: value,
+
+        }));
+        try {
+            setLoading(true)
+            const requestBody = { page: value - 1, pageSize: newPageSize, idBrand: selectedBrand, idCategory: selectedCategory, idCollar: selectedCollar, idMaterial: selectedMaterial }; // Sử dụng pageSize mới
+            console.log(requestBody);
+            const response = await Product.Get_All_Product(requestBody);
+            console.log(response);
+
+            setProducts(response.listData);
+            // setTotalRecord(response.totalRecord);
+            setTotalPage(Math.ceil(response.totalRecord / pagination.pageSize));
+            setPageSize(pagination.pageSize);
+            setCurrentPage(value)
+        } catch (error) {
+            console.error('Lỗi khi tải sản phẩm:', error);
+        } finally {
+            setLoading(false); // Đặt trạng thái loading là false khi kết thúc gọi API
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
     const calculatePageSize = (currentPage) => {
         // Nếu chuyển về trang đầu tiên, đặt lại pageSize về 9
-        if (currentPage === 1) {
-            return 9;
-        } else {
-            // Tính toán số lượng phần tử cần hiển thị trong trang hiện tại
-            const startIndex = (currentPage - 1) * pageSize;
-            const remainingItems = totalRecord - startIndex;
-            return Math.min(pageSize, remainingItems);
-        }
+        // if (currentPage === 1) {
+        //     return 9;
+        // } else {
+        // Tính toán số lượng phần tử cần hiển thị trong trang hiện tại
+        const startIndex = (currentPage - 1) * pageSize;
+        const remainingItems = totalRecord - startIndex;
+        return Math.min(pageSize, remainingItems);
+        // }
     };
-    
 
+    const [loading, setLoading] = useState(false);
     useEffect(() => {
-        // Set trang mặc định khi mới vào
-        setPagination(prevPagination => ({
-            ...prevPagination,
-            page: '1'
-        }));
-        // Gọi hàm xử lý khi trang thay đổi
-        handlerChangePage(1);
-        // Gọi fetchData để lấy dữ liệu
+        // setPagination(prevPagination => ({
+        //     ...prevPagination,
+        //     page: '1'
+        // }));
+        // handlerChangePage(1);
         fetchData();
     }, []);
-    
+
     const [images, setImages] = useState([]);
 
     const fetchData = async () => {
         try {
+            setLoading(true);
             const requestBody = { page: currentPage - 1, pageSize };
             console.log(requestBody);
             const response = await Product.Get_All_Product(requestBody);
 
-          
+
             // Trích xuất danh sách URL hình ảnh từ phản hồi
 
 
@@ -101,7 +101,7 @@ function Shop(props) {
             // Cập nhật trạng thái dựa trên phản hồi
             setProducts(response.listData);
             setTotalRecord(response.totalRecord);
-            setTotalPage(Math.ceil(response.totalRecord / 9)); // Phép tính đã được sửa
+            setTotalPage(Math.ceil(response.totalRecord / pagination.pageSize)); // Phép tính đã được sửa
         } catch (error) {
             // Xử lý lỗi
             console.error('Lỗi khi tải sản phẩm:', error);
@@ -109,7 +109,10 @@ function Shop(props) {
             // setProducts([]);
             // setTotalRecord(0);
             // setTotalPage(0);
+        } finally {
+            setLoading(false); // Đặt trạng thái loading là false khi kết thúc gọi API
         }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const handlePageChange = (pageNumber) => {
@@ -229,53 +232,193 @@ function Shop(props) {
     //     setProducts(fakeData)
     //     setTotalPage(1)
     // }, [id])
-    const handler_Search = (value) => {
-        console.log("Search: ", value)
 
-        setPagination({
-            page: pagination.page,
-            count: pagination.count,
-            search: value,
-            category: pagination.category
-        })
+    const fetchProductsFromApi = async (requestBody) => {
 
-    }
-
-
-    const handleCategoryChange = (selectedCategoryId) => {
-        // Thực hiện các hành động khi danh mục được chọn thay đổi, ví dụ: đổi route, gọi API để lấy sản phẩm, v.v.
-        console.log("Selected Category ID:", selectedCategoryId);
-        // Thực hiện các hành động khác tại đây
-    }
-    const handleBrandChange = (selectedCategoryId) => {
-        // Thực hiện các hành động khi danh mục được chọn thay đổi, ví dụ: đổi route, gọi API để lấy sản phẩm, v.v.
-        console.log("Selected Category ID:", selectedCategoryId);
-        // Thực hiện các hành động khác tại đây
-    }
-    const handleMaterialChange = (selectedCategoryId) => {
-        // Thực hiện các hành động khi danh mục được chọn thay đổi, ví dụ: đổi route, gọi API để lấy sản phẩm, v.v.
-        console.log("Selected Category ID:", selectedCategoryId);
-        // Thực hiện các hành động khác tại đây
-    }
-    const handleCollarChange = (selectedCategoryId) => {
-        // Thực hiện các hành động khi danh mục được chọn thay đổi, ví dụ: đổi route, gọi API để lấy sản phẩm, v.v.
-        console.log("Selected Category ID:", selectedCategoryId);
-        // Thực hiện các hành động khác tại đây
-    }
-    const [selectedColor, setSelectedColor] = useState('All');
-    const handleColorChange = (color) => {
-        setSelectedColor(color); // Cập nhật nút được chọn
-        // Gọi hàm xử lý các thay đổi liên quan đến nút được chọn
+        try {
+            setLoading(true);
+            // Gọi API search và truyền requestBody
+            const response = await axios.post('http://localhost:8071/public/product/get-all-by-condition', requestBody);
+            console.log(response)
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching products:', error);
+            throw error; // Ném lỗi để bắt ở nơi gọi hàm fetchProductsFromApi
+        }
+        finally {
+            setLoading(false); // Đặt trạng thái loading là false khi kết thúc gọi API
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
-    const [selectedSize, setSelectedSize] = useState('All');
-    const handleSizeChange = (size) => {
-        setSelectedSize(size); // Cập nhật nút được chọn
-        // Gọi hàm xử lý các thay đổi liên quan đến nút được chọn
+
+    const handler_Search = async () => {
+
+
+        try {
+            setLoading(true)
+            const requestBody = {
+                idBrand: selectedBrand, // Thay selectedBrand bằng giá trị id brand hiện tại
+                idCategory: selectedCategory, // Thay selectedCategory bằng giá trị id category hiện tại
+                idMaterial: selectedMaterial, // Thay selectedMaterial bằng giá trị id material hiện tại
+                idCollar: selectedCollar,
+                idColor: selectedColor,
+                idSize: selectedSize,
+                page: 0,
+                // pagination.page - 1,
+                pageSize: 9
+                //  pagination.pageSize,
+
+            };
+            console.log(requestBody)
+            const response = await fetchProductsFromApi(requestBody);
+            console.log(response);
+            setPagination(prevPagination => ({
+                ...prevPagination,
+                page: 1,
+
+            }));
+            setProducts(response.listData);
+            setPageSize(pagination.pageSize)
+            setTotalRecord(response.totalRecord);
+            setTotalPage(Math.ceil(response.totalRecord / pagination.pageSize));
+        } catch (error) {
+            console.error('Error searching products:', error);
+        }
+        finally {
+            setLoading(false); // Đặt trạng thái loading là false khi kết thúc gọi API
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [brand, setBrand] = useState([]);
+    const [selectedBrand, setSelectedBrand] = useState('');
+    const [color, setColor] = useState([]);
+    const [collar, setCollar] = useState([]);
+    const [selectedCollar, setSelectedcollar] = useState('');
+    const [material, setMaterial] = useState([]);
+    const [selectedMaterial, setSelectedMaterial] = useState('');
+    const [size, setSize] = useState([]);
+    useEffect(() => {
+        const apiCalls = [
+            fetchCategoriesFromApi(),
+            fetchBrandFromApi(),
+            fetchCollarFromApi(),
+            fetchColorFromApi(),
+            fetchMaterialFromApi(),
+            fetchSizeFromApi()
+        ];
+
+        Promise.all(apiCalls)
+            .then(([categories, brand, collar, color, material, size]) => {
+                setCategories(categories);
+                setBrand(brand);
+                setCollar(collar);
+                setColor(color);
+                setMaterial(material);
+                setSize(size);
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    }, []);
+
+    const fetchCategoriesFromApi = async () => {
+        try {
+            const response = await axios.get('http://localhost:8071/category/get-all-category');
+            console.log(response);
+            return response.data; // Giả sử danh sách các loại sản phẩm được trả về dưới dạng mảng categories
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+            return []; // Trả về một mảng rỗng nếu có lỗi
+        }
+    };
+
+    const fetchBrandFromApi = async () => {
+        try {
+            const response = await axios.get('http://localhost:8071/brand/get-all-brand');
+            console.log(response);
+            return response.data; // Giả sử danh sách các loại sản phẩm được trả về dưới dạng mảng categories
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+            return []; // Trả về một mảng rỗng nếu có lỗi
+        }
+    };
+    const fetchCollarFromApi = async () => {
+        try {
+            const response = await axios.get('http://localhost:8071/collar/get-all-collar');
+            console.log(response);
+            return response.data; // Giả sử danh sách các loại sản phẩm được trả về dưới dạng mảng categories
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+            return []; // Trả về một mảng rỗng nếu có lỗi
+        }
+    };
+
+    const fetchMaterialFromApi = async () => {
+        try {
+            const response = await axios.get('http://localhost:8071/material/get-all-material');
+            console.log(response);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+            return [];
+        }
+    };
+    const fetchSizeFromApi = async () => {
+        try {
+            const response = await axios.get('http://localhost:8071/size/get-all-size');
+            console.log(response);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+            return [];
+        }
+    };
+    const fetchColorFromApi = async () => {
+        try {
+            const response = await axios.get('http://localhost:8071/color/get-all-color');
+            console.log(response);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+            return [];
+        }
+    };
+    const handleCategoryChange = (value) => {
+        setSelectedCategory(value);
+        // Thực hiện các hành động khác khi loại sản phẩm được chọn thay đổi
+    };
+    const handleBrandChange = (value) => {
+        // Thực hiện các hành động khi danh mục được chọn thay đổi, ví dụ: đổi route, gọi API để lấy sản phẩm, v.v.
+        setSelectedBrand(value);
+        // Thực hiện các hành động khác tại đây
+    }
+    const handleMaterialChange = (value) => {
+        // Thực hiện các hành động khi danh mục được chọn thay đổi, ví dụ: đổi route, gọi API để lấy sản phẩm, v.v.
+        setSelectedMaterial(value);
+        // Thực hiện các hành động khác tại đây
+    }
+    const handleCollarChange = (value) => {
+        // Thực hiện các hành động khi danh mục được chọn thay đổi, ví dụ: đổi route, gọi API để lấy sản phẩm, v.v.
+        setSelectedcollar(value);
+        // Thực hiện các hành động khác tại đây
+    }
+    const [selectedColor, setSelectedColor] = useState('');
+    const handleColorChange = (value) => {
+
+        setSelectedColor(value);
+
+    };
+    const [selectedSize, setSelectedSize] = useState('');
+    const handleSizeChange = (value) => {
+        setSelectedSize(value);
+
     };
 
 
     return (
+
         <div >
+
             <div className="breadcrumb-area">
                 <div className="container">
                     <div className="breadcrumb-content">
@@ -289,17 +432,19 @@ function Shop(props) {
 
 
             <div className="li-main-blog-page li-main-blog-details-page pt-20 pb-60 pb-sm- pb-xs-45" >
+
+
                 <div className="container">
                     <div className="row">
                         <div className="col-lg-3 order-lg-1 order-2">
                             <div className="li-blog-sidebar-wrapper">
-                                <div className="li-blog-sidebar">
-                                    <div className="li-sidebar-search-form">
-                                        <Search handler_Search={handler_Search} />
-                                    </div>
+                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                    {loading && <div className="loading-spinner"></div>}
                                 </div>
+
                                 <div className="li-blog-sidebar pt-25">
-                                    <h4 className="li-blog-sidebar-title" style={{ marginBottom: '25px' }}>DANH SÁCH SẢN PHẨM</h4>
+
+                                    <h4 className="li-blog-sidebar-title" style={{ marginBottom: '25px', fontSize: '20px' }}>DANH SÁCH SẢN PHẨM</h4>
 
                                 </div>
 
@@ -308,13 +453,12 @@ function Shop(props) {
                                     <ul className="li-blog-archive">
 
                                     </ul>
-
                                     <div className="select-wrapper" style={{ marginBottom: '25px' }}>
-                                        <select className="category-select" onChange={(e) => handleCategoryChange(e.target.value)} >
+                                        <select className="category-select" onChange={(e) => handleCategoryChange(e.target.value)}>
                                             <option value="">Tất cả</option>
-                                            <option value="fake1">Fake Cate 1</option>
-                                            <option value="fake2">Fake Cate 2</option>
-                                            <option value="fake3">Fake Cate 3</option>
+                                            {categories.map(category => (
+                                                <option key={category.id} value={category.id}>{category.name}</option>
+                                            ))}
                                         </select>
                                     </div>
 
@@ -328,9 +472,9 @@ function Shop(props) {
                                     <div className="select-wrapper" style={{ marginBottom: '25px' }}>
                                         <select className="category-select" onChange={(e) => handleBrandChange(e.target.value)} >
                                             <option value="">Tất cả</option>
-                                            <option value="fake1">Fake Brand 1</option>
-                                            <option value="fake2">Fake Brand 2</option>
-                                            <option value="fake3">Fake Brand 3</option>
+                                            {brand.map(brand => (
+                                                <option key={brand.id} value={brand.id}>{brand.name}</option>
+                                            ))}
                                         </select>
                                     </div>
                                 </div>
@@ -343,9 +487,9 @@ function Shop(props) {
                                     <div className="select-wrapper" style={{ marginBottom: '25px' }}>
                                         <select className="category-select" onChange={(e) => handleCollarChange(e.target.value)} >
                                             <option value="">Tất cả</option>
-                                            <option value="fake1">Fake Collar 1</option>
-                                            <option value="fake2">Fake Collar 2</option>
-                                            <option value="fake3">Fake Collar 3</option>
+                                            {collar.map(collar => (
+                                                <option key={collar.id} value={collar.id}>{collar.name}</option>
+                                            ))}
                                         </select>
                                     </div>
                                 </div>
@@ -358,12 +502,14 @@ function Shop(props) {
                                     <div className="select-wrapper" style={{ marginBottom: '25px' }}>
                                         <select className="category-select" onChange={(e) => handleMaterialChange(e.target.value)} >
                                             <option value="">Tất cả</option>
-                                            <option value="fake1">Fake Material 1</option>
-                                            <option value="fake2">Fake Material 2</option>
-                                            <option value="fake3">Fake Material 3</option>
+                                            {material.map(material => (
+                                                <option key={material.id} value={material.id}>{material.name}</option>
+                                            ))}
                                         </select>
                                     </div>
                                 </div>
+
+
 
                                 <div className="li-blog-sidebar">
                                     <h4 className="li-blog-sidebar-title">Màu sắc</h4>
@@ -371,24 +517,25 @@ function Shop(props) {
                                     </ul>
                                     <div className="button-wrapper" style={{ marginBottom: '25px', display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                                         <button
-                                            className={`color-button ${selectedColor === 'All' ? 'active' : ''}`} // Áp dụng lớp active nếu nút được chọn là All
-                                            onClick={() => handleColorChange('All')}
+                                            className={`color-button ${selectedColor === '' ? 'active' : ''}`} // Áp dụng lớp active nếu nút được chọn là All
+                                            onClick={() => handleColorChange('')}
                                             style={{ padding: '8px 15px', border: '1px solid #ccc', borderRadius: '5px', marginRight: '10px', marginBottom: '10px', cursor: 'pointer' }}
                                         >
                                             Tất cả
                                         </button>
-                                        {["Color 1", "Color 2", "Color 3", "Color 4", "Color 5"].map((color, index) => (
+                                        {color.map((item) => ( // Sử dụng mỗi item trong color như key thay vì index
                                             <button
-                                                key={index}
-                                                className={`color-button ${selectedColor === color ? 'active' : ''}`} // Áp dụng lớp active nếu nút được chọn là brand
-                                                onClick={() => handleColorChange(color)}
+                                                key={item.id} // Sử dụng item.name hoặc một thuộc tính duy nhất khác của item như key
+                                                className={`color-button ${selectedColor === item.id ? 'active' : ''}`}
+                                                onClick={() => handleColorChange(item.id)}
                                                 style={{ padding: '8px 15px', border: '1px solid #ccc', borderRadius: '5px', marginRight: '10px', marginBottom: '10px', cursor: 'pointer' }}
                                             >
-                                                {color}
+                                                {item.name}
                                             </button>
                                         ))}
                                     </div>
                                 </div>
+
 
                                 <div className="li-blog-sidebar">
                                     <h4 className="li-blog-sidebar-title">Kích cỡ</h4>
@@ -396,27 +543,80 @@ function Shop(props) {
                                     </ul>
                                     <div className="button-wrapper" style={{ marginBottom: '25px', display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                                         <button
-                                            className={`color-button ${selectedSize === 'All' ? 'active' : ''}`} // Áp dụng lớp active nếu nút được chọn là All
-                                            onClick={() => handleColorChange('All')}
+                                            className={`color-button ${selectedSize === '' ? 'active' : ''}`} // Áp dụng lớp active nếu nút được chọn là All
+                                            onClick={() => handleSizeChange('')}
                                             style={{ padding: '8px 15px', border: '1px solid #ccc', borderRadius: '5px', marginRight: '10px', marginBottom: '10px', cursor: 'pointer' }}
                                         >
                                             Tất cả
                                         </button>
-                                        {["Size 1", "Size 2", "Size 3", "Size 4"].map((size, index) => (
+                                        {size.map((item) => ( // Sử dụng mỗi item trong color như key thay vì index
                                             <button
-                                                key={index}
-                                                className={`color-button ${selectedSize === size ? 'active' : ''}`} // Áp dụng lớp active nếu nút được chọn là brand
-                                                onClick={() => handleSizeChange(size)}
+                                                key={item.id} // Sử dụng item.name hoặc một thuộc tính duy nhất khác của item như key
+                                                className={`color-button ${selectedSize === item.id ? 'active' : ''}`}
+                                                onClick={() => handleSizeChange(item.id)}
                                                 style={{ padding: '8px 15px', border: '1px solid #ccc', borderRadius: '5px', marginRight: '10px', marginBottom: '10px', cursor: 'pointer' }}
                                             >
-                                                {size}
+                                                {item.name}
                                             </button>
                                         ))}
                                     </div>
                                 </div>
 
 
+                                {/* <div className="li-blog-sidebar">
+                                    <h4 className="li-blog-sidebar-title">Tìm kiếm theo trang</h4>
+                                    <div className="page-input">
+                                        <label htmlFor="page">Trang:</label>
+                                        <input
+                                            type="number"
+                                            id="page"
+                                            name="page"
+                                            value={pagination.page}
+                                            onChange={(e) => setPagination({ ...pagination, page: e.target.value })}
+                                            min="1"
+                                            max={totalPage}
+                                        />
+                                    </div>
+                                    <div className="page-input">
+                                        <label htmlFor="pageSize">Số sản phẩm/trang:</label>
+                                        <input
+                                            type="number"
+                                            id="pageSize"
+                                            name="pageSize"
+                                            value={pagination.pageSize}
+                                            onChange={(e) => setPagination({ ...pagination, pageSize: e.target.value })}
+                                            min="1"
+                                            max="9"
+                                        />
+                                    </div>
+                                   
+                                </div> */}
 
+                                <div className="li-blog-sidebar" style={{ display: 'flex', justifyContent: 'center', paddingTop: '20px' }}>
+                                    <div className="search-wrapper">
+                                        <button
+                                            onClick={handler_Search}
+                                            className="search-button"
+                                            style={{
+                                                backgroundColor: '#007bff',
+                                                color: '#fff',
+                                                padding: '10px 20px',
+                                                border: 'none',
+                                                borderRadius: '5px',
+                                                cursor: 'pointer',
+                                                transition: 'background-color 0.3s ease',
+                                            }}
+                                            onMouseEnter={(event) => event.target.style.backgroundColor = '#0056b3'} // Khi di chuột vào nút
+                                            onMouseLeave={(event) => event.target.style.backgroundColor = '#007bff'} // Khi di chuột ra khỏi nút
+                                        >
+                                            Tìm kiếm
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingTop: '50px' }}>
+                                    {loading && <div className="loading-spinner"></div>}
+                                </div>
                             </div>
                         </div>
                         <div className="col-lg-9 order-1 order-lg-2">
@@ -449,7 +649,7 @@ function Shop(props) {
 
                                                                 </Link>
                                                             </div>
-                                                            <div className="product-content" style={{marginTop:'10px'}}> 
+                                                            <div className="product-content" style={{ marginTop: '10px' }}>
                                                                 <h3>{product.name}</h3>
                                                                 <div className="product-details">
                                                                     <div className="detail">
@@ -464,7 +664,7 @@ function Shop(props) {
                                                                         <span>Chất liệu : </span>
                                                                         <span> {product.material.name}</span>
                                                                     </div>
-                                                                    <div className="detail" style={{marginBottom:'10px'}}>
+                                                                    <div className="detail" style={{ marginBottom: '10px' }}>
                                                                         <span>Cổ áo : </span>
                                                                         <span> {product.collar.name}</span>
                                                                     </div>
@@ -478,22 +678,40 @@ function Shop(props) {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="paginatoin-area">
+                                    
+                                    <div className="pagination-area" style={{paddingTop:'50px'}}>
                                         <div className="row">
                                             <div className="col-lg-6 col-md-6">
                                                 <p>Tổng số sản phẩm: {totalRecord}</p>
-                                                {/* <p>Page: {pagination.page}</p> */}
                                             </div>
-                                            <div className="col-lg-6 col-md-6" >
-                                                {Array.from({ length: totalPage }, (_, index) => (
-                                                    <button
-                                                        key={index}
-                                                        onClick={() => handlerChangePage(index + 1)}
-                                                        className={pagination.page === index + 1 ? "pagination-button current-page" : "pagination-button"}
-                                                    >
-                                                        {index + 1}
-                                                    </button>
-                                                ))}
+                                            <div className="col-lg-6 col-md-6">
+                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+                                                    {Array.from({ length: totalPage }, (_, index) => (
+                                                        <button
+                                                            key={index}
+                                                            onClick={() => handlerChangePage(index + 1)}
+                                                            className={pagination.page === index + 1 ? "pagination-button current-page" : "pagination-button"}
+                                                        >
+                                                            {index + 1}
+                                                        </button>
+                                                    ))}
+                                                    {totalPage > 1 && ( // Chỉ hiển thị input khi có nhiều hơn 1 trang
+                                                        <React.Fragment>
+                                                            <span style={{ marginRight: '10px' }}>Trang: </span>
+                                                            <input
+                                                                type="number"
+                                                                value={pagination.page}
+                                                                onChange={(e) => {
+                                                                    const pageNumber = parseInt(e.target.value);
+                                                                    if (!isNaN(pageNumber) && pageNumber >= 1 && pageNumber <= totalPage) {
+                                                                        handlerChangePage(pageNumber);
+                                                                    }
+                                                                }}
+                                                                style={{ width: '50px' }}
+                                                            />
+                                                        </React.Fragment>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -502,10 +720,12 @@ function Shop(props) {
 
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
     );
 }

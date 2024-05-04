@@ -121,12 +121,12 @@ function Profile(props) {
 
     const showModalDX = () => {
         setShowDangXuat(true);
-       
-        
+
+
     };
 
     const toggleModal = () => {
-       
+
         localStorage.removeItem("token");
         window.location.href = '/signin';
     };
@@ -137,29 +137,66 @@ function Profile(props) {
 
     const [user, set_user] = useState({})
 
+    // useEffect(() => {
+
+    //     const fetchData = async () => {
+
+    //         const response = await User.Get_User(sessionStorage.getItem('id_user'))
+
+    //         set_user(response)
+
+    //         set_name(response.fullname)
+
+    //         set_username(response.username)
+
+    //         set_email(response.email)
+
+    //         set_password(response.password)
+    //         set_new_password(response.password)
+    //         set_compare_password(response.password)
+
+    //     }
+
+    //     fetchData()
+
+    // }, [])
+    const [gender, setGender] = useState('');
+    const [birthday, setBirthDay] = useState([]);
+    const [status, setStatus] = useState('');
+   
+    const [userData, setUserData] = useState(null);
+
+    const fetchUserData = async () => {
+        try {
+            const token = localStorage.getItem("token"); // Lấy token từ localStorage hoặc nơi lưu trữ khác
+            const headerss = {
+                "Authorization": `Bearer ${token}`
+            };
+            console.log(token);
+            const response = await axios.post("http://localhost:8071/customer/user-info",  headerss);
+            console.log(response);
+            setUserData(response.data);
+            setCreatedBy(response.data.createdBy);
+            setCreatedTime(response.data.createdTime);
+            set_name(response.data.name);
+            set_username(response.data.username);
+            setGender(response.data.gender);
+            setBirthDay(response.data.birthDay);
+            set_password(response.data.password);
+            setStatus(response.data.status);
+            set_email(response.data.email);
+            set_sdt(response.data.phone)
+            setId(response.data.id)
+        } catch (error) {
+            console.error("Error fetching user data:", error);
+        }
+    };
+
     useEffect(() => {
 
-        const fetchData = async () => {
+        fetchUserData();
 
-            const response = await User.Get_User(sessionStorage.getItem('id_user'))
-
-            set_user(response)
-
-            set_name(response.fullname)
-
-            set_username(response.username)
-
-            set_email(response.email)
-
-            set_password(response.password)
-            set_new_password(response.password)
-            set_compare_password(response.password)
-
-        }
-
-        fetchData()
-
-    }, [])
+    }, []);
 
     const [name, set_name] = useState('')
     const [username, set_username] = useState('')
@@ -169,20 +206,93 @@ function Profile(props) {
     const [new_password, set_new_password] = useState('')
     const [compare_password, set_compare_password] = useState('')
 
+    const [createdTime, setCreatedTime] = useState('')
+    const [createdBy, setCreatedBy] = useState('')
+    const isValidEmail = (email) => {
+        // Biểu thức chính quy kiểm tra tính hợp lệ của email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+    
+    const isValidPhoneNumber = (phoneNumber) => {
+        // Biểu thức chính quy kiểm tra tính hợp lệ của số điện thoại
+        const phoneRegex = /^\d{10}$/; // Số điện thoại có 10 chữ số
+        return phoneRegex.test(phoneNumber);
+    };
+    
     const handler_update = async () => {
+        try {
+            
+            const requestBody = {
+                // _id: sessionStorage.getItem('id_user'),
+                name: name,
+                username: username,
+                // password: compare_password,
+                email: email,
+                phone: sdt,
+                createdTime: createdTime,
+                createdBy: createdBy,
+                id: id,
+                password:password,
+                birthDay:birthday,
+             gender:gender,
+             status:status
+            };
+            if (email.trim()==='' ) {
+                alert('Vui lòng điền đầy đủ thông tin Email ');
+                return;
+            }
+            if (sdt.trim()==='' ) {
+                alert('Vui lòng điền đầy đủ thông tin số điện thoại ');
+                return;
+            }
+            if (name.trim()==='' ) {
+                alert('Vui lòng điền đầy đủ thông tin tên ');
+                return;
+            }
+            if (username.trim()==='' ) {
+                alert('Vui lòng điền đầy đủ thông tin tên tài khoản ');
+                return;
+            }
+            if (!isValidEmail(email)) {
+                alert('Email không hợp lệ. Vui lòng kiểm tra lại!');
+                return;
+            }
+    
+            if (!isValidPhoneNumber(sdt)) {
+                alert('Số điện thoại không hợp lệ. Vui lòng kiểm tra lại!');
+                return;
+            }
+            console.log(requestBody);
+    
+            // Lấy bearerToken từ session storage hoặc nơi lưu trữ khác
+            const bearerToken = localStorage.getItem('token');
+           console.log(bearerToken);
+            const response = await axios.post("http://localhost:8071/customer/update-user-infor", requestBody, {
+                headers: {
+                    Authorization: `Bearer ${bearerToken}`
+                }
+            });
+            console.log(response);
+    
+            // Hiển thị thông báo thành công
+            alert('Cập nhật thành công!');
+            // window.location.reload();
+        } catch (error) {
+            // Xử lý lỗi và hiển thị thông báo lỗi
+            console.error('Cập nhật thất bại:', error);
+            if (error.response && error.response.status === 403 ){
+                alert('Username đã tồn tại. Vui lòng chọn một username khác!');
 
-        const data = {
-            _id: sessionStorage.getItem('id_user'),
-            fullname: name,
-            username: username,
-            password: compare_password
+            }
+            
+            // Kiểm tra nếu mã lỗi là 403 và có thông tin lỗi từ máy chủ
+           
         }
-
-        await User.Put_User(data)
-
-        window.location.reload()
-
-    }
+    };
+    
+    
+    
 
     const [activeTab, setActiveTab] = useState("choXacNhan", "choGiaoHang", "giaoHang", "hoanThanh", "huy", "tra");
     const handleTabChange = (key) => {
@@ -197,6 +307,27 @@ function Profile(props) {
     const handleCancel = () => {
         setIsModalVisible(false);
     };
+    
+    const fetchAddressesByIdCustomer = async (id) => {
+        try {
+            const response = await axios.get(`http://localhost:8071/customer/get-all-address?id=${id}`);
+            console.log(response);
+            return response.data; // Return data from the API
+        } catch (error) {
+            console.error('Error fetching addresses:', error);
+            return []; // Return an empty array in case of error
+        }
+    };
+
+    const [addresses, setAddresses] = useState([]); // State to store addresses fetched from API
+    console.log(id);
+    useEffect(() => {
+        // Call API to fetch addresses when component mounts or when id changes
+        fetchAddressesByIdCustomer(id)
+            .then(data => setAddresses(data))
+            .catch(error => console.error('Error fetching addresses:', error));
+    }, [id]); // Pass id as a dependency here
+    
 
     return (
         <div className="m-5 mt-5 pt-4" style={{ paddingBottom: '4rem' }}>
@@ -289,7 +420,7 @@ function Profile(props) {
                                             <span style={{ fontWeight: '600' }}>Họ và tên</span>
                                         </div>
                                         <div>
-                                            <input className="txt_input_edit" type="text" value={"name"}
+                                            <input className="txt_input_edit" type="text" value={name}
                                                 onChange={(e) => set_name(e.target.value)} />
                                         </div>
                                     </div>
@@ -298,25 +429,17 @@ function Profile(props) {
                                             <span style={{ fontWeight: '600' }}>Tên tài khoản</span>
                                         </div>
                                         <div>
-                                            <input className="txt_input_edit" type="text" disabled={true} value={"username"}
+                                            <input className="txt_input_edit" type="text" value={username}
                                                 onChange={(e) => set_username(e.target.value)} />
                                         </div>
                                     </div>
-                                    {/* <div className="txt_setting_edit pt-3 pb-2">
-                                        <div className="d-flex justify-content-center align-items-center">
-                                            <span style={{ fontWeight: '600' }}>Email</span>
-                                        </div>
-                                        <div>
-                                            <input className="txt_input_edit" type="text" value={email}
-                                                onChange={(e) => set_email(e.target.value)} />
-                                        </div>
-                                    </div> */}
+
                                     <div className="txt_setting_edit pt-3 pb-2">
                                         <div className="d-flex justify-content-center align-items-center">
                                             <span style={{ fontWeight: '600' }}>Email</span>
                                         </div>
                                         <div>
-                                            <input className="txt_input_edit" type="text" disabled={true} value={"email"}
+                                            <input className="txt_input_edit" type="text" value={email}
                                                 onChange={(e) => set_email(e.target.value)} />
                                         </div>
                                     </div>
@@ -325,12 +448,12 @@ function Profile(props) {
                                             <span style={{ fontWeight: '600' }}>Số điện thoại</span>
                                         </div>
                                         <div>
-                                            <input className="txt_input_edit" type="text" disabled={true} value={"sdt"}
+                                            <input className="txt_input_edit" type="text" value={sdt}
                                                 onChange={(e) => set_sdt(e.target.value)} />
                                         </div>
                                     </div>
                                     <div className="d-flex justify-content-center pt-3 pb-4">
-                                        <button className="btn btn-secondary" onClick={handler_update}>Lưu</button>
+                                        <button className="btn btn-secondary" onClick={handler_update}>Sửa</button>
                                     </div>
                                 </div>
                             ) : edit_status === 'lich_su' ? (
@@ -555,7 +678,7 @@ function Profile(props) {
                                             <span style={{ fontWeight: '600' }}>Mật khẩu cũ</span>
                                         </div>
                                         <div>
-                                            <input className="txt_input_edit" type="password" value={password}
+                                            <input className="txt_input_edit"  value={password}
                                                 onChange={(e) => set_password(e.target.value)} />
                                         </div>
                                     </div>
@@ -658,44 +781,22 @@ function Profile(props) {
                                     </div>
                                     <hr className="" style={{ marginTop: "0px", marginBottom: "0px" }} />
                                     <div>
-                                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "10px" }}>
-                                            <p className='m-3'>Địa chỉ 1 | 0989xxxxxx<br />
-                                                Phương Canh, Nam Từ Liêm, Hà Nội
-                                            </p>
-                                            <div style={{ textAlign: "center" }}>
-                                                <Button type='primary' disabled>Mặc định</Button>
-                                                <Button className='m-2' type='primary'>Cập nhật</Button>
-                                                <Button>Xóa</Button>
-                                            </div>
-                                        </div>
-                                        <hr className="" style={{ marginTop: "0px", marginBottom: "0px" }} />
-                                    </div>
-                                    <div>
-                                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "10px" }}>
-                                            <p className='m-3'>Địa chỉ 2 | 0868xxxxxx<br />
-                                                Phúc lý, Bắc Từ Liêm, Hà Nội
-                                            </p>
-                                            <div style={{ textAlign: "center" }}>
-                                                <Button type='primary' >Mặc định</Button>
-                                                <Button className='m-2' type='primary'>Cập nhật</Button>
-                                                <Button>Xóa</Button>
-                                            </div>
-                                        </div>
-                                        <hr className="" style={{ marginTop: "0px", marginBottom: "0px" }} />
-                                    </div>
-                                    <div>
-                                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "10px" }}>
-                                            <p className='m-3'>Địa chỉ 3 | 0357xxxxxx<br />
-                                                Núi trúc, Đống Đa, Hà Nội
-                                            </p>
-                                            <div style={{ textAlign: "center" }}>
-                                                <Button type='primary'>Mặc định</Button>
-                                                <Button className='m-2' type='primary'>Cập nhật</Button>
-                                                <Button >Xóa</Button>
-                                            </div>
-                                        </div>
-                                        <hr className="" style={{ marginTop: "0px", marginBottom: "0px" }} />
-                                    </div>
+            {addresses.map(address => (
+                <div key={address.id}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "10px" }}>
+                        <p className='m-3'>{address.address} | {address.phone}<br />
+                            {address.street}, {address.district}, {address.city}
+                        </p>
+                        <div style={{ textAlign: "center" }}>
+                            <Button type='primary' disabled={address.default}>Mặc định</Button>
+                            <Button className='m-2' type='primary'>Cập nhật</Button>
+                            <Button>Xóa</Button>
+                        </div>
+                    </div>
+                    <hr className="" style={{ marginTop: "0px", marginBottom: "0px" }} />
+                </div>
+            ))}
+        </div>
                                 </div>
                             )
                         }
