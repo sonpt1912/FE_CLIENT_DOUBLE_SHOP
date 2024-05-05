@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import io from "socket.io-client";
-
 import './Checkout.css'
 import OrderAPI from '../API/OrderAPI';
 import Paypal from './Paypal';
@@ -13,10 +11,6 @@ import Detail_OrderAPI from '../API/Detail_OrderAPI';
 import CouponAPI from '../API/CouponAPI';
 import MoMo from './MoMo.jsx'
 
-const socket = io('https://hieusuper20hcm.herok`uapp.com/', {
-    transports: ['websocket'], jsonp: false
-});
-socket.connect();
 
 Checkout.propTypes = {
 
@@ -236,8 +230,6 @@ function Checkout(props) {
         //     email: information.email
         // }
 
-        // Gửi socket lên server
-        socket.emit('send_order', "Có người vừa đặt hàng")
         // Xử lý API Send Mail
 
         // const send_mail = await OrderAPI.post_email(data_email)

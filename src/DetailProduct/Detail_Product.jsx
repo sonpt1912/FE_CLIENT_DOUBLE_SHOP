@@ -4,31 +4,191 @@ import Product from "../API/Product";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import SaleAPI from "../API/SaleAPI";
+import { InputNumber } from "antd";
 
 Detail_Product.propTypes = {};
 
 function Detail_Product(props) {
   const { id } = useParams();
 
-//   const [product, set_product] = useState({});
+  //   const [product, set_product] = useState({});
   const fakeProduct = {
-    id: 1,
-    name_product: "Áo khoác form rộng oversize",
-    price_product: 500000, // Giá sản phẩm
-    image: "https://example.com/image.jpg", // Link ảnh sản phẩm
-    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Vel harum tenetur delectus nam quam assumenda? Soluta vitae tempora ratione excepturi doloremque, repudiandae ullam, eum corporis, itaque dolor aperiam enim aspernatur.", // Mô tả sản phẩm
-    sizes: ["S", "M", "L","XL"], // Các size có sẵn
+    updatedTime: null,
+    product: {
+      id: 14,
+      code: "81005688",
+      name: "Áo Phông 3",
+      weight: 1,
+      height: null,
+      width: null,
+      length: null,
+      status: 0,
+      brand: {
+        id: 1,
+        code: "BRAND1",
+        name: "Tuấn",
+        description: "tuấn",
+        status: 0,
+        createdBy: "sonpt",
+        updatedBy: null,
+        createdTime: "2024-04-27 22:51:36",
+        updatedTime: null,
+      },
+      collar: {
+        id: 1,
+        code: "COLLAR1",
+        name: "Cổ dài",
+        description: "dài",
+        status: 0,
+        createdBy: "sonpt",
+        updatedBy: null,
+        createdTime: "2024-04-27 22:51:08",
+        updatedTime: null,
+      },
+      category: {
+        id: 1,
+        code: "CATEGORY1",
+        name: "Tốt",
+        description: "tốt",
+        status: 0,
+        createdBy: "sonpt",
+        updatedBy: null,
+        createdTime: "2024-04-27 22:51:27",
+        updatedTime: null,
+      },
+      material: {
+        id: 1,
+        code: "MATERIAL1",
+        name: "sắt",
+        description: "cứng",
+        status: 0,
+        createdBy: "TranTung",
+        updatedBy: null,
+        createdTime: "2024-04-27T22:51:15.701073500",
+        updatedTime: null,
+      },
+      createdBy: "sonpt",
+      createdTime: "2024-05-01 00:44:59",
+      updatedTime: null,
+      updatedBy: null,
+      listImages: null,
+      listDetailProduct: null,
+    },
+    collar: {
+      id: 1,
+      code: "COLLAR1",
+      name: "Cổ dài",
+      description: "dài",
+      status: 0,
+      createdBy: "sonpt",
+      updatedBy: null,
+      createdTime: "2024-04-27 22:51:08",
+      updatedTime: null,
+    },
+    quantity: 111,
+    updatedBy: null,
+    color: [
+      {
+        id: 2,
+        code: "#ff0000",
+        name: "XSM",
+        description: "ha",
+        status: 0,
+        createdBy: "1",
+        updatedBy: null,
+        createdTime: "2024-04-29 13:24:09",
+        updatedTime: null,
+      },
+      {
+        id: 3,
+        code: "#000000",
+        name: "XSMX",
+        description: "haX",
+        status: 0,
+        createdBy: "1",
+        updatedBy: null,
+        createdTime: "2024-04-29 13:24:09",
+        updatedTime: null,
+      },
+    ],
+    discountAmount: 0,
+    listImages: {
+      resources: [],
+      total_count: 0,
+      time: 2,
+    },
+    size: [
+      {
+        id: 1,
+        code: "SIZE1",
+        name: "XL",
+        description: "To",
+        status: 0,
+        createdBy: "sonpt",
+        updatedBy: null,
+        createdTime: "2024-04-27 22:50:58",
+        updatedTime: null,
+      },
+      {
+        id: 2,
+        code: "SIZE2",
+        name: "XLX",
+        description: "ToX",
+        status: 0,
+        createdBy: "sonpt",
+        updatedBy: null,
+        createdTime: "2024-04-27 22:50:58",
+        updatedTime: null,
+      },
+    ],
+    material: {
+      id: 1,
+      code: "MATERIAL1",
+      name: "sắt",
+      description: "cứng",
+      status: 0,
+      createdBy: "TranTung",
+      updatedBy: null,
+      createdTime: "2024-04-27T22:51:15.701073500",
+      updatedTime: null,
+    },
+    createdBy: "sonpt",
+    price: 2000,
+    createdTime: "2024-05-01 00:44:59",
+    id: 15,
+    category: {
+      id: 1,
+      code: "CATEGORY1",
+      name: "Tốt",
+      description: "tốt",
+      status: 0,
+      createdBy: "sonpt",
+      updatedBy: null,
+      createdTime: "2024-04-27 22:51:27",
+      updatedTime: null,
+    },
+    brand: {
+      id: 1,
+      code: "BRAND1",
+      name: "Tuấn",
+      description: "tuấn",
+      status: 0,
+      createdBy: "sonpt",
+      updatedBy: null,
+      createdTime: "2024-04-27 22:51:36",
+      updatedTime: null,
+    },
+    status: 0,
   };
-  
+
   const fakeSale = {
     id_product: fakeProduct,
     promotion: 10, // Phần trăm giảm giá
   };
-  
+
   // Sử dụng dữ liệu giả mạo trong component
   const [product, set_product] = useState(fakeProduct);
   const [sale, setSale] = useState(fakeSale);
-  
 
   const dispatch = useDispatch();
 
@@ -38,7 +198,7 @@ function Detail_Product(props) {
   // Get count từ redux khi user chưa đăng nhập
   const count_change = useSelector((state) => state.Count.isLoad);
 
-//   const [sale, setSale] = useState();
+  //   const [sale, setSale] = useState();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -98,7 +258,20 @@ function Detail_Product(props) {
   // State list_comment
   const [list_comment, set_list_comment] = useState([]);
 
-
+  const handleSizeChange = (newSize) => {
+    // Cập nhật product.size trong state của component
+    set_product((prevProduct) => ({
+      ...prevProduct,
+      size: newSize,
+    }));
+  };
+  const handleColorChange = (newColor) => {
+    // Cập nhật product.color trong state của component
+    set_product((prevProduct) => ({
+      ...prevProduct,
+      color: newColor,
+    }));
+  };
   return (
     <div>
       {show_success && (
@@ -150,141 +323,109 @@ function Detail_Product(props) {
 
             <div className="col-lg-7 col-md-6">
               <div className="product-details-view-content pt-60">
-                <div className="product-info">
-                  <h2>{product.name_product}</h2>
-                  <div className="price-box pt-20">
-                    {sale ? (
-                      <del
-                        className="new-price new-price-2"
-                        style={{ color: "#525252" }}
-                      >
+                <div className="row mb-4">
+                  <div className="col-md-6">
+                    <h4 className="title text-dark">
+                      {fakeProduct.product.name}
+                    </h4>
+                    <div className="mb-3">
+                      <span className="h5 text-danger">
                         {new Intl.NumberFormat("vi-VN", {
                           style: "decimal",
                           decimal: "VND",
-                        }).format(product.price_product) + " VNĐ"}
-                      </del>
-                    ) : (
-                      <span className="new-price new-price-2">
-                        {new Intl.NumberFormat("vi-VN", {
-                          style: "decimal",
-                          decimal: "VND",
-                        }).format(product.price_product) + " VNĐ"}
+                        }).format(fakeProduct.price) + ".00đ"}
                       </span>
-                    )}
-                    <br />
-                    {sale && (
-                      <span className="new-price new-price-2">
-                        {new Intl.NumberFormat("vi-VN", {
-                          style: "decimal",
-                          decimal: "VND",
-                        }).format(
-                          parseInt(sale.id_product.price_product) -
-                            (parseInt(sale.id_product.price_product) *
-                              parseInt(sale.promotion)) /
-                              100
-                        ) + " VNĐ"}
-                      </span>
-                    )}
-                  </div>
-                  <div className="product-desc">
-                    <p>
-                      <span>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                        Vel harum tenetur delectus nam quam assumenda? Soluta
-                        vitae tempora ratione excepturi doloremque, repudiandae
-                        ullam, eum corporis, itaque dolor aperiam enim
-                        aspernatur.
-                      </span>
-                    </p>
-                  </div>
-                  <div className="product-variants">
-                    <div className="produt-variants-size">
-                      <label>Size</label>
-                      <select
-                        className="nice-select"
-                        onChange={(e) => set_size(e.target.value)}
-                      >
-                        <option value="S">S</option>
-                        <option value="M">M</option>
-                        <option value="L">L</option>
-                      </select>
+                    </div>
+                    <div className="row">
+                      <dt className="col-3">Brand</dt>
+                      <dd className="col-9">
+                        {fakeProduct.product.brand.name}
+                      </dd>
+                      <dt className="col-3">Category</dt>
+                      <dd className="col-9">
+                        {fakeProduct.product.category.name}
+                      </dd>
                     </div>
                   </div>
-                  <div className="single-add-to-cart">
-                    <form action="#" className="cart-quantity">
-                      <div className="quantity">
-                        <label>Quantity</label>
-                        <div className="cart-plus-minus">
-                          <input
-                            className="cart-plus-minus-box"
-                            value={count}
-                            type="text"
-                            onChange={(e) => set_count(e.target.value)}
-                          />
-                          <div className="dec qtybutton" onClick={downCount}>
-                            <i className="fa fa-angle-down"></i>
-                          </div>
-                          <div className="inc qtybutton" onClick={upCount}>
-                            <i className="fa fa-angle-up"></i>
-                          </div>
+                </div>
+
+                <div className="row mb-4">
+                  <div className="col-md-6">
+                    <dt className="mb-2">Size</dt>
+                    <div className="d-flex flex-wrap">
+                      {fakeProduct.size.map((size) => (
+                        <div
+                          key={size.id}
+                          className={`size-swatch ${
+                            size === fakeProduct.size ? "active" : ""
+                          }`}
+                          style={{
+                            width: "40px",
+                            height: "40px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            border: "1px solid #ccc",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                          }}
+                          onClick={() => handleSizeChange(size)}
+                        >
+                          {size.name}
                         </div>
-                      </div>
-                      <a
-                        href="#"
-                        className="add-to-cart"
-                        type="submit"
-                        onClick={handler_addcart}
-                      >
-                        Add to cart
-                      </a>
-                    </form>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="col-md-6">
+                    <dt className="mb-2">Color</dt>
+                    <div className="d-flex flex-wrap">
+                      {fakeProduct.color.map((color) => (
+                        <div
+                          key={color.id}
+                          className={`color-swatch ${
+                            color === fakeProduct.color ? "active" : ""
+                          }`}
+                          style={{
+                            backgroundColor: color.code,
+                            width: "40px",
+                            height: "40px",
+                            borderRadius: "50%",
+                            border: "1px solid #ccc",
+                            cursor: "pointer",
+                          }}
+                          onClick={() => handleColorChange(color)}
+                        ></div>
+                      ))}
+                    </div>
                   </div>
                 </div>
+
+                <div className="row mb-4">
+                  <div className="col-md-4 col-6">
+                    <dt className="mb-2 d-block">Quantity</dt>
+                    <div
+                      className="input-group mb-3"
+                      style={{ width: "170px" }}
+                    >
+                      <InputNumber
+                        min="1"
+                        value={fakeProduct.quantity}
+                        onChange={(e) => set_count(e.target.value)}
+                        type="number"
+                        className="form-control form-control-sm"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="add-to-cart" type="submit">
+                Add to cart
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      {/* <div className="product-area pt-35">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="li-product-tab">
-                <ul className="nav li-product-menu">
-                  <li>
-                    <a className="active" data-toggle="tab" href="#description">
-                      <span>Description</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a data-toggle="tab" href="#reviews">
-                      <span>Reviews</span>
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div className="tab-content">
-            <div
-              id="description"
-              className="tab-pane active show"
-              role="tabpanel"
-            >
-              <div className="product-description">
-                <span>
-                  The best is yet to come! Give your walls a voice with a framed
-                  poster. This aesthethic, optimistic poster will look great in
-                  your desk or in an open-space office. Painted wooden frame
-                  with passe-partout for more depth.
-                </span>
-              </div>
-            </div>
-           
-          </div>
-        </div>
-      </div> */}
     </div>
   );
 }

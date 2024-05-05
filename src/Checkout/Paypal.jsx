@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import io from "socket.io-client";
 
 import PropTypes from 'prop-types';
 import { Redirect } from 'react-router-dom'
@@ -10,10 +9,6 @@ import NoteAPI from '../API/NoteAPI';
 import Detail_OrderAPI from '../API/Detail_OrderAPI';
 import CouponAPI from '../API/CouponAPI';
 
-const socket = io('https://hieusuper20hcm.herokuapp.com/', {
-    transports: ['websocket'], jsonp: false
-});
-socket.connect();
 
 Paypal.propTypes = {
     information: PropTypes.object,
