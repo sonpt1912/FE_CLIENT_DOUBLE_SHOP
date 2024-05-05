@@ -33,91 +33,91 @@ import OrderMomo from "./Order/OrderMomo";
 
 const Home = lazy(() => {
   return new Promise((resolve) => {
-    setTimeout(() => resolve(import("./Home/Home")), 2000);
+    setTimeout(() => resolve(import("./Home/Home")));
   });
 });
 
 const Shop = lazy(() => {
   return new Promise((resolve) => {
-    setTimeout(() => resolve(import("./Shop/Shop")), 2000);
+    setTimeout(() => resolve(import("./Shop/Shop")));
   });
 });
 
 const Detail_Product = lazy(() => {
   return new Promise((resolve) => {
-    setTimeout(() => resolve(import("./DetailProduct/Detail_Product")), 2000);
+    setTimeout(() => resolve(import("./DetailProduct/Detail_Product")));
   });
 });
 
 const Cart = lazy(() => {
   return new Promise((resolve) => {
-    setTimeout(() => resolve(import("./Cart/Cart")), 2000);
+    setTimeout(() => resolve(import("./Cart/Cart")));
   });
 });
 
 // const Checkout = lazy(() => {
 //   return new Promise((resolve) => {
-//     setTimeout(() => resolve(import("./Checkout/Checkout")), 2000);
+//     setTimeout(() => resolve(import("./Checkout/Checkout")));
 //   });
 // });
 
 const Favorite = lazy(() => {
   return new Promise((resolve) => {
-    setTimeout(() => resolve(import("./Favorite/Favorite")), 2000);
+    setTimeout(() => resolve(import("./Favorite/Favorite")));
   });
 });
 
 const Event = lazy(() => {
   return new Promise((resolve) => {
-    setTimeout(() => resolve(import("./Event/Event")), 2000);
+    setTimeout(() => resolve(import("./Event/Event")));
   });
 });
 
 const DetailEvent = lazy(() => {
   return new Promise((resolve) => {
-    setTimeout(() => resolve(import("./Event/DetailEvent")), 2000);
+    setTimeout(() => resolve(import("./Event/DetailEvent")));
   });
 });
 
 const Contact = lazy(() => {
   return new Promise((resolve) => {
-    setTimeout(() => resolve(import("./Contact/Contact")), 2000);
+    setTimeout(() => resolve(import("./Contact/Contact")));
   });
 });
 
 const SignIn = lazy(() => {
   return new Promise((resolve) => {
-    setTimeout(() => resolve(import("./Auth/SignIn")), 2000);
+    setTimeout(() => resolve(import("./Auth/SignIn")));
   });
 });
 
 const SignUp = lazy(() => {
   return new Promise((resolve) => {
-    setTimeout(() => resolve(import("./Auth/SignUp")), 2000);
+    setTimeout(() => resolve(import("./Auth/SignUp")));
   });
 });
 
 const History = lazy(() => {
   return new Promise((resolve) => {
-    setTimeout(() => resolve(import("./History/History")), 2000);
+    setTimeout(() => resolve(import("./History/History")));
   });
 });
 
 const Profile = lazy(() => {
   return new Promise((resolve) => {
-    setTimeout(() => resolve(import("./Profile/Profile")), 2000);
+    setTimeout(() => resolve(import("./Profile/Profile")));
   });
 });
 
 const Search = lazy(() => {
   return new Promise((resolve) => {
-    setTimeout(() => resolve(import("./Search/Search")), 2000);
+    setTimeout(() => resolve(import("./Search/Search")));
   });
 });
 
 const About = lazy(() => {
   return new Promise((resolve) => {
-    setTimeout(() => resolve(import("./About/About")), 2000);
+    setTimeout(() => resolve(import("./About/About")));
   });
 });
 
@@ -125,7 +125,6 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <Header />
         <Suspense
           fallback={
             <div className="sk-cube-grid">
@@ -142,30 +141,36 @@ function App() {
           }
         >
           <Switch>
-            <Route exact path="/" component={Home} />
-            <Route path="/shop/:id" component={Shop} />
-            <Route path="/detail/:id" component={Detail_Product} />
-            <Route path="/cart" component={Cart} />
-            <Route path="/checkout" component={Checkout} />
-            <Route path="/favorite" component={Favorite} />
-
-            <Route exact path="/event" component={Event} />
-            <Route path="/event/:id" component={DetailEvent} />
-
-
-            <Route path="/contact" component={Contact} />
             <Route path="/signin" component={SignIn} />
             <Route path="/signup" component={SignUp} />
-            <Route path="/success" component={OrderSuccess} />
-            <Route path="/fail" component={OrderFail} />
-            <Route path="/momo" component={OrderMomo} />
-            <Route path="/history" component={History} />
-            <Route path="/profile/:id" component={Profile} />
-            <Route path="/search" component={Search} />
-            <Route path="/about" component={About} />
+
+            <Route>
+              <Header />
+              <Switch>
+                <Route exact path="/" component={Home} />
+                <Route path="/shop/:id" component={Shop} />
+                <Route path="/detail/:id" component={Detail_Product} />
+                <Route path="/cart" component={Cart} />
+                <Route path="/checkout" component={Checkout} />
+                <Route path="/favorite" component={Favorite} />
+
+                <Route exact path="/event" component={Event} />
+                <Route path="/event/:id" component={DetailEvent} />
+
+                <Route path="/contact" component={Contact} />
+
+                <Route path="/success" component={OrderSuccess} />
+                <Route path="/fail" component={OrderFail} />
+                <Route path="/momo" component={OrderMomo} />
+                <Route path="/history" component={History} />
+                <Route path="/profile/:id" component={Profile} />
+                <Route path="/search" component={Search} />
+                <Route path="/about" component={About} />
+              </Switch>
+              <Footer />
+            </Route>
           </Switch>
         </Suspense>
-        <Footer />
       </BrowserRouter>
     </div>
   );
