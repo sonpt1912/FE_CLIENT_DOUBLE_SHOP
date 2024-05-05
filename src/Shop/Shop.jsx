@@ -414,6 +414,9 @@ function Shop(props) {
 
     };
 
+    useEffect(() => {
+        handler_Search(); // Call handler_Search function
+    }, [selectedBrand, selectedCategory, selectedMaterial, selectedCollar, selectedColor, selectedSize]);
 
     return (
 
@@ -438,9 +441,7 @@ function Shop(props) {
                     <div className="row">
                         <div className="col-lg-3 order-lg-1 order-2">
                             <div className="li-blog-sidebar-wrapper">
-                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    {loading && <div className="loading-spinner"></div>}
-                                </div>
+                              
 
                                 <div className="li-blog-sidebar pt-25">
 
@@ -592,7 +593,7 @@ function Shop(props) {
                                    
                                 </div> */}
 
-                                <div className="li-blog-sidebar" style={{ display: 'flex', justifyContent: 'center', paddingTop: '20px' }}>
+                                {/* <div className="li-blog-sidebar" style={{ display: 'flex', justifyContent: 'center', paddingTop: '20px' }}>
                                     <div className="search-wrapper">
                                         <button
                                             onClick={handler_Search}
@@ -612,11 +613,9 @@ function Shop(props) {
                                             Tìm kiếm
                                         </button>
                                     </div>
-                                </div>
+                                </div> */}
 
-                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingTop: '50px' }}>
-                                    {loading && <div className="loading-spinner"></div>}
-                                </div>
+                              
                             </div>
                         </div>
                         <div className="col-lg-9 order-1 order-lg-2">
@@ -628,28 +627,28 @@ function Shop(props) {
                                     </div>
                                 </div>
                             </div>
+                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingTop: '10px',paddingBottom:"10px" }}>
+                                {loading && <div className="loading-spinner"></div>}
+                            </div>
+
                             <div className="shop-products-wrapper">
                                 <div className="tab-content">
                                     <div id="grid-view" className="tab-pane active" role="tabpanel">
                                         <div className="product-area shop-product-area">
                                             <div className="row">
-                                                {products.map(product => (
+                                            {products.map(product => (
                                                     <div className="col-lg-4 col-md-6" key={product.id}>
                                                         <div className="single-product-wrap">
                                                             <div className="product-image">
                                                                 <Link to={`/detail/${product.id}`}>
-
                                                                     {product.listImages && product.listImages.resources.length > 0 ? (
-                                                                        // Sử dụng URL của hình ảnh đầu tiên trong mảng resources
                                                                         <img src={product.listImages.resources[0].url} alt={product.name} />
                                                                     ) : (
-                                                                        // Nếu không có hình ảnh, bạn có thể cung cấp một URL mặc định hoặc hình ảnh thay thế
-                                                                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7JDQLmn016pSYDwyLcHbpA88Wk83h0nd2szdavgNzc0jWSE3tUL3WldrxFkjJ9YvuheM&usqp=CAU" alt={product.name} />
+                                                                        <div style={{width:"100%",backgroundColor: '#f0f0f0',height:"250px"}} />
                                                                     )}
-
                                                                 </Link>
                                                             </div>
-                                                            <div className="product-content" style={{ marginTop: '10px' }}>
+                                                            <div className="product-content" style={{ marginTop: '10px', display: 'flex', flexDirection: 'column' }}>
                                                                 <h3>{product.name}</h3>
                                                                 <div className="product-details">
                                                                     <div className="detail">
@@ -669,9 +668,7 @@ function Shop(props) {
                                                                         <span> {product.collar.name}</span>
                                                                     </div>
                                                                 </div>
-
                                                             </div>
-
                                                         </div>
                                                     </div>
                                                 ))}

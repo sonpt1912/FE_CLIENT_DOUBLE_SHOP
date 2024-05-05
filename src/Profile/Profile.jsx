@@ -163,7 +163,7 @@ function Profile(props) {
     const [gender, setGender] = useState('');
     const [birthday, setBirthDay] = useState([]);
     const [status, setStatus] = useState('');
-   
+
     const [userData, setUserData] = useState(null);
 
     const fetchUserData = async () => {
@@ -173,7 +173,7 @@ function Profile(props) {
                 "Authorization": `Bearer ${token}`
             };
             console.log(token);
-            const response = await axios.post("http://localhost:8071/customer/user-info",  headerss);
+            const response = await axios.post("http://localhost:8071/customer/user-info", headerss);
             console.log(response);
             setUserData(response.data);
             setCreatedBy(response.data.createdBy);
@@ -213,16 +213,16 @@ function Profile(props) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
     };
-    
+
     const isValidPhoneNumber = (phoneNumber) => {
         // Biểu thức chính quy kiểm tra tính hợp lệ của số điện thoại
-        const phoneRegex = /^\d{10}$/; // Số điện thoại có 10 chữ số
+        const phoneRegex = /^0\d{9}$/; // Số điện thoại bắt đầu bằng số 0 và có tổng cộng 10 chữ số
         return phoneRegex.test(phoneNumber);
     };
-    
+
     const handler_update = async () => {
         try {
-            
+
             const requestBody = {
                 // _id: sessionStorage.getItem('id_user'),
                 name: name,
@@ -233,65 +233,114 @@ function Profile(props) {
                 createdTime: createdTime,
                 createdBy: createdBy,
                 id: id,
-                password:password,
-                birthDay:birthday,
-             gender:gender,
-             status:status
+                password: password,
+                birthDay: birthday,
+                gender: gender,
+                status: status
             };
-            if (email.trim()==='' ) {
-                alert('Vui lòng điền đầy đủ thông tin Email ');
-                return;
-            }
-            if (sdt.trim()==='' ) {
+
+            if (sdt.trim() === '') {
                 alert('Vui lòng điền đầy đủ thông tin số điện thoại ');
                 return;
             }
-            if (name.trim()==='' ) {
+            if (name.trim() === '') {
                 alert('Vui lòng điền đầy đủ thông tin tên ');
                 return;
             }
-            if (username.trim()==='' ) {
-                alert('Vui lòng điền đầy đủ thông tin tên tài khoản ');
+            const specialChars = /[!@#$%^&*(),.?":{}|<>]/g;
+            if (specialChars.test(name)) {
+                alert("Tên không được chứa ký tự đặc biệt!");
                 return;
             }
-            if (!isValidEmail(email)) {
-                alert('Email không hợp lệ. Vui lòng kiểm tra lại!');
+            if (specialChars.test(sdt)) {
+                alert("Số điện thoại không được chứa ký tự đặc biệt!");
                 return;
             }
-    
+            if (!isNaN(name)) {
+                alert("Tên không được chỉ chứa số!");
+                return;
+            }
+
+
             if (!isValidPhoneNumber(sdt)) {
                 alert('Số điện thoại không hợp lệ. Vui lòng kiểm tra lại!');
                 return;
             }
             console.log(requestBody);
-    
+
             // Lấy bearerToken từ session storage hoặc nơi lưu trữ khác
             const bearerToken = localStorage.getItem('token');
-           console.log(bearerToken);
+            console.log(bearerToken);
             const response = await axios.post("http://localhost:8071/customer/update-user-infor", requestBody, {
                 headers: {
                     Authorization: `Bearer ${bearerToken}`
                 }
             });
             console.log(response);
-    
+
             // Hiển thị thông báo thành công
             alert('Cập nhật thành công!');
             // window.location.reload();
         } catch (error) {
             // Xử lý lỗi và hiển thị thông báo lỗi
             console.error('Cập nhật thất bại:', error);
-            if (error.response && error.response.status === 403 ){
-                alert('Username đã tồn tại. Vui lòng chọn một username khác!');
 
-            }
-            
+
             // Kiểm tra nếu mã lỗi là 403 và có thông tin lỗi từ máy chủ
-           
+
         }
     };
+    const handler_change = async () => {
+        // Kiểm tra xác thực mật khẩu mới và mật khẩu nhập lại
+        if (new_password.trim() !== compare_password.trim()) {
+            alert('Mật khẩu mới và mật khẩu nhập lại không khớp.');
+            return;
+        }
     
+        // Tạo đối tượng requestBody từ dữ liệu nhập liệu
+        const requestBody = {
+            password: password1,
+            newPassword: new_password
+        };
+        if (new_password.trim() === password1.trim()) {
+            alert('Mật khẩu mới phải khác mật khẩu cũ.');
+            return;
+        }
+        if (password1.trim() === '') {
+            alert('Vui lòng điền mật khẩu cũ ');
+            return;
+        }
+        if (new_password.trim() === '') {
+            alert('Vui lòng điền mật khẩu mới ');
+            return;
+        }
+        if (compare_password.trim() === '') {
+            alert('Vui lòng điền nhập lại mật khẩu mới ');
+            return;
+        }
+        try {
+            // Gọi API để thay đổi mật khẩu
+            const response = await axios.post('http://localhost:8071/customer/update-password', requestBody);
     
+            // Xử lý kết quả từ API nếu cần
+            console.log(response);
+    
+            // Hiển thị thông báo hoặc chuyển hướng trang sau khi thay đổi mật khẩu thành công
+            alert('Mật khẩu đã được thay đổi thành công.');
+        } catch (error) {
+            // Xử lý lỗi nếu có
+            console.error('Lỗi khi thay đổi mật khẩu:', error);
+    
+            // Kiểm tra nếu mã lỗi là 403 và có thông tin lỗi từ máy chủ
+            if (error.response && error.response.status === 403) {
+                // Hiển thị thông báo nếu mật khẩu cũ không chính xác
+                alert('Mật khẩu cũ không chính xác.');
+            } else {
+                // Hiển thị thông báo lỗi mặc định nếu không phải là lỗi 403
+                alert('Đã xảy ra lỗi khi thay đổi mật khẩu. Vui lòng thử lại sau.');
+            }
+        }
+    };
     
 
     const [activeTab, setActiveTab] = useState("choXacNhan", "choGiaoHang", "giaoHang", "hoanThanh", "huy", "tra");
@@ -307,17 +356,22 @@ function Profile(props) {
     const handleCancel = () => {
         setIsModalVisible(false);
     };
-    
-    const fetchAddressesByIdCustomer = async (id) => {
+
+    const fetchAddressesByIdCustomer = async (id, token) => {
         try {
-            const response = await axios.get(`http://localhost:8071/customer/get-all-address?id=${id}`);
+            const response = await axios.get(`http://localhost:8071/customer/get-all-address?id=${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}` // Truyền token qua tiêu đề Authorization
+                }
+            });
             console.log(response);
-            return response.data; // Return data from the API
+            return response.data; // Trả về dữ liệu từ API
         } catch (error) {
             console.error('Error fetching addresses:', error);
-            return []; // Return an empty array in case of error
+            return []; // Trả về một mảng rỗng trong trường hợp có lỗi
         }
     };
+    
 
     const [addresses, setAddresses] = useState([]); // State to store addresses fetched from API
     console.log(id);
@@ -327,7 +381,8 @@ function Profile(props) {
             .then(data => setAddresses(data))
             .catch(error => console.error('Error fetching addresses:', error));
     }, [id]); // Pass id as a dependency here
-    
+    const [password1, set_password1] = useState('');
+
 
     return (
         <div className="m-5 mt-5 pt-4" style={{ paddingBottom: '4rem' }}>
@@ -356,6 +411,11 @@ function Profile(props) {
                             onClick={() => handler_Status('quen_mat_khau')}>
                             <a className={edit_status === 'quen_mat_khau' ? 'a_setting_active' : ''}
                                 style={{ fontSize: '1.1rem' }}>Đổi mật khẩu</a>
+                        </div>
+                        <div className={edit_status === 'voucher' ? 'setting_item setting_item_active' : 'setting_item'}
+                            onClick={() => handler_Status('voucher')}>
+                            <a className={edit_status === 'voucher' ? 'a_setting_active' : ''}
+                                style={{ fontSize: '1.1rem' }}>Phiếu giảm giá</a>
                         </div>
                         {/* <div className={edit_status === 'dang_xuat' ? 'setting_item setting_item_active' : 'setting_item'}
                             onClick={() => handler_Status('dang_xuat')}>
@@ -426,23 +486,26 @@ function Profile(props) {
                                     </div>
                                     <div className="txt_setting_edit pt-3 pb-2">
                                         <div className="d-flex justify-content-center align-items-center">
-                                            <span style={{ fontWeight: '600' }}>Tên tài khoản</span>
+                                            <span style={{ fontWeight: '600' }}>Giới tính</span>
                                         </div>
-                                        <div>
-                                            <input className="txt_input_edit" type="text" value={username}
-                                                onChange={(e) => set_username(e.target.value)} />
+                                        <div style={{ width: "508px" }}>
+                                            <select className="form-select" value={gender === null ? '' : gender == 0 ? 'Nam' : 'Nữ'} onChange={(e) => setGender(e.target.value === 'Nam' ? 0 : e.target.value === 'Nữ' ? 1 : null)}>
+                                                <option value=''>Chọn giới tính</option>
+                                                <option value="Nam">Nam</option>
+                                                <option value="Nữ">Nữ</option>
+                                            </select>
                                         </div>
                                     </div>
 
                                     <div className="txt_setting_edit pt-3 pb-2">
                                         <div className="d-flex justify-content-center align-items-center">
-                                            <span style={{ fontWeight: '600' }}>Email</span>
+                                            <span style={{ fontWeight: '600' }}>Ngày sinh</span>
                                         </div>
                                         <div>
-                                            <input className="txt_input_edit" type="text" value={email}
-                                                onChange={(e) => set_email(e.target.value)} />
+                                            <input className="txt_input_edit" type="date" value={birthday} onChange={(e) => setBirthDay(e.target.value)} />
                                         </div>
                                     </div>
+
                                     <div className="txt_setting_edit pt-3 pb-2">
                                         <div className="d-flex justify-content-center align-items-center">
                                             <span style={{ fontWeight: '600' }}>Số điện thoại</span>
@@ -678,8 +741,8 @@ function Profile(props) {
                                             <span style={{ fontWeight: '600' }}>Mật khẩu cũ</span>
                                         </div>
                                         <div>
-                                            <input className="txt_input_edit"  value={password}
-                                                onChange={(e) => set_password(e.target.value)} />
+                                            <input className="txt_input_edit" value={password1}
+                                                onChange={(e) => set_password1(e.target.value)} />
                                         </div>
                                     </div>
                                     <div className="txt_setting_edit pt-3 pb-2">
@@ -687,7 +750,7 @@ function Profile(props) {
                                             <span style={{ fontWeight: '600' }} >Mật khẩu mới</span>
                                         </div>
                                         <div>
-                                            <input className="txt_input_edit" type="password" value={new_password}
+                                            <input className="txt_input_edit" value={new_password}
                                                 onChange={(e) => set_new_password(e.target.value)} />
                                         </div>
                                     </div>
@@ -696,16 +759,16 @@ function Profile(props) {
                                             <span style={{ fontWeight: '600' }}>Nhập lại mật khẩu mới</span>
                                         </div>
                                         <div>
-                                            <input className="txt_input_edit" type="password" value={compare_password}
+                                            <input className="txt_input_edit" value={compare_password}
                                                 onChange={(e) => set_compare_password(e.target.value)} />
                                         </div>
                                     </div>
                                     <div className="d-flex justify-content-center pt-3 pb-4 align-items-center">
-                                        <button className="btn btn-secondary" onClick={handler_update}>Lưu</button>
+                                        <button className="btn btn-secondary" onClick={handler_change}>Lưu</button>
                                     </div>
                                 </div>
                             ) : (
-                                <div>
+                                <div style={{ border: '1px solid white', padding: '15px', height: "400px", overflow: "auto" }}>
                                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                                         <h4 className='m-3' style={{ alignSelf: "flex-start" }}>Địa chỉ của tôi</h4>
                                         <div className='m-3'>
@@ -781,22 +844,87 @@ function Profile(props) {
                                     </div>
                                     <hr className="" style={{ marginTop: "0px", marginBottom: "0px" }} />
                                     <div>
-            {addresses.map(address => (
-                <div key={address.id}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "10px" }}>
-                        <p className='m-3'>{address.address} | {address.phone}<br />
-                            {address.street}, {address.district}, {address.city}
-                        </p>
-                        <div style={{ textAlign: "center" }}>
-                            <Button type='primary' disabled={address.default}>Mặc định</Button>
-                            <Button className='m-2' type='primary'>Cập nhật</Button>
-                            <Button>Xóa</Button>
-                        </div>
-                    </div>
-                    <hr className="" style={{ marginTop: "0px", marginBottom: "0px" }} />
-                </div>
-            ))}
-        </div>
+                                        {addresses.map(address => (
+                                            <div key={address.id}>
+                                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "10px" }}>
+                                                    <p className='m-3'>{address.district}/{address.province}/{address.city} | {address.phone}<br />
+                                                        {address.description}
+                                                    </p>
+                                                    <div style={{ textAlign: "center" }}>
+                                                        <Button type='primary' disabled={address.default}>Mặc định</Button>
+                                                        <Button className='m-2' type='primary' onClick={showModal}>Cập nhật</Button>
+                                                        <Modal title="Thêm mới địa chỉ" visible={isModalVisible} onCancel={handleCancel}
+                                                            footer={[
+                                                                <Button key="cancel" onClick={handleCancel}>Hủy</Button>,
+                                                                <Button key="ok" type="primary">Thêm</Button>,
+                                                            ]}>
+                                                            <form>
+                                                                <div className='d-flex center mb-3'>
+                                                                    <label className='w-50'>Thành phố</label>
+                                                                    <Select
+                                                                        style={{ width: '100%' }}
+                                                                        showSearch
+                                                                        placeholder="--- Chọn Tỉnh/Thành phố ---"
+                                                                        optionFilterProp="children"
+                                                                        filterOption={(input, option) => (option?.label ?? '').includes(input)}
+                                                                        filterSort={(optionA, optionB) =>
+                                                                            (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                                                        }
+                                                                        options={cityData}
+                                                                        onChange={handleCityChange}
+                                                                        value={selectedCity}
+                                                                    />
+                                                                </div>
+                                                                <div className='d-flex center mb-3'>
+                                                                    <label className='w-50'>Huyện</label>
+                                                                    <Select
+                                                                        style={{ width: '100%' }}
+                                                                        showSearch
+                                                                        placeholder="--- Chọn Quận/Huyện ---"
+                                                                        optionFilterProp="children"
+                                                                        filterOption={(input, option) => (option?.label ?? '').includes(input)}
+                                                                        // filterSort={(optionA, optionB) =>
+                                                                        //     (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                                                        // }
+                                                                        options={disData}
+                                                                        onChange={handleDisChange}
+                                                                        value={selectedDis}
+
+                                                                    />
+                                                                </div>
+                                                                <div className='d-flex center mb-3'>
+                                                                    <label className='w-50'>Xã</label>
+                                                                    <Select
+                                                                        style={{ width: '100%' }}
+                                                                        showSearch
+                                                                        placeholder="--- Chọn Xã/Phường ---"
+                                                                        optionFilterProp="children"
+                                                                        filterOption={(input, option) => (option?.label ?? '').includes(input)}
+                                                                        filterSort={(optionA, optionB) =>
+                                                                            (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                                                        }
+                                                                        options={warData}
+                                                                        onChange={handleWarChange}
+                                                                        value={selectedWar}
+                                                                    />
+                                                                </div>
+                                                                <div className='d-flex center mb-3'>
+                                                                    <label className='w-50'>Nhập địa chỉ chi tiết</label>
+                                                                    <Input
+                                                                        name="description"
+                                                                        value={description}
+                                                                        onChange={(e) => handleInputChange({ target: { name: 'description', value: e.target.value } })}
+                                                                    />
+                                                                </div>
+                                                            </form>
+                                                        </Modal>
+                                                        <Button>Xóa</Button>
+                                                    </div>
+                                                </div>
+                                                <hr className="" style={{ marginTop: "0px", marginBottom: "0px" }} />
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             )
                         }

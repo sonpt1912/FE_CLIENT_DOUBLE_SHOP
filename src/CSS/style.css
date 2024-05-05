@@ -5684,4 +5684,21 @@ span.required {
 	  transform: rotate(360deg);
 	}
   }
+  .radio-input {
+    width: 12px; /* Điều chỉnh kích thước radio button */
+    height: 12px;
+    border-radius: 50%; /* Biến radio button thành hình tròn */
+    margin-right: 10px; /* Khoảng cách giữa các radio buttons */
+    appearance: none; /* Loại bỏ giao diện mặc định của radio button */
+    border: 2px solid #333; /* Đường viền cho radio button */
+}
+
+.radio-input:checked {
+    background-color: #333; /* Màu nền khi được chọn */
+}
+
+.radio-input:focus {
+    outline: none; /* Loại bỏ đường viền khi được focus */
+}
+
   

@@ -69,16 +69,15 @@ function Footer(props) {
                                 <div className="footer-logo">
                                     <img src={Global.Logo} style={{ width: '20rem'}} alt="Footer Logo" />
                                     <p className="info">
-                                    Our mission is to empower individuals to express themselves confidently through fashion. We believe that clothing is more than just fabric; it's a form of self-expression and identity. 
-                                </p>
+                                    Sứ mệnh của chúng tôi là trao quyền cho các cá nhân thể hiện bản thân một cách tự tin thông qua thời trang. Chúng tôi tin rằng quần áo không chỉ là vải; đó là một hình thức thể hiện bản thân và bản sắc.                                </p>
                                 </div>
                                 <ul className="des">
                                     <li>
-                                        <span>Address: </span>
-                                    634 Truong Chinh Street, Thanh Xuan District, Ha Noi Capital.
+                                        <span>Địa chỉ: </span>
+                                    634 đường Trường Chinh, quận Thanh Xuân, Thành phố Hà Nội.
                                 </li>
                                     <li>
-                                        <span>Phone: </span>
+                                        <span>Số điện thoại: </span>
                                         <a href="#">0964886840</a>
                                     </li>
                                     <li>
@@ -89,34 +88,33 @@ function Footer(props) {
                             </div>
                                 <div className="col-lg-2 col-md-3 col-sm-6">
                                     <div className="footer-block">
-                                        <h3 className="footer-block-title">Clothes</h3>
+                                        <h3 className="footer-block-title">Quần áo</h3>
                                         <ul>
-                                            <li><a href="#">Prices drop</a></li>
-                                            <li><a href="#">New products</a></li>
-                                            <li><a href="#">Best sales</a></li>
-                                            <li><a href="#">Contact us</a></li>
+                                            <li><a href="#">Sản phẩm mới</a></li>
+                                            <li><a href="#">Giảm giá</a></li>
+                                            <li><a href="#">Liên hệ</a></li>
                                         </ul>
                                     </div>
                                 </div>
                             <div className="col-lg-2 col-md-3 col-sm-6">
                                 <div className="footer-block">
-                                    <h3 className="footer-block-title">Our store</h3>
+                                    <h3 className="footer-block-title">Cửa hàng của chúng tôi</h3>
                                         <ul>
-                                            <li><a href="#">Delivery</a></li>
-                                            <li><a href="#">Legal Notice</a></li>
+                                            <li><a href="#">Giao hàng</a></li>
+                                            <li><a href="#">Thông báo</a></li>
                                           
-                                            <li><a href="#">Contact us</a></li>
+                                            <li><a href="#">Liên hệ</a></li>
                                       </ul>
                                 </div>
                             </div>
                             <div className="col-lg-4">  
                                 <div className="footer-newsletter">
-                                    <h4>Sign up to newsletter</h4>
+                                    <h4>Đăng kí thành viên</h4>
                                     <form action="#" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" className="footer-subscribe-form validate" target="_blank">
                                         <div id="mc_embed_signup_scroll">
                                             <div id="mc-form" className="mc-form subscribe-form form-group" >
-                                                <input id="mc-email" type="email" autoComplete="off" placeholder="Enter your email" />
-                                                <button className="btn" id="mc-submit">Subscribe</button>
+                                                <input id="mc-email" type="email" autoComplete="off" placeholder="Nhập email" />
+                                                <button className="btn" id="mc-submit">Đăng kí</button>
                                             </div>
                                         </div>
                                     </form>
