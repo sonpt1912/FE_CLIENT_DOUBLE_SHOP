@@ -858,7 +858,7 @@ function Profile(props) {
                                             onChange={handlePageChange}
                                             onShowSizeChange={handlePageSizeChange}
                                             showSizeChanger
-                                            pageSizeOptions={['5', '10', '20', '50']}
+                                            pageSizeOptions={['6', '10', '20', '50']}
                                         />
                                     </div>
                                     {/* <Table
