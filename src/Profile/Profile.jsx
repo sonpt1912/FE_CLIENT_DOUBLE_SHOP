@@ -10,7 +10,7 @@ import TabPane from "antd/es/tabs/TabPane";
 import axios from "axios";
 
 const { Column } = Table;
-
+const { Search } = Input;
 Profile.propTypes = {
 
 };
@@ -361,28 +361,56 @@ function Profile(props) {
         try {
             const response = await axios.get(`http://localhost:8071/customer/get-all-address?id=${id}`, {
                 headers: {
-                    Authorization: `Bearer ${token}` // Truyền token qua tiêu đề Authorization
+                    Authorization: `Bearer ${token}`
                 }
             });
             console.log(response);
-            return response.data; // Trả về dữ liệu từ API
+            return response.data;
         } catch (error) {
             console.error('Error fetching addresses:', error);
-            return []; // Trả về một mảng rỗng trong trường hợp có lỗi
+            return [];
         }
     };
 
 
-    const [addresses, setAddresses] = useState([]); // State to store addresses fetched from API
+    const [addresses, setAddresses] = useState([]);
     console.log(id);
     useEffect(() => {
-        // Call API to fetch addresses when component mounts or when id changes
         fetchAddressesByIdCustomer(id)
             .then(data => setAddresses(data))
             .catch(error => console.error('Error fetching addresses:', error));
-    }, [id]); // Pass id as a dependency here
+    }, [id]);
     const [password1, set_password1] = useState('');
 
+    const [listVoucher, setListVoucher] = useState([])
+    useEffect(() => {
+        axios.post('http://localhost:8071/customer/get-voucher-by-user-login')
+            .then(response => {
+                setListVoucher(response.data);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    }, [listVoucher]);
+
+    const [pageSize, setPageSize] = useState(5);
+
+    const handlePageSizeChange = (current, newSize) => {
+        setPageSize(newSize);
+    };
+
+    const [searchText, setSearchText] = useState('');
+    const handleSearch = (value) => {
+        setSearchText(value);
+    };
+
+    const handleSearchChange = (e) => {
+        setSearchText(e.target.value);
+    };
+
+    const filteredVouchers = listVoucher.filter(voucher =>
+        voucher.code.toLowerCase().includes(searchText.toLowerCase())
+    );
 
     return (
         <div className="m-5 mt-5 pt-4" style={{ paddingBottom: '4rem' }}>
@@ -768,13 +796,29 @@ function Profile(props) {
                                     </div>
                                 </div>
                             ) : edit_status === "voucher" ? (
-                                <div className="voucher">
+                                <div className="voucher" style={{ width: "1300px" }}>
+                                    <Search
+                                        placeholder="Nhập từ khóa tìm kiếm"
+                                        style={{ margin: "10px", height: "40px", width: "300px" }}
+                                        onSearch={handleSearch}
+                                        onChange={handleSearchChange}
+                                    />
                                     <Table
-                                        style={{ margin: "10px" }}
+                                        style={{ marginLeft: "40px", marginTop: "20px" }}
                                         className="text-center"
-
+                                        dataSource={filteredVouchers}
+                                        // pagination={{
+                                        //     showTotal: (totalPages) => `Tổng: ${totalPages} `,
+                                        // }}
                                         pagination={{
-                                            showTotal: (totalPages) => `Số lượng Sản phẩm: ${totalPages} `,
+                                            showTotal: (totalPages) => `Tổng: ${totalPages} `,
+                                            pageSize: pageSize,
+                                            pageSizeOptions: ['5', '10', '20', '50'],
+                                            showSizeChanger: true,
+                                            onChange: handlePageSizeChange,
+                                        }}
+                                        scroll={{
+                                            y: 200,
                                         }}
                                     >
                                         <Column
@@ -785,23 +829,31 @@ function Profile(props) {
                                         />
                                         <Column
                                             title="Mã giảm giá"
-                                            dataIndex={['productCode']}
-                                            key="productCode"
+                                            dataIndex={['code']}
+                                            key="code"
                                         />
                                         <Column
                                             title="Giá trị giảm"
-                                            dataIndex={['productName']}
-                                            key="productName"
+                                            // dataIndex={['productName']}
+                                            key="discount"
+                                            render={(text, record) => {
+                                                if (record.discountAmount === 0) {
+                                                    return `${record.discountPercent}%`;
+                                                } else if (record.discountPercent === 0) {
+                                                    return `${record.discountAmount} VNĐ`;
+                                                }
+                                                return null;
+                                            }}
                                         />
                                         <Column
                                             title="Đơn tối thiểu"
-                                            dataIndex={['productName']}
-                                            key="productName"
+                                            dataIndex={['minimumOrder']}
+                                            key="minimumOrder"
                                         />
                                         <Column
                                             title="Ngày hết hạn"
-                                            dataIndex={['quantity']}
-                                            key="quantity"
+                                            dataIndex={['endDate']}
+                                            key="endDate"
                                         />
                                     </Table>
                                 </div>
