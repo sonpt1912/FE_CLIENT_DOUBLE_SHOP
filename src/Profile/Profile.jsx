@@ -10,7 +10,7 @@ import TabPane from "antd/es/tabs/TabPane";
 import axios from "axios";
 
 const { Column } = Table;
-
+const { Search } = Input;
 Profile.propTypes = {
 
 };
@@ -296,7 +296,7 @@ function Profile(props) {
             alert('Mật khẩu mới và mật khẩu nhập lại không khớp.');
             return;
         }
-    
+
         // Tạo đối tượng requestBody từ dữ liệu nhập liệu
         const requestBody = {
             password: password1,
@@ -321,16 +321,16 @@ function Profile(props) {
         try {
             // Gọi API để thay đổi mật khẩu
             const response = await axios.post('http://localhost:8071/customer/update-password', requestBody);
-    
+
             // Xử lý kết quả từ API nếu cần
             console.log(response);
-    
+
             // Hiển thị thông báo hoặc chuyển hướng trang sau khi thay đổi mật khẩu thành công
             alert('Mật khẩu đã được thay đổi thành công.');
         } catch (error) {
             // Xử lý lỗi nếu có
             console.error('Lỗi khi thay đổi mật khẩu:', error);
-    
+
             // Kiểm tra nếu mã lỗi là 403 và có thông tin lỗi từ máy chủ
             if (error.response && error.response.status === 403) {
                 // Hiển thị thông báo nếu mật khẩu cũ không chính xác
@@ -341,7 +341,7 @@ function Profile(props) {
             }
         }
     };
-    
+
 
     const [activeTab, setActiveTab] = useState("choXacNhan", "choGiaoHang", "giaoHang", "hoanThanh", "huy", "tra");
     const handleTabChange = (key) => {
@@ -361,28 +361,56 @@ function Profile(props) {
         try {
             const response = await axios.get(`http://localhost:8071/customer/get-all-address?id=${id}`, {
                 headers: {
-                    Authorization: `Bearer ${token}` // Truyền token qua tiêu đề Authorization
+                    Authorization: `Bearer ${token}`
                 }
             });
             console.log(response);
-            return response.data; // Trả về dữ liệu từ API
+            return response.data;
         } catch (error) {
             console.error('Error fetching addresses:', error);
-            return []; // Trả về một mảng rỗng trong trường hợp có lỗi
+            return [];
         }
     };
-    
 
-    const [addresses, setAddresses] = useState([]); // State to store addresses fetched from API
+
+    const [addresses, setAddresses] = useState([]);
     console.log(id);
     useEffect(() => {
-        // Call API to fetch addresses when component mounts or when id changes
         fetchAddressesByIdCustomer(id)
             .then(data => setAddresses(data))
             .catch(error => console.error('Error fetching addresses:', error));
-    }, [id]); // Pass id as a dependency here
+    }, [id]);
     const [password1, set_password1] = useState('');
 
+    const [listVoucher, setListVoucher] = useState([])
+    useEffect(() => {
+        axios.post('http://localhost:8071/customer/get-voucher-by-user-login')
+            .then(response => {
+                setListVoucher(response.data);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    }, [listVoucher]);
+
+    const [pageSize, setPageSize] = useState(5);
+
+    const handlePageSizeChange = (current, newSize) => {
+        setPageSize(newSize);
+    };
+
+    const [searchText, setSearchText] = useState('');
+    const handleSearch = (value) => {
+        setSearchText(value);
+    };
+
+    const handleSearchChange = (e) => {
+        setSearchText(e.target.value);
+    };
+
+    const filteredVouchers = listVoucher.filter(voucher =>
+        voucher.code.toLowerCase().includes(searchText.toLowerCase())
+    );
 
     return (
         <div className="m-5 mt-5 pt-4" style={{ paddingBottom: '4rem' }}>
@@ -402,6 +430,11 @@ function Profile(props) {
                             <a className={edit_status === 'dia_chi' ? 'a_setting_active' : ''}
                                 style={{ fontSize: '1.1rem' }}>Địa chỉ</a>
                         </div>
+                        <div className={edit_status === 'voucher' ? 'setting_item setting_item_active' : 'setting_item'}
+                            onClick={() => handler_Status('voucher')}>
+                            <a className={edit_status === 'voucher' ? 'a_setting_active' : ''}
+                                style={{ fontSize: '1.1rem' }}>Phiếu giảm giá</a>
+                        </div>
                         <div className={edit_status === 'lich_su' ? 'setting_item setting_item_active' : 'setting_item'}
                             onClick={() => handler_Status('lich_su')}>
                             <a className={edit_status === 'lich_su' ? 'a_setting_active' : ''}
@@ -411,11 +444,6 @@ function Profile(props) {
                             onClick={() => handler_Status('quen_mat_khau')}>
                             <a className={edit_status === 'quen_mat_khau' ? 'a_setting_active' : ''}
                                 style={{ fontSize: '1.1rem' }}>Đổi mật khẩu</a>
-                        </div>
-                        <div className={edit_status === 'voucher' ? 'setting_item setting_item_active' : 'setting_item'}
-                            onClick={() => handler_Status('voucher')}>
-                            <a className={edit_status === 'voucher' ? 'a_setting_active' : ''}
-                                style={{ fontSize: '1.1rem' }}>Phiếu giảm giá</a>
                         </div>
                         {/* <div className={edit_status === 'dang_xuat' ? 'setting_item setting_item_active' : 'setting_item'}
                             onClick={() => handler_Status('dang_xuat')}>
@@ -767,6 +795,68 @@ function Profile(props) {
                                         <button className="btn btn-secondary" onClick={handler_change}>Lưu</button>
                                     </div>
                                 </div>
+                            ) : edit_status === "voucher" ? (
+                                <div className="voucher" style={{ width: "1300px" }}>
+                                    <Search
+                                        placeholder="Nhập từ khóa tìm kiếm"
+                                        style={{ margin: "10px", height: "40px", width: "300px" }}
+                                        onSearch={handleSearch}
+                                        onChange={handleSearchChange}
+                                    />
+                                    <Table
+                                        style={{ marginLeft: "40px", marginTop: "20px" }}
+                                        className="text-center"
+                                        dataSource={filteredVouchers}
+                                        // pagination={{
+                                        //     showTotal: (totalPages) => `Tổng: ${totalPages} `,
+                                        // }}
+                                        pagination={{
+                                            showTotal: (totalPages) => `Tổng: ${totalPages} `,
+                                            pageSize: pageSize,
+                                            pageSizeOptions: ['5', '10', '20', '50'],
+                                            showSizeChanger: true,
+                                            onChange: handlePageSizeChange,
+                                        }}
+                                        scroll={{
+                                            y: 200,
+                                        }}
+                                    >
+                                        <Column
+                                            title="STT"
+                                            dataIndex="index"
+                                            key="index"
+                                            render={(text, record, index) => index + 1}
+                                        />
+                                        <Column
+                                            title="Mã giảm giá"
+                                            dataIndex={['code']}
+                                            key="code"
+                                        />
+                                        <Column
+                                            title="Giá trị giảm"
+                                            // dataIndex={['productName']}
+                                            key="discount"
+                                            render={(text, record) => {
+                                                if (record.discountAmount === 0) {
+                                                    return `${record.discountPercent}%`;
+                                                } else if (record.discountPercent === 0) {
+                                                    return `${record.discountAmount} VNĐ`;
+                                                }
+                                                return null;
+                                            }}
+                                        />
+                                        <Column
+                                            title="Đơn tối thiểu"
+                                            dataIndex={['minimumOrder']}
+                                            key="minimumOrder"
+                                        />
+                                        <Column
+                                            title="Ngày hết hạn"
+                                            dataIndex={['endDate']}
+                                            key="endDate"
+                                        />
+                                    </Table>
+                                </div>
                             ) : (
                                 <div style={{ border: '1px solid white', padding: '15px', height: "400px", overflow: "auto" }}>
                                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
@@ -931,7 +1021,7 @@ function Profile(props) {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
 
