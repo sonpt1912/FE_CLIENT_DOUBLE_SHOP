@@ -827,7 +827,7 @@ function Profile(props) {
                                                         border: '1px solid #ccc',
                                                         padding: '10px',
                                                         marginBottom: '10px',
-                                                        backgroundColor: '#87b9e9',
+                                                        backgroundColor: '#B0E2FF',
                                                         borderRadius: '5px',
                                                         boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.1)',
                                                         position: 'relative',
