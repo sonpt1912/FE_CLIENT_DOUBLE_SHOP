@@ -296,7 +296,7 @@ function Profile(props) {
             alert('Mật khẩu mới và mật khẩu nhập lại không khớp.');
             return;
         }
-    
+
         // Tạo đối tượng requestBody từ dữ liệu nhập liệu
         const requestBody = {
             password: password1,
@@ -321,16 +321,16 @@ function Profile(props) {
         try {
             // Gọi API để thay đổi mật khẩu
             const response = await axios.post('http://localhost:8071/customer/update-password', requestBody);
-    
+
             // Xử lý kết quả từ API nếu cần
             console.log(response);
-    
+
             // Hiển thị thông báo hoặc chuyển hướng trang sau khi thay đổi mật khẩu thành công
             alert('Mật khẩu đã được thay đổi thành công.');
         } catch (error) {
             // Xử lý lỗi nếu có
             console.error('Lỗi khi thay đổi mật khẩu:', error);
-    
+
             // Kiểm tra nếu mã lỗi là 403 và có thông tin lỗi từ máy chủ
             if (error.response && error.response.status === 403) {
                 // Hiển thị thông báo nếu mật khẩu cũ không chính xác
@@ -341,7 +341,7 @@ function Profile(props) {
             }
         }
     };
-    
+
 
     const [activeTab, setActiveTab] = useState("choXacNhan", "choGiaoHang", "giaoHang", "hoanThanh", "huy", "tra");
     const handleTabChange = (key) => {
@@ -371,7 +371,7 @@ function Profile(props) {
             return []; // Trả về một mảng rỗng trong trường hợp có lỗi
         }
     };
-    
+
 
     const [addresses, setAddresses] = useState([]); // State to store addresses fetched from API
     console.log(id);
@@ -402,6 +402,11 @@ function Profile(props) {
                             <a className={edit_status === 'dia_chi' ? 'a_setting_active' : ''}
                                 style={{ fontSize: '1.1rem' }}>Địa chỉ</a>
                         </div>
+                        <div className={edit_status === 'voucher' ? 'setting_item setting_item_active' : 'setting_item'}
+                            onClick={() => handler_Status('voucher')}>
+                            <a className={edit_status === 'voucher' ? 'a_setting_active' : ''}
+                                style={{ fontSize: '1.1rem' }}>Phiếu giảm giá</a>
+                        </div>
                         <div className={edit_status === 'lich_su' ? 'setting_item setting_item_active' : 'setting_item'}
                             onClick={() => handler_Status('lich_su')}>
                             <a className={edit_status === 'lich_su' ? 'a_setting_active' : ''}
@@ -411,11 +416,6 @@ function Profile(props) {
                             onClick={() => handler_Status('quen_mat_khau')}>
                             <a className={edit_status === 'quen_mat_khau' ? 'a_setting_active' : ''}
                                 style={{ fontSize: '1.1rem' }}>Đổi mật khẩu</a>
-                        </div>
-                        <div className={edit_status === 'voucher' ? 'setting_item setting_item_active' : 'setting_item'}
-                            onClick={() => handler_Status('voucher')}>
-                            <a className={edit_status === 'voucher' ? 'a_setting_active' : ''}
-                                style={{ fontSize: '1.1rem' }}>Phiếu giảm giá</a>
                         </div>
                         {/* <div className={edit_status === 'dang_xuat' ? 'setting_item setting_item_active' : 'setting_item'}
                             onClick={() => handler_Status('dang_xuat')}>
@@ -767,6 +767,44 @@ function Profile(props) {
                                         <button className="btn btn-secondary" onClick={handler_change}>Lưu</button>
                                     </div>
                                 </div>
+                            ) : edit_status === "voucher" ? (
+                                <div className="voucher">
+                                    <Table
+                                        style={{ margin: "10px" }}
+                                        className="text-center"
+
+                                        pagination={{
+                                            showTotal: (totalPages) => `Số lượng Sản phẩm: ${totalPages} `,
+                                        }}
+                                    >
+                                        <Column
+                                            title="STT"
+                                            dataIndex="index"
+                                            key="index"
+                                            render={(text, record, index) => index + 1}
+                                        />
+                                        <Column
+                                            title="Mã giảm giá"
+                                            dataIndex={['productCode']}
+                                            key="productCode"
+                                        />
+                                        <Column
+                                            title="Giá trị giảm"
+                                            dataIndex={['productName']}
+                                            key="productName"
+                                        />
+                                        <Column
+                                            title="Đơn tối thiểu"
+                                            dataIndex={['productName']}
+                                            key="productName"
+                                        />
+                                        <Column
+                                            title="Ngày hết hạn"
+                                            dataIndex={['quantity']}
+                                            key="quantity"
+                                        />
+                                    </Table>
+                                </div>
                             ) : (
                                 <div style={{ border: '1px solid white', padding: '15px', height: "400px", overflow: "auto" }}>
                                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
@@ -931,7 +969,7 @@ function Profile(props) {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
 
