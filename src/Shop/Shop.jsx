@@ -4,9 +4,11 @@ import queryString from 'query-string'
 import Product from '../API/Product';
 import { Link, useParams } from 'react-router-dom';
 import Products from './Component/Products';
-import Pagination from './Component/Pagination';
+import { Pagination } from 'antd';
+
 import Search from './Component/Search';
 import axios from 'axios';
+import { PiNewspaperDuotone } from 'react-icons/pi';
 Shop.propTypes = {
 
 };
@@ -16,6 +18,7 @@ function Shop(props) {
     const { id } = useParams()
 
     const [products, setProducts] = useState([])
+    const [totalRecord, setTotalRecord] = useState(0);
 
     //Tổng số trang
     const [totalPage, setTotalPage] = useState()
@@ -23,102 +26,42 @@ function Shop(props) {
     //Từng trang hiện tại
     const [pagination, setPagination] = useState({
         page: '1',
-        pageSize: '9',
+        pageSize: '5',
         search: '',
         category: id
     })
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(9);
+    const [pageSize, setPageSize] = useState(5);
 
     //Hàm này dùng để thay đổi state pagination.page
     //Nó sẽ truyền xuống Component con và nhận dữ liệu từ Component con truyền lên
-    const handlerChangePage = async (value) => {
-        // Kiểm tra xem giá trị mới có phải là một số nguyên không
-        const newPageSize = calculatePageSize(value);
+    const handleChangePage = (pageNumber, newPageSize) => {
+        console.log(pageNumber);
+        setCurrentPage(pageNumber);
 
-        // Cập nhật trạng thái của phân trang
-        setPagination(prevPagination => ({
-            ...prevPagination,
-            page: value,
-
-        }));
-        try {
-            setLoading(true)
-            const requestBody = { page: value - 1, pageSize: newPageSize, idBrand: selectedBrand, idCategory: selectedCategory, idCollar: selectedCollar, idMaterial: selectedMaterial }; // Sử dụng pageSize mới
-            console.log(requestBody);
-            const response = await Product.Get_All_Product(requestBody);
-            console.log(response);
-
-            setProducts(response.listData);
-            // setTotalRecord(response.totalRecord);
-            setTotalPage(Math.ceil(response.totalRecord / pagination.pageSize));
-            setPageSize(pagination.pageSize);
-            setCurrentPage(value)
-        } catch (error) {
-            console.error('Lỗi khi tải sản phẩm:', error);
-        } finally {
-            setLoading(false); // Đặt trạng thái loading là false khi kết thúc gọi API
-        }
-        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
-    const calculatePageSize = (currentPage) => {
-        // Nếu chuyển về trang đầu tiên, đặt lại pageSize về 9
-        // if (currentPage === 1) {
-        //     return 9;
-        // } else {
-        // Tính toán số lượng phần tử cần hiển thị trong trang hiện tại
-        const startIndex = (currentPage - 1) * pageSize;
-        const remainingItems = totalRecord - startIndex;
-        return Math.min(pageSize, remainingItems);
-        // }
-    };
+   
 
     const [loading, setLoading] = useState(false);
-    useEffect(() => {
-        // setPagination(prevPagination => ({
-        //     ...prevPagination,
-        //     page: '1'
-        // }));
-        // handlerChangePage(1);
-        fetchData();
-    }, []);
 
     const [images, setImages] = useState([]);
 
-    const fetchData = async () => {
-        try {
-            setLoading(true);
-            const requestBody = { page: currentPage - 1, pageSize };
-            console.log(requestBody);
-            const response = await Product.Get_All_Product(requestBody);
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [brand, setBrand] = useState([]);
+    const [selectedBrand, setSelectedBrand] = useState('');
+    const [color, setColor] = useState([]);
+    const [collar, setCollar] = useState([]);
+    const [selectedCollar, setSelectedcollar] = useState('');
+    const [material, setMaterial] = useState([]);
+    const [selectedMaterial, setSelectedMaterial] = useState('');
+    const [size, setSize] = useState([]);
 
-
-            // Trích xuất danh sách URL hình ảnh từ phản hồi
-
-
-
-            // Cập nhật trạng thái dựa trên phản hồi
-            setProducts(response.listData);
-            setTotalRecord(response.totalRecord);
-            setTotalPage(Math.ceil(response.totalRecord / pagination.pageSize)); // Phép tính đã được sửa
-        } catch (error) {
-            // Xử lý lỗi
-            console.error('Lỗi khi tải sản phẩm:', error);
-            // Tuỳ chọn, bạn có thể cập nhật trạng thái để biểu thị lỗi
-            // setProducts([]);
-            // setTotalRecord(0);
-            // setTotalPage(0);
-        } finally {
-            setLoading(false); // Đặt trạng thái loading là false khi kết thúc gọi API
-        }
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
 
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber); // Cập nhật trang hiện tại khi chuyển trang
     };
-    const [totalRecord, setTotalRecord] = useState(0);
 
     // useEffect(() => {
 
@@ -248,12 +191,42 @@ function Shop(props) {
         finally {
             setLoading(false); // Đặt trạng thái loading là false khi kết thúc gọi API
         }
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 100, behavior: 'smooth' });
     };
+    const handleCategoryChange = (value) => {
+        setSelectedCategory(value);
+        // Thực hiện các hành động khác khi loại sản phẩm được chọn thay đổi
+    };
+    const handleBrandChange = (value) => {
+        // Thực hiện các hành động khi danh mục được chọn thay đổi, ví dụ: đổi route, gọi API để lấy sản phẩm, v.v.
+        setSelectedBrand(value);
+        // Thực hiện các hành động khác tại đây
+    }
+    const handleMaterialChange = (value) => {
+        // Thực hiện các hành động khi danh mục được chọn thay đổi, ví dụ: đổi route, gọi API để lấy sản phẩm, v.v.
+        setSelectedMaterial(value);
+        // Thực hiện các hành động khác tại đây
+    }
+    const handleCollarChange = (value) => {
+        // Thực hiện các hành động khi danh mục được chọn thay đổi, ví dụ: đổi route, gọi API để lấy sản phẩm, v.v.
+        setSelectedcollar(value);
+        // Thực hiện các hành động khác tại đây
+    }
+    const [selectedColor, setSelectedColor] = useState('');
+    const handleColorChange = (value) => {
 
+        setSelectedColor(value);
+
+    };
+    const [selectedSize, setSelectedSize] = useState('');
+    const handleSizeChange = (value) => {
+        setSelectedSize(value);
+
+    };
+    useEffect(() => {
+        handler_Search();
+    }, [selectedBrand, selectedMaterial, selectedCategory, selectedCollar, selectedColor, selectedSize]);
     const handler_Search = async () => {
-
-
         try {
             setLoading(true)
             const requestBody = {
@@ -265,40 +238,31 @@ function Shop(props) {
                 idSize: selectedSize,
                 page: 0,
                 // pagination.page - 1,
-                pageSize: 9
+                pageSize: 5
                 //  pagination.pageSize,
 
             };
             console.log(requestBody)
             const response = await fetchProductsFromApi(requestBody);
             console.log(response);
-            setPagination(prevPagination => ({
-                ...prevPagination,
-                page: 1,
+            // setPagination(prevPagination => ({
+            //     ...prevPagination,
+            //     page: 1,
 
-            }));
+            // }));
             setProducts(response.listData);
-            setPageSize(pagination.pageSize)
+            // setPageSize(pagination.pageSize)
             setTotalRecord(response.totalRecord);
-            setTotalPage(Math.ceil(response.totalRecord / pagination.pageSize));
+            setTotalPage(Math.ceil(response.totalRecord / 5));
         } catch (error) {
             console.error('Error searching products:', error);
         }
         finally {
             setLoading(false); // Đặt trạng thái loading là false khi kết thúc gọi API
         }
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 100, behavior: 'smooth' });
     };
-    const [categories, setCategories] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState('');
-    const [brand, setBrand] = useState([]);
-    const [selectedBrand, setSelectedBrand] = useState('');
-    const [color, setColor] = useState([]);
-    const [collar, setCollar] = useState([]);
-    const [selectedCollar, setSelectedcollar] = useState('');
-    const [material, setMaterial] = useState([]);
-    const [selectedMaterial, setSelectedMaterial] = useState('');
-    const [size, setSize] = useState([]);
+    
     useEffect(() => {
         const apiCalls = [
             fetchCategoriesFromApi(),
@@ -383,41 +347,54 @@ function Shop(props) {
             return [];
         }
     };
-    const handleCategoryChange = (value) => {
-        setSelectedCategory(value);
-        // Thực hiện các hành động khác khi loại sản phẩm được chọn thay đổi
-    };
-    const handleBrandChange = (value) => {
-        // Thực hiện các hành động khi danh mục được chọn thay đổi, ví dụ: đổi route, gọi API để lấy sản phẩm, v.v.
-        setSelectedBrand(value);
-        // Thực hiện các hành động khác tại đây
-    }
-    const handleMaterialChange = (value) => {
-        // Thực hiện các hành động khi danh mục được chọn thay đổi, ví dụ: đổi route, gọi API để lấy sản phẩm, v.v.
-        setSelectedMaterial(value);
-        // Thực hiện các hành động khác tại đây
-    }
-    const handleCollarChange = (value) => {
-        // Thực hiện các hành động khi danh mục được chọn thay đổi, ví dụ: đổi route, gọi API để lấy sản phẩm, v.v.
-        setSelectedcollar(value);
-        // Thực hiện các hành động khác tại đây
-    }
-    const [selectedColor, setSelectedColor] = useState('');
-    const handleColorChange = (value) => {
-
-        setSelectedColor(value);
-
-    };
-    const [selectedSize, setSelectedSize] = useState('');
-    const handleSizeChange = (value) => {
-        setSelectedSize(value);
-
-    };
 
     useEffect(() => {
-        handler_Search(); // Call handler_Search function
-    }, [selectedBrand, selectedCategory, selectedMaterial, selectedCollar, selectedColor, selectedSize]);
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                // const calculatedPageSize = calculatePageSize(currentPage, totalRecord);
+                const requestBody = { page: currentPage - 1, pageSize: 5 };
+                console.log(requestBody);
 
+                const response = await Product.Get_All_Product(requestBody);
+
+                console.log(response);
+                const newData = response.listData;
+                console.log(newData);
+
+                // Kiểm tra dữ liệu mới và cũ
+                console.log("products trước khi set:", products);
+                console.log("newData:", newData);
+
+                // setTotalRecord(response.totalRecord);
+                console.log(newData.length); // Đảm bảo newData có đúng 4 phần tử
+                setProducts(newData)
+                // Kiểm tra dữ liệu sau khi set
+                console.log("products sau khi set:", newData);
+            } catch (error) {
+                console.error('Lỗi khi tải dữ liệu:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+
+    }, [pageSize, currentPage]);
+  
+
+    // useEffect(() => {
+    //     handler_Search();
+    // }, [selectedBrand, selectedCategory, selectedMaterial, selectedCollar, selectedColor, selectedSize]);
+    const handleChangePage1 = (pagination) => {
+        const { current, pageSize } = pagination;
+        setCurrentPage(current);
+    };
+    const getVisibleProducts = () => {
+        const startIndex = (currentPage - 1) * pageSize;
+        const endIndex = startIndex + pageSize;
+        return products.slice(startIndex, endIndex);
+    };
     return (
 
         <div >
@@ -441,7 +418,7 @@ function Shop(props) {
                     <div className="row">
                         <div className="col-lg-3 order-lg-1 order-2">
                             <div className="li-blog-sidebar-wrapper">
-                              
+
 
                                 <div className="li-blog-sidebar pt-25">
 
@@ -615,7 +592,7 @@ function Shop(props) {
                                     </div>
                                 </div> */}
 
-                              
+
                             </div>
                         </div>
                         <div className="col-lg-9 order-1 order-lg-2">
@@ -627,7 +604,7 @@ function Shop(props) {
                                     </div>
                                 </div>
                             </div>
-                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingTop: '10px',paddingBottom:"10px" }}>
+                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingTop: '10px', paddingBottom: "10px" }}>
                                 {loading && <div className="loading-spinner"></div>}
                             </div>
 
@@ -636,7 +613,7 @@ function Shop(props) {
                                     <div id="grid-view" className="tab-pane active" role="tabpanel">
                                         <div className="product-area shop-product-area">
                                             <div className="row">
-                                            {products.map(product => (
+                                                {products.map(product => (
                                                     <div className="col-lg-4 col-md-6" key={product.id}>
                                                         <div className="single-product-wrap">
                                                             <div className="product-image">
@@ -644,7 +621,7 @@ function Shop(props) {
                                                                     {product.listImages && product.listImages.resources.length > 0 ? (
                                                                         <img src={product.listImages.resources[0].url} alt={product.name} />
                                                                     ) : (
-                                                                        <div style={{width:"100%",backgroundColor: '#f0f0f0',height:"250px"}} />
+                                                                        <div style={{ width: "100%", backgroundColor: '#f0f0f0', height: "250px" }} />
                                                                     )}
                                                                 </Link>
                                                             </div>
@@ -653,19 +630,19 @@ function Shop(props) {
                                                                 <div className="product-details">
                                                                     <div className="detail">
                                                                         <span>Thương hiệu : </span>
-                                                                        <span> {product.brand.name}</span>
+                                                                        <span>{product.brand.name}</span>
                                                                     </div>
                                                                     <div className="detail">
                                                                         <span>Loại sản phẩm : </span>
-                                                                        <span> {product.category.name}</span>
+                                                                        <span>{product.category.name}</span>
                                                                     </div>
                                                                     <div className="detail">
                                                                         <span>Chất liệu : </span>
-                                                                        <span> {product.material.name}</span>
+                                                                        <span>{product.material.name}</span>
                                                                     </div>
                                                                     <div className="detail" style={{ marginBottom: '10px' }}>
                                                                         <span>Cổ áo : </span>
-                                                                        <span> {product.collar.name}</span>
+                                                                        <span>{product.collar.name}</span>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -675,43 +652,25 @@ function Shop(props) {
                                             </div>
                                         </div>
                                     </div>
-                                    
-                                    <div className="pagination-area" style={{paddingTop:'50px'}}>
-                                        <div className="row">
-                                            <div className="col-lg-6 col-md-6">
-                                                <p>Tổng số sản phẩm: {totalRecord}</p>
-                                            </div>
-                                            <div className="col-lg-6 col-md-6">
-                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-                                                    {Array.from({ length: totalPage }, (_, index) => (
-                                                        <button
-                                                            key={index}
-                                                            onClick={() => handlerChangePage(index + 1)}
-                                                            className={pagination.page === index + 1 ? "pagination-button current-page" : "pagination-button"}
-                                                        >
-                                                            {index + 1}
-                                                        </button>
-                                                    ))}
-                                                    {totalPage > 1 && ( // Chỉ hiển thị input khi có nhiều hơn 1 trang
-                                                        <React.Fragment>
-                                                            <span style={{ marginRight: '10px' }}>Trang: </span>
-                                                            <input
-                                                                type="number"
-                                                                value={pagination.page}
-                                                                onChange={(e) => {
-                                                                    const pageNumber = parseInt(e.target.value);
-                                                                    if (!isNaN(pageNumber) && pageNumber >= 1 && pageNumber <= totalPage) {
-                                                                        handlerChangePage(pageNumber);
-                                                                    }
-                                                                }}
-                                                                style={{ width: '50px' }}
-                                                            />
-                                                        </React.Fragment>
-                                                    )}
-                                                </div>
-                                            </div>
+
+                                    <div className="pagination-area" style={{ paddingTop: '50px' }}>
+                                        <div className="row justify-content-center"> {/* Thêm justify-content-center để căn giữa phân trang */}
+                                            
+                                                <Pagination 
+                                                    
+                                                    // Trừ đi 1 vì currentPage là index của trang (bắt đầu từ 1), trong khi totalPages được tính từ 0
+                                                    current={currentPage}
+                                                    pageSize={pageSize}
+                                                    total={totalRecord}
+                                                    onChange={handleChangePage}
+                                                    showQuickJumper
+                                                    showTotal={(totalRecord) => `Tổng ${totalRecord} sản phẩm`}
+                                                    // Hiển thị số trang hiện tại và tổng số trang
+                                                />
+                                            
                                         </div>
                                     </div>
+
 
 
 
