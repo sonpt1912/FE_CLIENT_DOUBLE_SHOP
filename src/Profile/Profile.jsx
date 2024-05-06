@@ -391,7 +391,7 @@ function Profile(props) {
             .catch(error => {
                 console.error('Error fetching data:', error);
             });
-    }, [listVoucher]);
+    }, []);
 
     const [pageSize, setPageSize] = useState(5);
 
@@ -796,9 +796,9 @@ function Profile(props) {
                                     </div>
                                 </div>
                             ) : edit_status === "voucher" ? (
-                                <div className="voucher" style={{ width: "1300px" }}>
+                                <div className="voucher" style={{ width: "1000px" }}>
                                     <Search
-                                        placeholder="Nhập từ khóa tìm kiếm"
+                                        placeholder="Tìm kiếm theo mã voucher"
                                         style={{ margin: "10px", height: "40px", width: "300px" }}
                                         onSearch={handleSearch}
                                         onChange={handleSearchChange}
