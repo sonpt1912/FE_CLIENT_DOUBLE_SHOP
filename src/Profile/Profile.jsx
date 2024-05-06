@@ -5,7 +5,7 @@ import avt from './avt.jpg'
 import User from '../API/User';
 import { addSession } from '../Redux/Action/ActionSession';
 import { useDispatch } from 'react-redux';
-import { Table, Tabs, Button, Modal, Input, Select, Form } from 'antd';
+import { Table, Tabs, Button, Modal, Input, Select, Form, Row, Col, Pagination } from 'antd';
 import TabPane from "antd/es/tabs/TabPane";
 import axios from "axios";
 
@@ -393,12 +393,11 @@ function Profile(props) {
             });
     }, []);
 
-    const [pageSize, setPageSize] = useState(5);
-
-    const handlePageSizeChange = (current, newSize) => {
-        setPageSize(newSize);
-    };
-
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(6);
+    // const handlePageSizeChange = (current, newSize) => {
+    //     setPageSize(newSize);
+    // };
     const [searchText, setSearchText] = useState('');
     const handleSearch = (value) => {
         setSearchText(value);
@@ -412,6 +411,23 @@ function Profile(props) {
         voucher.code.toLowerCase().includes(searchText.toLowerCase())
     );
 
+    const formatCurrency = (value) => {
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    };
+
+    const itemsPerPage = pageSize;
+
+    const totalPages = Math.ceil(filteredVouchers.length / itemsPerPage);
+    const slicedVouchers = filteredVouchers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
+
+    const handlePageSizeChange = (current, size) => {
+        setCurrentPage(1); // Reset trang về trang đầu tiên khi thay đổi kích thước của trang
+        setPageSize(size);
+    };
     return (
         <div className="m-5 mt-5 pt-4" style={{ paddingBottom: '4rem' }}>
 
@@ -800,10 +816,52 @@ function Profile(props) {
                                     <Search
                                         placeholder="Tìm kiếm theo mã voucher"
                                         style={{ margin: "10px", height: "40px", width: "300px" }}
-                                        onSearch={handleSearch}
                                         onChange={handleSearchChange}
                                     />
-                                    <Table
+                                    <div>
+                                        <Row style={{ border: '1px solid while', padding: '15px', height: "280px", overflow: "auto" }}>
+                                            {slicedVouchers.map(i => (
+                                                <Col span={12}>
+                                                    <div style={{
+                                                        margin: '10px',
+                                                        border: '1px solid #ccc',
+                                                        padding: '10px',
+                                                        marginBottom: '10px',
+                                                        backgroundColor: '#87b9e9',
+                                                        borderRadius: '5px',
+                                                        boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.1)',
+                                                        position: 'relative',
+                                                    }}>
+                                                        <Row>
+                                                            <Col span={8}>Mã giảm giá {i.code}</Col>
+                                                            <Col span={16}>
+                                                                Giảm giá {i.discountAmount === 0 ? i.discountPercent + "%" : formatCurrency(i.discountAmount)} cho hóa đơn tối thiểu {formatCurrency(i.minimumOrder)}
+                                                            </Col>
+                                                        </Row>
+                                                        <div style={{
+                                                            position: 'absolute', // Sử dụng absolute position để đặt endDate
+                                                            bottom: '5px',
+                                                            right: '10px',
+                                                            fontStyle: 'italic'
+                                                        }}>
+                                                            HSD: {i.endDate}
+                                                        </div>
+                                                    </div>
+                                                </Col>
+                                            ))}
+                                        </Row>
+                                        <Pagination
+                                            style={{ textAlign: 'center', marginTop: '10px' }}
+                                            current={currentPage}
+                                            total={listVoucher.length}
+                                            pageSize={pageSize}
+                                            onChange={handlePageChange}
+                                            onShowSizeChange={handlePageSizeChange}
+                                            showSizeChanger
+                                            pageSizeOptions={['5', '10', '20', '50']}
+                                        />
+                                    </div>
+                                    {/* <Table
                                         style={{ marginLeft: "40px", marginTop: "20px" }}
                                         className="text-center"
                                         dataSource={filteredVouchers}
@@ -855,7 +913,7 @@ function Profile(props) {
                                             dataIndex={['endDate']}
                                             key="endDate"
                                         />
-                                    </Table>
+                                    </Table> */}
                                 </div>
                             ) : (
                                 <div style={{ border: '1px solid white', padding: '15px', height: "400px", overflow: "auto" }}>
