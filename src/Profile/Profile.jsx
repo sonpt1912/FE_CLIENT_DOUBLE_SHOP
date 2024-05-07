@@ -859,6 +859,7 @@ function Profile(props) {
                                             onShowSizeChange={handlePageSizeChange}
                                             showSizeChanger
                                             pageSizeOptions={['6', '10', '20', '50']}
+                                            showTotal={(record) => `Tổng: ${record}`}
                                         />
                                     </div>
                                     {/* <Table
