@@ -862,59 +862,6 @@ function Profile(props) {
                                             showTotal={(record) => `Tổng: ${record}`}
                                         />
                                     </div>
-                                    {/* <Table
-                                        style={{ marginLeft: "40px", marginTop: "20px" }}
-                                        className="text-center"
-                                        dataSource={filteredVouchers}
-                                        // pagination={{
-                                        //     showTotal: (totalPages) => `Tổng: ${totalPages} `,
-                                        // }}
-                                        pagination={{
-                                            showTotal: (totalPages) => `Tổng: ${totalPages} `,
-                                            pageSize: pageSize,
-                                            pageSizeOptions: ['5', '10', '20', '50'],
-                                            showSizeChanger: true,
-                                            onChange: handlePageSizeChange,
-                                        }}
-                                        scroll={{
-                                            y: 200,
-                                        }}
-                                    >
-                                        <Column
-                                            title="STT"
-                                            dataIndex="index"
-                                            key="index"
-                                            render={(text, record, index) => index + 1}
-                                        />
-                                        <Column
-                                            title="Mã giảm giá"
-                                            dataIndex={['code']}
-                                            key="code"
-                                        />
-                                        <Column
-                                            title="Giá trị giảm"
-                                            // dataIndex={['productName']}
-                                            key="discount"
-                                            render={(text, record) => {
-                                                if (record.discountAmount === 0) {
-                                                    return `${record.discountPercent}%`;
-                                                } else if (record.discountPercent === 0) {
-                                                    return `${record.discountAmount} VNĐ`;
-                                                }
-                                                return null;
-                                            }}
-                                        />
-                                        <Column
-                                            title="Đơn tối thiểu"
-                                            dataIndex={['minimumOrder']}
-                                            key="minimumOrder"
-                                        />
-                                        <Column
-                                            title="Ngày hết hạn"
-                                            dataIndex={['endDate']}
-                                            key="endDate"
-                                        />
-                                    </Table> */}
                                 </div>
                             ) : (
                                 <div style={{ border: '1px solid white', padding: '15px', height: "400px", overflow: "auto" }}>
