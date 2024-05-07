@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import { Table, Tabs, Button, Modal, Input, Select, Form, Row, Col, Pagination } from 'antd';
 import TabPane from "antd/es/tabs/TabPane";
 import axios from "axios";
+import { SearchOutlined } from '@ant-design/icons';
 
 const { Column } = Table;
 const { Search } = Input;
@@ -813,10 +814,12 @@ function Profile(props) {
                                 </div>
                             ) : edit_status === "voucher" ? (
                                 <div className="voucher" style={{ width: "1000px" }}>
-                                    <Search
+                                    <Input
                                         placeholder="Tìm kiếm theo mã voucher"
-                                        style={{ margin: "10px", height: "40px", width: "300px" }}
+                                        style={{ margin: "10px", height: "55px", width: "300px"}}
                                         onChange={handleSearchChange}
+                                        prefix={<SearchOutlined/>}
+                                        
                                     />
                                     <div>
                                         <Row style={{ border: '1px solid while', padding: '15px', height: "280px", overflow: "auto" }}>
@@ -851,7 +854,8 @@ function Profile(props) {
                                             ))}
                                         </Row>
                                         <Pagination
-                                            style={{ textAlign: 'center', marginTop: '10px' }}
+                                            style={{ textAlign: 'center', marginTop: '10px', margin: "5px" }}
+                                            size='small'
                                             current={currentPage}
                                             total={listVoucher.length}
                                             pageSize={pageSize}
