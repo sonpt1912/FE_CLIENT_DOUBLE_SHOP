@@ -5,10 +5,17 @@ import avt from './avt.jpg'
 import User from '../API/User';
 import { addSession } from '../Redux/Action/ActionSession';
 import { useDispatch } from 'react-redux';
+<<<<<<< HEAD
 import { Table, Tabs, Button, Modal, Input, Select, Form, Popconfirm, message } from 'antd';
 import TabPane from "antd/es/tabs/TabPane";
 import axios from "axios";
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+=======
+import { Table, Tabs, Button, Modal, Input, Select, Form, Row, Col, Pagination } from 'antd';
+import TabPane from "antd/es/tabs/TabPane";
+import axios from "axios";
+import { SearchOutlined } from '@ant-design/icons';
+>>>>>>> efa4d46bce48228cf5c967783a197372c3f87ff3
 
 const { Column } = Table;
 const { Search } = Input;
@@ -733,12 +740,11 @@ function Profile(props) {
             });
     }, []);
 
-    const [pageSize, setPageSize] = useState(5);
-
-    const handlePageSizeChange = (current, newSize) => {
-        setPageSize(newSize);
-    };
-
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(6);
+    // const handlePageSizeChange = (current, newSize) => {
+    //     setPageSize(newSize);
+    // };
     const [searchText, setSearchText] = useState('');
     const handleSearch = (value) => {
         setSearchText(value);
@@ -783,6 +789,23 @@ function Profile(props) {
         }
     };
 
+    const formatCurrency = (value) => {
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    };
+
+    const itemsPerPage = pageSize;
+
+    const totalPages = Math.ceil(filteredVouchers.length / itemsPerPage);
+    const slicedVouchers = filteredVouchers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
+
+    const handlePageSizeChange = (current, size) => {
+        setCurrentPage(1); // Reset trang về trang đầu tiên khi thay đổi kích thước của trang
+        setPageSize(size);
+    };
     return (
         <div className="m-5 mt-5 pt-4" style={{ paddingBottom: '4rem' }}>
 
@@ -1202,65 +1225,58 @@ function Profile(props) {
                                 </div>
                             ) : edit_status === "voucher" ? (
                                 <div className="voucher" style={{ width: "1000px" }}>
-                                    <Search
+                                    <Input
                                         placeholder="Tìm kiếm theo mã voucher"
-                                        style={{ margin: "10px", height: "40px", width: "300px" }}
-                                        onSearch={handleSearch}
+                                        style={{ margin: "10px", height: "55px", width: "300px"}}
                                         onChange={handleSearchChange}
+                                        prefix={<SearchOutlined/>}
+                                        
                                     />
-                                    <Table
-                                        style={{ marginLeft: "40px", marginTop: "20px" }}
-                                        className="text-center"
-                                        dataSource={filteredVouchers}
-                                        // pagination={{
-                                        //     showTotal: (totalPages) => `Tổng: ${totalPages} `,
-                                        // }}
-                                        pagination={{
-                                            showTotal: (totalPages) => `Tổng: ${totalPages} `,
-                                            pageSize: pageSize,
-                                            pageSizeOptions: ['5', '10', '20', '50'],
-                                            showSizeChanger: true,
-                                            onChange: handlePageSizeChange,
-                                        }}
-                                        scroll={{
-                                            y: 200,
-                                        }}
-                                    >
-                                        <Column
-                                            title="STT"
-                                            dataIndex="index"
-                                            key="index"
-                                            render={(text, record, index) => index + 1}
+                                    <div>
+                                        <Row style={{ border: '1px solid while', padding: '15px', height: "280px", overflow: "auto" }}>
+                                            {slicedVouchers.map(i => (
+                                                <Col span={12}>
+                                                    <div style={{
+                                                        margin: '10px',
+                                                        border: '1px solid #ccc',
+                                                        padding: '10px',
+                                                        marginBottom: '10px',
+                                                        backgroundColor: '#B0E2FF',
+                                                        borderRadius: '5px',
+                                                        boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.1)',
+                                                        position: 'relative',
+                                                    }}>
+                                                        <Row>
+                                                            <Col span={8}>Mã giảm giá {i.code}</Col>
+                                                            <Col span={16}>
+                                                                Giảm giá {i.discountAmount === 0 ? i.discountPercent + "%" : formatCurrency(i.discountAmount)} cho hóa đơn tối thiểu {formatCurrency(i.minimumOrder)}
+                                                            </Col>
+                                                        </Row>
+                                                        <div style={{
+                                                            position: 'absolute', // Sử dụng absolute position để đặt endDate
+                                                            bottom: '5px',
+                                                            right: '10px',
+                                                            fontStyle: 'italic'
+                                                        }}>
+                                                            HSD: {i.endDate}
+                                                        </div>
+                                                    </div>
+                                                </Col>
+                                            ))}
+                                        </Row>
+                                        <Pagination
+                                            style={{ textAlign: 'center', marginTop: '10px', margin: "5px" }}
+                                            size='small'
+                                            current={currentPage}
+                                            total={listVoucher.length}
+                                            pageSize={pageSize}
+                                            onChange={handlePageChange}
+                                            onShowSizeChange={handlePageSizeChange}
+                                            showSizeChanger
+                                            pageSizeOptions={['6', '10', '20', '50']}
+                                            showTotal={(record) => `Tổng: ${record}`}
                                         />
-                                        <Column
-                                            title="Mã giảm giá"
-                                            dataIndex={['code']}
-                                            key="code"
-                                        />
-                                        <Column
-                                            title="Giá trị giảm"
-                                            // dataIndex={['productName']}
-                                            key="discount"
-                                            render={(text, record) => {
-                                                if (record.discountAmount === 0) {
-                                                    return `${record.discountPercent}%`;
-                                                } else if (record.discountPercent === 0) {
-                                                    return `${record.discountAmount} VNĐ`;
-                                                }
-                                                return null;
-                                            }}
-                                        />
-                                        <Column
-                                            title="Đơn tối thiểu"
-                                            dataIndex={['minimumOrder']}
-                                            key="minimumOrder"
-                                        />
-                                        <Column
-                                            title="Ngày hết hạn"
-                                            dataIndex={['endDate']}
-                                            key="endDate"
-                                        />
-                                    </Table>
+                                    </div>
                                 </div>
                             ) : (
                                 <div style={{ border: '1px solid white', padding: '15px', height: "400px", overflow: "auto" }}>
