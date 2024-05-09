@@ -4,7 +4,7 @@ import queryString from 'query-string'
 import Product from '../API/Product';
 import { Link, useParams } from 'react-router-dom';
 import Products from './Component/Products';
-import { Pagination } from 'antd';
+import { Pagination, Spin } from 'antd';
 
 import Search from './Component/Search';
 import axios from 'axios';
@@ -32,7 +32,7 @@ function Shop(props) {
     })
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(5);
+    const [pageSize, setPageSize] = useState(9);
 
     //Hàm này dùng để thay đổi state pagination.page
     //Nó sẽ truyền xuống Component con và nhận dữ liệu từ Component con truyền lên
@@ -41,7 +41,7 @@ function Shop(props) {
         setCurrentPage(pageNumber);
 
     };
-   
+
 
     const [loading, setLoading] = useState(false);
 
@@ -183,6 +183,7 @@ function Shop(props) {
             // Gọi API search và truyền requestBody
             const response = await axios.post('http://localhost:8071/public/product/get-all-by-condition', requestBody);
             console.log(response)
+            window.scrollTo({ top: 100, behavior: 'smooth' });
             return response.data;
         } catch (error) {
             console.error('Error fetching products:', error);
@@ -191,7 +192,6 @@ function Shop(props) {
         finally {
             setLoading(false); // Đặt trạng thái loading là false khi kết thúc gọi API
         }
-        window.scrollTo({ top: 100, behavior: 'smooth' });
     };
     const handleCategoryChange = (value) => {
         setSelectedCategory(value);
@@ -238,7 +238,7 @@ function Shop(props) {
                 idSize: selectedSize,
                 page: 0,
                 // pagination.page - 1,
-                pageSize: 5
+                pageSize: 9
                 //  pagination.pageSize,
 
             };
@@ -253,7 +253,8 @@ function Shop(props) {
             setProducts(response.listData);
             // setPageSize(pagination.pageSize)
             setTotalRecord(response.totalRecord);
-            setTotalPage(Math.ceil(response.totalRecord / 5));
+            setTotalPage(Math.ceil(response.totalRecord / 9));
+
         } catch (error) {
             console.error('Error searching products:', error);
         }
@@ -262,7 +263,7 @@ function Shop(props) {
         }
         window.scrollTo({ top: 100, behavior: 'smooth' });
     };
-    
+
     useEffect(() => {
         const apiCalls = [
             fetchCategoriesFromApi(),
@@ -353,7 +354,7 @@ function Shop(props) {
             try {
                 setLoading(true);
                 // const calculatedPageSize = calculatePageSize(currentPage, totalRecord);
-                const requestBody = { page: currentPage - 1, pageSize: 5 };
+                const requestBody = { page: currentPage - 1, pageSize: 9 };
                 console.log(requestBody);
 
                 const response = await Product.Get_All_Product(requestBody);
@@ -381,7 +382,7 @@ function Shop(props) {
         fetchData();
 
     }, [pageSize, currentPage]);
-  
+
 
     // useEffect(() => {
     //     handler_Search();
@@ -604,70 +605,73 @@ function Shop(props) {
                                     </div>
                                 </div>
                             </div>
-                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingTop: '10px', paddingBottom: "10px" }}>
-                                {loading && <div className="loading-spinner"></div>}
-                            </div>
+
 
                             <div className="shop-products-wrapper">
                                 <div className="tab-content">
                                     <div id="grid-view" className="tab-pane active" role="tabpanel">
                                         <div className="product-area shop-product-area">
                                             <div className="row">
-                                                {products.map(product => (
-                                                    <div className="col-lg-4 col-md-6" key={product.id}>
-                                                        <div className="single-product-wrap">
-                                                            <div className="product-image">
-                                                                <Link to={`/detail/${product.id}`}>
-                                                                    {product.listImages && product.listImages.resources.length > 0 ? (
-                                                                        <img src={product.listImages.resources[0].url} alt={product.name} />
-                                                                    ) : (
-                                                                        <div style={{ width: "100%", backgroundColor: '#f0f0f0', height: "250px" }} />
-                                                                    )}
-                                                                </Link>
-                                                            </div>
-                                                            <div className="product-content" style={{ marginTop: '10px', display: 'flex', flexDirection: 'column' }}>
-                                                                <h3>{product.name}</h3>
-                                                                <div className="product-details">
-                                                                    <div className="detail">
-                                                                        <span>Thương hiệu : </span>
-                                                                        <span>{product.brand.name}</span>
-                                                                    </div>
-                                                                    <div className="detail">
-                                                                        <span>Loại sản phẩm : </span>
-                                                                        <span>{product.category.name}</span>
-                                                                    </div>
-                                                                    <div className="detail">
-                                                                        <span>Chất liệu : </span>
-                                                                        <span>{product.material.name}</span>
-                                                                    </div>
-                                                                    <div className="detail" style={{ marginBottom: '10px' }}>
-                                                                        <span>Cổ áo : </span>
-                                                                        <span>{product.collar.name}</span>
+                                                {loading ? (
+                                                    <Spin size="large" style={{ margin: 'auto',marginTop:'250px' ,marginBottom:'200px'}} />
+                                                ) : (
+                                                    products.map(product => (
+                                                        <div className="col-lg-4 col-md-6" key={product.id}>
+                                                            <div className="single-product-wrap">
+                                                                <div className="product-image" style={{marginTop:'20px'}}>
+                                                                    <Link to={`/detail/${product.id}`}>
+                                                                        {product.listImages && product.listImages.resources.length > 0 ? (
+                                                                            <img src={product.listImages.resources[0].url} alt={product.name} />
+                                                                        ) : (
+                                                                            <div style={{ width: "100%", backgroundColor: '#f0f0f0', height: "250px" }} />
+                                                                        )}
+                                                                    </Link>
+                                                                </div>
+                                                                <div className="product-content" style={{ marginTop: '10px', display: 'flex', flexDirection: 'column' }}>
+                                                                    <h3>{product.name}</h3>
+                                                                    <div className="product-details">
+                                                                        <div className="detail">
+                                                                            <span>Thương hiệu : </span>
+                                                                            <span>{product.brand.name}</span>
+                                                                        </div>
+                                                                        <div className="detail">
+                                                                            <span>Loại sản phẩm : </span>
+                                                                            <span>{product.category.name}</span>
+                                                                        </div>
+                                                                        <div className="detail">
+                                                                            <span>Chất liệu : </span>
+                                                                            <span>{product.material.name}</span>
+                                                                        </div>
+                                                                        <div className="detail" style={{ marginBottom: '10px' }}>
+                                                                            <span>Cổ áo : </span>
+                                                                            <span>{product.collar.name}</span>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                ))}
+                                                    ))
+                                                )}
                                             </div>
                                         </div>
                                     </div>
 
                                     <div className="pagination-area" style={{ paddingTop: '50px' }}>
                                         <div className="row justify-content-center"> {/* Thêm justify-content-center để căn giữa phân trang */}
-                                            
-                                                <Pagination 
-                                                    
-                                                    // Trừ đi 1 vì currentPage là index của trang (bắt đầu từ 1), trong khi totalPages được tính từ 0
-                                                    current={currentPage}
-                                                    pageSize={pageSize}
-                                                    total={totalRecord}
-                                                    onChange={handleChangePage}
-                                                    showQuickJumper
-                                                    showTotal={(totalRecord) => `Tổng ${totalRecord} sản phẩm`}
-                                                    // Hiển thị số trang hiện tại và tổng số trang
-                                                />
-                                            
+
+                                            <Pagination
+
+                                                // Trừ đi 1 vì currentPage là index của trang (bắt đầu từ 1), trong khi totalPages được tính từ 0
+                                                current={currentPage}
+                                                pageSize={pageSize}
+                                                total={totalRecord}
+                                                onChange={handleChangePage}
+                                                showQuickJumper
+                                                showSizeChanger
+                                                showTotal={(totalRecord) => `Tổng ${totalRecord} sản phẩm`}
+                                            // Hiển thị số trang hiện tại và tổng số trang
+                                            />
+
                                         </div>
                                     </div>
 

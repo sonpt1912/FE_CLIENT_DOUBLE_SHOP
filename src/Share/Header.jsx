@@ -13,11 +13,15 @@ import { addSearch } from "../Redux/Action/ActionSearch";
 import CartsLocal from "./CartsLocal";
 import { FaUser, FaHeart, FaShoppingCart } from 'react-icons/fa';
 import { AiOutlineUser, AiOutlineHeart, AiOutlineShoppingCart } from 'react-icons/ai';
+import { useHistory } from 'react-router-dom';
+import { Modal, Button, Row, Col, Pagination,Spin } from 'antd';
+import axios from 'axios';
+
 
 function Header(props) {
   // State count of cart
 
-  
+
   const [count_cart, set_count_cart] = useState(0);
 
   const [total_price, set_total_price] = useState(0);
@@ -57,27 +61,26 @@ function Header(props) {
   //   const action = addSession(sessionStorage.getItem("id_user"));
   //   dispatch(action);
   // }
-  
+
   //Get IdUser từ redux khi user đã đăng nhập
   var id_user = useSelector((state) => state.Session.idUser);
 
   // Get carts từ redux khi user chưa đăng nhập
   // const carts = useSelector(state => state.Cart.listCart)
-
   const [active_user, set_active_user] = useState(false);
-// Trong bất kỳ thành phần nào của ứng dụng, bạn có thể lấy accessToken từ localStorage như sau:
-const accessToken = localStorage.getItem('token');
+  // Trong bất kỳ thành phần nào của ứng dụng, bạn có thể lấy accessToken từ localStorage như sau:
+  const accessToken = localStorage.getItem('token');
 
   const [user, set_user] = useState({});
 
   // Hàm này dùng để hiện thị
   // useEffect(() => {
   //   if (!id_user) {
-     
+
 
   //     set_active_user(false);
   //   } else {
-    
+
 
   //     const fetchData = async () => {
   //       const response = await User.Get_User(sessionStorage.getItem("id_user"));
@@ -168,16 +171,24 @@ const accessToken = localStorage.getItem('token');
   const [keyword_search, set_keyword_search] = useState("");
 
   const [products, set_products] = useState([]);
-
+  const [loading,setLoading]=useState(false)
   useEffect(() => {
     const fetchData = async () => {
-      const response = await Product.Get_All_Product();
+      try {
       
-      set_products(response);
+        const response = await Product.Get_All_Product();
+        set_products(response);
+        // Đặt loading thành false khi fetch hoàn thành
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        // Xử lý lỗi ở đây
+      } 
     };
-
+  
     fetchData();
   }, []);
+  
+  
 
   // Hàm này trả ra list product mà khách hàng tìm kiếm
   // sử dụng useMemo để performance hơn vì nếu mà dữ liệu mới giống với dữ liệu cũ thì nó sẽ lấy cái
@@ -205,6 +216,75 @@ const accessToken = localStorage.getItem('token');
     sessionStorage.setItem("search", keyword_search);
 
     window.location.replace("/search");
+  };
+  const history = useHistory();
+  // const [showModal, setShowModal] = useState(false);
+
+  // Hàm kiểm tra xem người dùng đã đăng nhập hay chưa
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const handleFavoriteClick = () => {
+    if (accessToken) {
+      // Hiển thị modal nếu đã đăng nhập
+      setIsModalVisible(true);
+      fetchData(); // Gọi API ở đây
+    } else {
+      // Chuyển hướng đến trang đăng nhập nếu chưa đăng nhập
+      history.push('/signin');
+    }
+  };
+  const [data, setData] = useState([]);
+
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.post('http://localhost:8071/favorite/get-all-by-id-customer'); // Replace with your API endpoint
+      console.log(response);
+
+      setData(response.data);
+      setLoading(false) // Set the data state with the fetched data
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+    finally {
+      setLoading(false); // Đặt loading thành false dù có lỗi xảy ra hay không
+    }
+    
+  };
+
+
+  useEffect(() => {
+    fetchData(); // Call fetchData function when component mounts
+  }, []);
+  const [currentPage, setCurrentPage] = useState(1); // State cho trang hiện tại
+  const [pageSize, setPageSize] = useState(4); // State cho kích thước của trang
+
+  // Số lượng item trên mỗi trang
+  const itemsPerPage = pageSize;
+
+  // Tính toán tổng số trang dựa trên số lượng item và số lượng item trên mỗi trang
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+
+  // Cắt danh sách voucher thành các trang tương ứng
+  const slicedVouchers = data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  // Xử lý sự kiện thay đổi trang
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  // Xử lý sự kiện thay đổi kích thước của trang
+  const handlePageSizeChange = (current, size) => {
+    setCurrentPage(1); // Reset trang về trang đầu tiên khi thay đổi kích thước của trang
+    setPageSize(size);
   };
 
   return (
@@ -246,9 +326,77 @@ const accessToken = localStorage.getItem('token');
                         <Link to={accessToken ? "/profile/1" : "/signin"} style={{ margin: "0 15px", fontSize: "25px" }}>
                           <AiOutlineUser style={{ color: "black" }} /> {/* Biểu tượng user */}
                         </Link>
-                        <Link to={accessToken ? "/favorite" : "/signin"} style={{ margin: "0 15px", fontSize: "25px" }}>
-                          <AiOutlineHeart style={{ color: "black" }} /> {/* Biểu tượng heart */}
-                        </Link>
+                        <div style={{ marginTop: "10px",marginLeft:"20px",marginRight:"20px", fontSize: "25px", cursor: "pointer" }} onClick={handleFavoriteClick}>
+                          <AiOutlineHeart style={{ color: "black" }} />
+                        </div>
+                        {isModalVisible && ( // Kiểm tra nếu isModalVisible là true thì mới hiển thị modal
+                          <Modal visible={isModalVisible} width={1000} onCancel={handleCancel}
+                            footer={[
+                              <Button key="cancel" onClick={handleCancel}>
+                                Đóng
+                              </Button>
+                            ]}
+                          >
+                            {/* Nội dung của modal */}
+                            <div className="modal-content">
+                              {/* Nút đóng modal */}
+                              <span className="close" onClick={() => setIsModalVisible(false)}>&times;</span>
+                              <h2 style={{ textAlign: "center" }}>Danh sách sản phẩm</h2>
+                              <Spin spinning={loading} size="large" style={{ margin: '0 auto' }}>
+
+                              <Row style={{ border: '1px solid white', padding: '15px', height: "280px", overflow: "auto" }}>
+                                {slicedVouchers.map(i => (
+                                  <Col span={12}>
+                                    <div style={{
+                                      margin: '10px',
+                                      border: '1px solid #ccc',
+                                      padding: '10px',
+                                      marginBottom: '10px',
+                                      backgroundColor: '',
+                                      borderRadius: '5px',
+                                      boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.1)',
+                                      position: 'relative',
+                                      height: "100px"
+                                    }}>
+                                      <Row>
+                                        <Col span={8}>
+                                          <div style={{ width: "150px", backgroundColor: '#f0f0f0', height: "75px" }} />{/* Add your image component here */}
+                                        </Col>
+                                        <Col span={16} style={{ position: 'relative' }}>
+                                          <div style={{ position: 'absolute', top: 40, right: 0, transform: 'translateY(-50%)' }}>
+                                            Tên sản phẩm: {i.name} {/* Product name */}
+                                          </div>
+                                        </Col>
+                                      </Row>
+                                      <div style={{
+                                        position: 'absolute', // Sử dụng absolute position để đặt endDate
+                                        bottom: '5px',
+                                        right: '10px',
+                                        fontStyle: 'italic'
+                                      }}>
+                                        {/* HSD: <br></br>{i.product.code} */}
+                                      </div>
+                                    </div>
+                                  </Col>
+                                ))}
+                              </Row>
+                              </Spin>
+
+                              <Pagination
+                                style={{ textAlign: 'center', marginTop: '10px' }}
+                                current={currentPage}
+                                total={data.length}
+                                pageSize={pageSize}
+                                onChange={handlePageChange}
+                                onShowSizeChange={handlePageSizeChange}
+                                showSizeChanger
+                                pageSizeOptions={['4', '8', '16', '32']}
+                                showTotal={(record) => `Tổng ${record} sản phẩm`}
+                              />
+                            </div>
+                          </Modal>
+                        )}
+
                         <Link to="/cart" style={{ margin: "0 15px", fontSize: "25px" }}>
                           <AiOutlineShoppingCart style={{ color: "black" }} /> {/* Biểu tượng shopping cart */}
                           <span className="cart-item-count">

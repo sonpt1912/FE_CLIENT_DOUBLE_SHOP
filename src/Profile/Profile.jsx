@@ -5,9 +5,10 @@ import avt from './avt.jpg'
 import User from '../API/User';
 import { addSession } from '../Redux/Action/ActionSession';
 import { useDispatch } from 'react-redux';
-import { Table, Tabs, Button, Modal, Input, Select, Form } from 'antd';
+import { Table, Tabs, Button, Modal, Input, Select, Form, Popconfirm, message } from 'antd';
 import TabPane from "antd/es/tabs/TabPane";
 import axios from "axios";
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const { Column } = Table;
 const { Search } = Input;
@@ -33,34 +34,155 @@ function Profile(props) {
     const [selectedWar, setSelectedWar] = useState('');
     const [warData, setWarData] = useState([]);
 
+    // const handleCityChange = (value) => {
+    //     setSelectedCity(value);
+    //     const selectedCityCode = cityData.find(city => city.value === value)?.value;
+    //     const selectedCityName = cityData.find(city => city.value === value)?.label;
+    //     setCity(selectedCityName);
+    //     dataDis(selectedCityCode);
+    //     setSelectedDis("");
+    // };
+
+    // const handleDisChange = (value) => {
+    //     setSelectedDis(value);
+    //     const selectedDisCode = disData.find(dis => dis.value === value)?.value;
+    //     const selectedDisName = disData.find(dis => dis.value === value)?.label;
+    //     setDistrict(selectedDisName);
+
+    //     dataWar(selectedDisCode);
+    //     setSelectedWar("");
+    // };
+
+    // const handleWarChange = (value) => {
+    //     setSelectedWar(value);
+    //     const selectedWarName = warData.find(war => war.value === value)?.label;
+    //     setWard(selectedWarName);
+    // };
+
+
+    // const handleInputChange = (e) => {
+    //     const { name, value } = e.target;
+
+    //     if (name === "city") {
+    //         setCity(value);
+    //     } else if (name === "dis") {
+    //         selectedDis(value);
+    //     } else if (name === "war") {
+    //         setWard(value);
+    //     } else if (name === "ngo") {
+    //         setNgo(value);
+    //     } else if (name === "description") {
+    //         setDescription(value);
+
+
+    //     } else if (name === "defaul") {
+    //         setDefaul(parseInt(value));
+    //     }
+
+    // };
+
+
+    const header = {
+        headers: {
+            Token: "81e2108c-e9c6-11ee-b1d4-92b443b7a897",
+        },
+    };
+    const dataCity = async () => {
+        try {
+            const response = await axios.get(
+                `https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province`,
+                header
+            );
+            console.log(response);
+            setCityData(
+                response.data.data.map((city) => ({
+                    label: city.ProvinceName,
+                    value: city.ProvinceID,
+                }))
+            );
+        } catch (error) {
+            console.error("Error fetching city data:", error);
+        }
+    };
+
+    const dataDis = async (selectedCityCode) => {
+        try {
+          const requestData = {
+            province_id: selectedCityCode,
+          };
+    
+          const response = await axios.post(
+            `https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district`,
+            requestData,
+            header
+          );
+    
+          setDisData(
+            response.data.data.map((city) => ({
+              label: city.DistrictName,
+              value: city.DistrictID,
+            }))
+          );
+        } catch (error) {
+          console.error("Error fetching city data:", error);
+        }
+      };
+    const dataWar = async (selectedDisCode) => {
+        try {
+            const requestData1 = {
+                district_id: selectedDisCode,
+            };
+            console.log(selectedDisCode);
+            const response = await axios.post(
+                `https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id`,
+                requestData1,
+                header
+            );
+            setWarData(
+                response.data.data.map((city) => ({
+                    label: city.WardName,
+                    value: city.WardCode,
+                }))
+            );
+        } catch (error) {
+            console.error("Error fetching city data:", error);
+        }
+    };
     const handleCityChange = (value) => {
         setSelectedCity(value);
-        const selectedCityCode = cityData.find(city => city.value === value)?.value;
-        const selectedCityName = cityData.find(city => city.value === value)?.label;
+        const selectedCityCode = cityData.find((city) => city.value === value)?.value;
+        const selectedCityName = cityData.find((city) => city.value === value)?.label;
         setCity(selectedCityName);
-        dataDis(selectedCityCode);
         setSelectedDis("");
-    };
-
-    const handleDisChange = (value) => {
-        setSelectedDis(value);
-        const selectedDisCode = disData.find(dis => dis.value === value)?.value;
-        const selectedDisName = disData.find(dis => dis.value === value)?.label;
-        setDistrict(selectedDisName);
-
-        dataWar(selectedDisCode);
         setSelectedWar("");
     };
-
+    
+    const handleDisChange = (value) => {
+        setSelectedDis(value);
+        const selectedDisCode = disData.find((dis) => dis.value === value)?.value;
+        const selectedDisName = disData.find((dis) => dis.value === value)?.label;
+        setDistrict(selectedDisName);
+        setSelectedWar(""); // Reset selectedWar khi thay đổi quận/huyện
+        // Gọi lại hàm dataWar khi thay đổi quận/huyện
+        dataWar(selectedDisCode); // Fetch lại dataWar với selectedDisCode (ID của quận/huyện)
+    };
     const handleWarChange = (value) => {
         setSelectedWar(value);
-        const selectedWarName = warData.find(war => war.value === value)?.label;
+        const selectedWarName = warData.find((war) => war.value === value)?.label;
         setWard(selectedWarName);
+        // Gọi lại hàm dataWar khi thay đổi lựa chọn phường/xã
+        dataWar(selectedDis); // Fetch lại dataWar với selectedDisCode (ID của quận/huyện)
     };
-
-    useEffect(() => {
+    
+      useEffect(() => {
         dataCity();
-    }, []);
+      }, []);
+    
+      // UseEffect to fetch dataDis and dataWar upon successful addition or edit
+    
+    
+  
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
 
@@ -81,36 +203,56 @@ function Profile(props) {
         }
 
     };
+    const handleCityChange1 = (value) => {
+        setSelectedCity(value);
+        const selectedCityCode = cityData.find(city => city.value === value)?.value;
+        const selectedCityName = cityData.find(city => city.value === value)?.label;
+        setCity(selectedCityCode); // Đây có vẻ là lỗi, phải là setCity(selectedCityCode);
+        setSelectedDis(""); // Reset giá trị của huyện/quận khi chọn thành phố mới
+        setSelectedWar(""); // Reset giá trị của xã/phường khi chọn thành phố mới
+        setDistrict(""); // Reset giá trị của huyện/quận khi chọn thành phố mới
+        setWard(""); // Reset giá trị của xã/phường khi chọn thành phố mới
+        dataDis(selectedCityCode); // Gọi hàm để lấy danh sách huyện/quận mới
+    };
 
-    const dataCity = async () => {
-        try {
-            const response = await fetch(`https://vapi.vnappmob.com/api/province`).then((res) => { return res.json() }).then((data) => {
-                setCityData(data.results.map(city => ({ label: city.province_name, value: city.province_id })));
-            })
-        } catch (error) {
-            console.error("Error fetching city data:", error);
+
+    const handleDisChange1 = (value) => {
+        setSelectedDis(value);
+        const selectedDisCode = disData.find((dis) => dis.value === value)?.value;
+        const selectedDisName = disData.find((dis) => dis.value === value)?.label;
+        setDistrict(selectedDisCode);
+        setSelectedWar("");
+        dataWar(selectedDisCode);
+    };
+
+    const handleWarChange1 = (value) => {
+        setSelectedWar(value);
+        const selectedWarName = warData.find((war) => war.value === value)?.label;
+        const selectedWarCode = warData.find((war) => war.value === value)?.value;
+        setWard(selectedWarCode);
+    };
+    const handleInputChange1 = (e) => {
+        const { name, value } = e.target;
+
+        if (name === "city") {
+            setCity(value);
+        } else if (name === "dis") {
+            selectedDis(value);
+        } else if (name === "war") {
+            setWard(value);
+        } else if (name === "ngo") {
+            setNgo(value);
+        } else if (name === "description") {
+            setDescription(value);
+        } else if (name === "defaul") {
+            setDefaul(parseInt(value));
         }
     };
-    const dataDis = async (selectedCityCode) => {
-        try {
-            const response = await axios.get(`https://vapi.vnappmob.com/api/province/district/${selectedCityCode}`);
-            setDisData(response.data.results.map(city => ({ label: city.district_name, value: city.district_id })));
-
-        } catch (error) {
-            console.error("Error fetching city data:", error);
-        }
-    };
-    const dataWar = async (selectedDisCode) => {
-        try {
-
-            const response = await axios.get(`https://vapi.vnappmob.com/api/province/ward/${selectedDisCode}`);
-            setWarData(response.data.results.map(city => ({ label: city.ward_name, value: city.ward_id })));
-        } catch (error) {
-            console.error("Error fetching city data:", error);
-        }
-    };
+   
     // Hàm này dùng để render html cho từng loại edit profile hoặc change password
     // Tùy theo người dùng chọn
+
+
     const [edit_status, set_edit_status] = useState('thong_tin_ca_nhan')
     const [showDangXuat, setShowDangXuat] = useState(false);
 
@@ -188,7 +330,7 @@ function Profile(props) {
             set_sdt(response.data.phone)
             setId(response.data.id)
         } catch (error) {
-            console.error("Error fetching user data:", error);
+            console.error("Lỗi khi hiển thị dữ liệu:");
         }
     };
 
@@ -208,11 +350,7 @@ function Profile(props) {
 
     const [createdTime, setCreatedTime] = useState('')
     const [createdBy, setCreatedBy] = useState('')
-    const isValidEmail = (email) => {
-        // Biểu thức chính quy kiểm tra tính hợp lệ của email
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    };
+
 
     const isValidPhoneNumber = (phoneNumber) => {
         // Biểu thức chính quy kiểm tra tính hợp lệ của số điện thoại
@@ -238,32 +376,41 @@ function Profile(props) {
                 gender: gender,
                 status: status
             };
+            if (/\s/.test(sdt)) {
+                message.error('Số điện thoại không được chứa dấu cách.');
+                return;
+            }
 
+            // Kiểm tra xem tên có chứa dấu cách ở đầu không
+            if (/^\s/.test(name)) {
+                message.error('Tên không được chứa dấu cách ở đầu.');
+                return;
+            }
             if (sdt.trim() === '') {
-                alert('Vui lòng điền đầy đủ thông tin số điện thoại ');
+                message.error('Vui lòng điền đầy đủ thông tin số điện thoại ');
                 return;
             }
             if (name.trim() === '') {
-                alert('Vui lòng điền đầy đủ thông tin tên ');
+                message.error('Vui lòng điền đầy đủ thông tin tên ');
                 return;
             }
             const specialChars = /[!@#$%^&*(),.?":{}|<>]/g;
             if (specialChars.test(name)) {
-                alert("Tên không được chứa ký tự đặc biệt!");
+                message.error("Tên không được chứa ký tự đặc biệt!");
                 return;
             }
             if (specialChars.test(sdt)) {
-                alert("Số điện thoại không được chứa ký tự đặc biệt!");
+                message.error("Số điện thoại không được chứa ký tự đặc biệt!");
                 return;
             }
             if (!isNaN(name)) {
-                alert("Tên không được chỉ chứa số!");
+                message.error("Tên không được chỉ chứa số!");
                 return;
             }
 
 
             if (!isValidPhoneNumber(sdt)) {
-                alert('Số điện thoại không hợp lệ. Vui lòng kiểm tra lại!');
+                message.error('Số điện thoại không hợp lệ. Vui lòng kiểm tra lại!');
                 return;
             }
             console.log(requestBody);
@@ -277,45 +424,72 @@ function Profile(props) {
                 }
             });
             console.log(response);
-
+            setBirthDay(response.data.birthDay)
+            set_name(response.data.name)
+            setGender(response.data.gender)
+            set_sdt(response.data.phone)
             // Hiển thị thông báo thành công
-            alert('Cập nhật thành công!');
+            message.success('Cập nhật thành công!');
             // window.location.reload();
         } catch (error) {
             // Xử lý lỗi và hiển thị thông báo lỗi
-            console.error('Cập nhật thất bại:', error);
+            message.error('Cập nhật thất bại:');
 
 
             // Kiểm tra nếu mã lỗi là 403 và có thông tin lỗi từ máy chủ
 
         }
     };
+    const [isAddModalVisible, setIsAddModalVisible] = useState(false);
+    const handleAddCancel = () => {
+        setIsAddModalVisible(false);
+    };
+    const showAddModal = () => {
+        setIsAddModalVisible(true);
+    };
     const handler_change = async () => {
         // Kiểm tra xác thực mật khẩu mới và mật khẩu nhập lại
-        if (new_password.trim() !== compare_password.trim()) {
-            alert('Mật khẩu mới và mật khẩu nhập lại không khớp.');
-            return;
-        }
+        const whitespaceRegex = /\s/;
+
 
         // Tạo đối tượng requestBody từ dữ liệu nhập liệu
         const requestBody = {
             password: password1,
             newPassword: new_password
         };
+
+        if (new_password.trim() !== compare_password.trim()) {
+            message.error('Mật khẩu mới và mật khẩu nhập lại không khớp.');
+            return;
+        }
         if (new_password.trim() === password1.trim()) {
-            alert('Mật khẩu mới phải khác mật khẩu cũ.');
+            message.error('Mật khẩu mới phải khác mật khẩu cũ.');
+            return;
+        }
+        if (whitespaceRegex.test(password1)) {
+            message.error('Mật khẩu cũ không được chứa khoảng trắng.');
+            return;
+        }
+        // Kiểm tra xem mật khẩu mới có chứa khoảng trắng không
+        if (whitespaceRegex.test(new_password)) {
+            message.error('Mật khẩu mới không được chứa khoảng trắng.');
+            return;
+        }
+        // Kiểm tra xem mật khẩu nhập lại có chứa khoảng trắng không
+        if (whitespaceRegex.test(compare_password)) {
+            message.error('Nhập lại mật khẩu mới không được chứa khoảng trắng.');
             return;
         }
         if (password1.trim() === '') {
-            alert('Vui lòng điền mật khẩu cũ ');
+            message.error('Vui lòng điền mật khẩu cũ ');
             return;
         }
         if (new_password.trim() === '') {
-            alert('Vui lòng điền mật khẩu mới ');
+            message.error('Vui lòng điền mật khẩu mới ');
             return;
         }
         if (compare_password.trim() === '') {
-            alert('Vui lòng điền nhập lại mật khẩu mới ');
+            message.error('Vui lòng điền nhập lại mật khẩu mới ');
             return;
         }
         try {
@@ -326,21 +500,21 @@ function Profile(props) {
             console.log(response);
 
             // Hiển thị thông báo hoặc chuyển hướng trang sau khi thay đổi mật khẩu thành công
-            alert('Mật khẩu đã được thay đổi thành công.');
+            message.success('Mật khẩu đã được thay đổi thành công.');
         } catch (error) {
             // Xử lý lỗi nếu có
-            console.error('Lỗi khi thay đổi mật khẩu:', error);
 
             // Kiểm tra nếu mã lỗi là 403 và có thông tin lỗi từ máy chủ
             if (error.response && error.response.status === 403) {
                 // Hiển thị thông báo nếu mật khẩu cũ không chính xác
-                alert('Mật khẩu cũ không chính xác.');
+                message.error('Mật khẩu cũ không chính xác.');
             } else {
                 // Hiển thị thông báo lỗi mặc định nếu không phải là lỗi 403
-                alert('Đã xảy ra lỗi khi thay đổi mật khẩu. Vui lòng thử lại sau.');
+                message.error('Đã xảy ra lỗi khi thay đổi mật khẩu. Vui lòng thử lại sau.');
             }
         }
     };
+    const [showPassword, setShowPassword] = useState(false); // Trạng thái hiển thị mật khẩu
 
 
     const [activeTab, setActiveTab] = useState("choXacNhan", "choGiaoHang", "giaoHang", "hoanThanh", "huy", "tra");
@@ -350,36 +524,202 @@ function Profile(props) {
 
     const [isModalVisible, setIsModalVisible] = useState(false);
     const showModal = () => {
+
         setIsModalVisible(true);
     };
 
     const handleCancel = () => {
         setIsModalVisible(false);
     };
+    const [addresses, setAddresses] = useState([]);
 
     const fetchAddressesByIdCustomer = async (id, token) => {
         try {
-            const response = await axios.get(`http://localhost:8071/customer/get-all-address?id=${id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
+            const response = await axios.get(`http://localhost:8071/customer/get-all-address`, {
+
             });
             console.log(response);
-            return response.data;
+            setAddresses(response.data)
+            return addAddress;
+
         } catch (error) {
-            console.error('Error fetching addresses:', error);
-            return [];
+            console.error('Lỗi khi hiển thị dữ liệu:', error);
+
         }
+    };
+    const [ids, setIds] = useState(false)
+
+    useEffect(() => {
+        fetchAddressesByIdCustomer();
+    }, []);
+
+
+    const [is_defaul, setIsDefault] = useState('')
+    const token = localStorage.getItem("token")
+    const addAddress = async () => {
+        if (!city || !district || !ward || !description) {
+            message.error('Vui lòng điền đầy đủ thông tin.');
+            return;
+        }
+    
+        try {
+            const requestBody = {
+                id_customer: id,
+                city: selectedCity,
+                district: selectedDis,
+                province: selectedWar,
+                description: description,
+            };
+    
+            console.log(requestBody);
+            const response = await axios.post('http://localhost:8071/customer/create-address', requestBody);
+            console.log(response.data); // Log dữ liệu phản hồi từ API
+          
+            console.log(selectedCity);
+            await dataDis(selectedCity);
+            console.log("Selected District:", selectedDis); // Log giá trị selectedDis sau khi được cập nhật bởi hàm dataDis
+    
+            await dataWar(selectedDis);
+            console.log("Selected Ward:", selectedWar); // Log giá trị selectedWar sau khi được cập nhật bởi hàm dataWar
+            fetchAddressesByIdCustomer();
+        
+            message.success('Thêm địa chỉ thành công:');
+            
+            form.resetFields();
+            handleAddCancel();
+        } catch (error) {
+            console.error("Thêm thất bại:", error); // Log lỗi nếu có
+            message.error("Thêm thất bại!");
+        } finally {
+            setSelectedCity('');
+            setSelectedDis('');
+            setSelectedWar('');
+            setDescription('');
+            handleAddCancel();
+        }
+    };
+    
+
+
+    const handleAddAddress = async () => {
+        addAddress();
+    }
+    const [provinceName, setProvinceName] = useState("");
+
+    const [addressData, setAddressData] = useState({
+        city: '',
+        district: '',
+        province: '',
+        description: ''
+    });
+   
+    const updateAddress = async (id) => {
+
+
+        try {
+            const requestBody = {
+                id: id,
+                city: selectedCity,
+                district: selectedDis,
+                province: selectedWar,
+                description: description,
+                // defaul: defaul 
+            };
+            console.log(requestBody);
+            // Gọi API thêm mới địa chỉ
+            const response = await axios.post('http://localhost:8071/customer/update-address', requestBody);
+            console.log(response);
+
+            fetchAddressesByIdCustomer()
+
+            message.success('Thành công:');
+
+            // window.location.reload();
+            // setIdss(false)
+            // console.log(ids);
+            // Đóng modal sau khi thêm thành công
+            handleCancel();
+
+        }
+        catch (error) {
+
+            message.error("Thất bại!");
+        } finally {
+            handleCancel();
+
+        }
+    };
+    const [ia, setIa] = useState(true)
+    const updateOtherAddresses = async (id) => {
+        try {
+            // Gọi API để cập nhật defaul của các bản ghi còn lại
+            const response = await axios.post('http://localhost:8071/customer/update-other-addresses', { id: id });
+            if (response.status === 200) {
+                fetchAddressesByIdCustomer()
+                console.log('Cập nhật defaul thành công!');
+                // setIa(false)
+
+            } else {
+                console.log('Cập nhật defaul không thành công!');
+            }
+        } catch (error) {
+            console.error('Lỗi khi cập nhật defaul của các bản ghi còn lại:', error);
+        }
+    };
+    const handleUpdateOther = (id) => {
+        updateOtherAddresses(id);
+    }
+    const handleUpdate = (id) => {
+
+        //      const selectedAddress = addresses.find(address => address.id === id);
+
+        // setAddressData(selectedAddress);
+
+        // Hiển thị modal
+        showModal();
+    };
+
+    // useEffect(() => {
+    //     fetchAddressesByIdCustomer()
+
+    //         .then(data => setAddresses(data))
+    //         .catch(error => console.error('Lỗi khi hiển thị dữ liệu:', error));
+    // }, [ids, id, idss]);
+    // const [loading,setLoading]=useState(false)
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         try {
+    //             // setLoading(true);
+    //             const response = await axios.get(`http://localhost:8071/customer/get-all-address`);
+    //             setAddresses(response.data);
+    //         } catch (error) {
+    //             console.error('Error fetching data:', error);
+    //         } 
+    //         // finally {
+    //         //     setLoading(false);
+    //         // }
+    //     };
+
+    //     fetchData();
+    // }, []);
+    const getProvinceName = (provinceId) => {
+        const province = cityData.find(city => city.value == provinceId);
+
+        return province ? province.label : "";
     };
 
 
-    const [addresses, setAddresses] = useState([]);
-    console.log(id);
-    useEffect(() => {
-        fetchAddressesByIdCustomer(id)
-            .then(data => setAddresses(data))
-            .catch(error => console.error('Error fetching addresses:', error));
-    }, [id]);
+    // Hàm để lấy tên của district từ ID
+    const getDistrictName = (districtId) => {
+        const district = disData.find(dis => dis.value == districtId);
+
+        return district ? district.label : '';
+    };
+    // Hàm để lấy tên của ward từ ID
+    const getWardName = (wardId) => {
+        const ward = warData.find(ward => ward.value == wardId);
+        return ward ? ward.label : '';
+    };
     const [password1, set_password1] = useState('');
 
     const [listVoucher, setListVoucher] = useState([])
@@ -389,7 +729,7 @@ function Profile(props) {
                 setListVoucher(response.data);
             })
             .catch(error => {
-                console.error('Error fetching data:', error);
+                console.error('Lỗi khi hiển thị dữ liệu:', error);
             });
     }, []);
 
@@ -411,6 +751,37 @@ function Profile(props) {
     const filteredVouchers = listVoucher.filter(voucher =>
         voucher.code.toLowerCase().includes(searchText.toLowerCase())
     );
+    const [showPassword1, setShowPassword1] = useState(false); // Trạng thái hiển thị mật khẩu
+    const [showPassword2, setShowPassword2] = useState(false); // Trạng thái hiển thị mật khẩu
+    const [showPassword3, setShowPassword3] = useState(false); // Trạng thái hiển thị mật khẩu
+
+    // Hàm để thay đổi trạng thái hiển thị mật khẩu
+    const togglePasswordVisibility1 = () => {
+        setShowPassword1(!showPassword1);
+    };
+    const togglePasswordVisibility2 = () => {
+        setShowPassword2(!showPassword2);
+    };
+    const togglePasswordVisibility3 = () => {
+        setShowPassword3(!showPassword3);
+    };
+
+
+    const handleDelete = async (id) => {
+        try {
+            // Đặt trạng thái loading
+            const data = { id: id }
+            await axios.post('http://localhost:8071/customer/delete-address', data); // Gọi API DELETE với requestBody
+            // Thực hiện các bước cần thiết sau khi xóa địa chỉ thành công
+            message.success('Xóa địa chỉ thành công');
+            fetchAddressesByIdCustomer()
+
+
+        } catch (error) {
+            message.error('Lỗi khi xóa địa chỉ:');
+            // Xử lý lỗi nếu có
+        }
+    };
 
     return (
         <div className="m-5 mt-5 pt-4" style={{ paddingBottom: '4rem' }}>
@@ -509,40 +880,39 @@ function Profile(props) {
                                         </div>
                                         <div>
                                             <input className="txt_input_edit" type="text" value={name}
-                                                onChange={(e) => set_name(e.target.value)} />
+                                                onChange={(e) => set_name(e.target.value)} required />
                                         </div>
                                     </div>
                                     <div className="txt_setting_edit pt-3 pb-2">
                                         <div className="d-flex justify-content-center align-items-center">
                                             <span style={{ fontWeight: '600' }}>Giới tính</span>
                                         </div>
-                                        <div style={{ width: "508px" }}>
-                                            <select className="form-select" value={gender === null ? '' : gender == 0 ? 'Nam' : 'Nữ'} onChange={(e) => setGender(e.target.value === 'Nam' ? 0 : e.target.value === 'Nữ' ? 1 : null)}>
+                                        <div style={{ width: "65%", maxWidth: "100%" }}>
+                                            <select className="form-select" value={gender === null ? '' : gender == 0 ? 'Nam' : 'Nữ'} onChange={(e) => setGender(e.target.value === 'Nam' ? 0 : e.target.value === 'Nữ' ? 1 : null)} required>
                                                 <option value=''>Chọn giới tính</option>
                                                 <option value="Nam">Nam</option>
                                                 <option value="Nữ">Nữ</option>
                                             </select>
                                         </div>
                                     </div>
-
                                     <div className="txt_setting_edit pt-3 pb-2">
                                         <div className="d-flex justify-content-center align-items-center">
                                             <span style={{ fontWeight: '600' }}>Ngày sinh</span>
                                         </div>
                                         <div>
-                                            <input className="txt_input_edit" type="date" value={birthday} onChange={(e) => setBirthDay(e.target.value)} />
+                                            <input className="txt_input_edit" type="date" value={birthday} onChange={(e) => setBirthDay(e.target.value)} required />
                                         </div>
                                     </div>
-
                                     <div className="txt_setting_edit pt-3 pb-2">
                                         <div className="d-flex justify-content-center align-items-center">
                                             <span style={{ fontWeight: '600' }}>Số điện thoại</span>
                                         </div>
                                         <div>
                                             <input className="txt_input_edit" type="text" value={sdt}
-                                                onChange={(e) => set_sdt(e.target.value)} />
+                                                onChange={(e) => set_sdt(e.target.value)} required />
                                         </div>
                                     </div>
+
                                     <div className="d-flex justify-content-center pt-3 pb-4">
                                         <button className="btn btn-secondary" onClick={handler_update}>Sửa</button>
                                     </div>
@@ -764,31 +1134,66 @@ function Profile(props) {
                                 </div>
                             ) : edit_status === 'quen_mat_khau' ? (
                                 <div className="setting_change_password">
-                                    <div className="txt_setting_edit pt-3 pb-2">
-                                        <div className="d-flex justify-content-center align-items-center">
-                                            <span style={{ fontWeight: '600' }}>Mật khẩu cũ</span>
+                                    <div>
+                                        <div className="txt_setting_edit mt-3 pb-2">
+                                            <div className="d-flex justify-content-center align-items-center" style={{ marginTop: '50px' }}>
+                                                <span style={{ fontWeight: '600' }}>Mật khẩu cũ</span>
+                                            </div>
+                                            <div className="input-group" style={{ width: '70%', marginTop: '50px' }} >
+                                                <input
+                                                    type={showPassword1 ? "text" : "password"}
+                                                    className="txt_input_edit form-control"
+                                                    value={password1}
+                                                    onChange={(e) => set_password1(e.target.value)}
+                                                />
+                                                <button
+                                                    className="btn btn-outline-secondary"
+                                                    type="button"
+                                                    onClick={togglePasswordVisibility1}
+                                                >
+                                                    {showPassword1 ? <FaEyeSlash /> : <FaEye />}
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <input className="txt_input_edit" value={password1}
-                                                onChange={(e) => set_password1(e.target.value)} />
+                                        <div className="txt_setting_edit pt-3 pb-2">
+                                            <div className="d-flex justify-content-center align-items-center">
+                                                <span style={{ fontWeight: '600' }}>Mật khẩu mới</span>
+                                            </div>
+                                            <div className="input-group" style={{ width: '70%' }}>
+                                                <input
+                                                    type={showPassword2 ? "text" : "password"}
+                                                    className="txt_input_edit form-control"
+                                                    value={new_password}
+                                                    onChange={(e) => set_new_password(e.target.value)}
+                                                />
+                                                <button
+                                                    className="btn btn-outline-secondary"
+                                                    type="button"
+                                                    onClick={togglePasswordVisibility2}
+                                                >
+                                                    {showPassword2 ? <FaEyeSlash /> : <FaEye />}
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="txt_setting_edit pt-3 pb-2">
-                                        <div className="d-flex justify-content-center align-items-center">
-                                            <span style={{ fontWeight: '600' }} >Mật khẩu mới</span>
-                                        </div>
-                                        <div>
-                                            <input className="txt_input_edit" value={new_password}
-                                                onChange={(e) => set_new_password(e.target.value)} />
-                                        </div>
-                                    </div>
-                                    <div className="txt_setting_edit pt-3 pb-2">
-                                        <div className="d-flex justify-content-center align-items-center">
-                                            <span style={{ fontWeight: '600' }}>Nhập lại mật khẩu mới</span>
-                                        </div>
-                                        <div>
-                                            <input className="txt_input_edit" value={compare_password}
-                                                onChange={(e) => set_compare_password(e.target.value)} />
+                                        <div className="txt_setting_edit pt-3 pb-2">
+                                            <div className="d-flex justify-content-center align-items-center">
+                                                <span style={{ fontWeight: '600' }}>Nhập lại mật khẩu mới</span>
+                                            </div>
+                                            <div className="input-group" style={{ width: '70%' }}>
+                                                <input
+                                                    type={showPassword3 ? "text" : "password"}
+                                                    className="txt_input_edit form-control"
+                                                    value={compare_password}
+                                                    onChange={(e) => set_compare_password(e.target.value)}
+                                                />
+                                                <button
+                                                    className="btn btn-outline-secondary"
+                                                    type="button"
+                                                    onClick={togglePasswordVisibility3}
+                                                >
+                                                    {showPassword3 ? <FaEyeSlash /> : <FaEye />}
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="d-flex justify-content-center pt-3 pb-4 align-items-center">
@@ -862,13 +1267,17 @@ function Profile(props) {
                                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                                         <h4 className='m-3' style={{ alignSelf: "flex-start" }}>Địa chỉ của tôi</h4>
                                         <div className='m-3'>
-                                            <Button type="primary" shape="round" onClick={showModal}>
+                                            <Button type="primary" shape="round" onClick={showAddModal}>
                                                 Thêm mới địa chỉ
                                             </Button>
-                                            <Modal title="Thêm mới địa chỉ" visible={isModalVisible} onCancel={handleCancel}
+                                            <Modal title="Thêm mới địa chỉ" visible={isAddModalVisible} onCancel={handleAddCancel}
                                                 footer={[
-                                                    <Button key="cancel" onClick={handleCancel}>Hủy</Button>,
-                                                    <Button key="ok" type="primary">Thêm</Button>,
+                                                    <Button key="cancel" onClick={handleAddCancel}>
+                                                        Hủy
+                                                    </Button>,
+                                                    <Button key="ok" type="primary" onClick={handleAddAddress}> {/* Thay đổi đây */}
+                                                        Thêm
+                                                    </Button>,
                                                 ]}>
                                                 <form>
                                                     <div className='d-flex center mb-3'>
@@ -910,11 +1319,11 @@ function Profile(props) {
                                                             style={{ width: '100%' }}
                                                             showSearch
                                                             placeholder="--- Chọn Xã/Phường ---"
-                                                            optionFilterProp="children"
-                                                            filterOption={(input, option) => (option?.label ?? '').includes(input)}
-                                                            filterSort={(optionA, optionB) =>
-                                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                                                            }
+                                                            optionFilterProp="children" // filterOption={(input, option) => (option?.label ?? '').includes(input)}
+                                                            // filterSort={(optionA, optionB) =>
+                                                            //     (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                                            // }
+
                                                             options={warData}
                                                             onChange={handleWarChange}
                                                             value={selectedWar}
@@ -935,18 +1344,33 @@ function Profile(props) {
                                     <hr className="" style={{ marginTop: "0px", marginBottom: "0px" }} />
                                     <div>
                                         {addresses.map(address => (
-                                            <div key={address.id}>
+                                            <div key={address.id} >
                                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "10px" }}>
-                                                    <p className='m-3'>{address.district}/{address.province}/{address.city} | {address.phone}<br />
-                                                        {address.description}
+                                                    <p className='m-3'>
+                                                        Tỉnh/Thành phố: {address.city && getProvinceName(address.city)} <br />
+                                                        Huyện/Quận: {address.district && getDistrictName(address.district)} <br />
+                                                        Xã/Phường: {address.province && getWardName(address.province)} <br />
+                                                        Địa chỉ: {address.description}
                                                     </p>
                                                     <div style={{ textAlign: "center" }}>
-                                                        <Button type='primary' disabled={address.default}>Mặc định</Button>
+                                                        <Popconfirm
+                                                            title="Bạn muốn đặt địa chỉ này làm mặc định chứ?"
+                                                            onConfirm={() => handleUpdateOther(address.id)} // Xác nhận thực hiện hành động
+                                                            okText="Đồng ý"
+                                                            cancelText="Hủy"
+                                                        >
+                                                            <Button
+                                                                type='primary'
+                                                                disabled={address.defaul === 0}
+                                                            >
+                                                                Mặc định
+                                                            </Button>
+                                                        </Popconfirm>
                                                         <Button className='m-2' type='primary' onClick={showModal}>Cập nhật</Button>
-                                                        <Modal title="Thêm mới địa chỉ" visible={isModalVisible} onCancel={handleCancel}
+                                                        <Modal title="Sửa địa chỉ" visible={isModalVisible} onCancel={handleCancel}
                                                             footer={[
                                                                 <Button key="cancel" onClick={handleCancel}>Hủy</Button>,
-                                                                <Button key="ok" type="primary">Thêm</Button>,
+                                                                <Button key="ok" type="primary" onClick={() => updateAddress(address.id)}>Sửa</Button>,
                                                             ]}>
                                                             <form>
                                                                 <div className='d-flex center mb-3'>
@@ -961,8 +1385,8 @@ function Profile(props) {
                                                                             (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
                                                                         }
                                                                         options={cityData}
-                                                                        onChange={handleCityChange}
-                                                                        value={selectedCity}
+                                                                        onChange={handleCityChange1}
+                                                                        value={getProvinceName(address.city)}
                                                                     />
                                                                 </div>
                                                                 <div className='d-flex center mb-3'>
@@ -977,8 +1401,8 @@ function Profile(props) {
                                                                         //     (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
                                                                         // }
                                                                         options={disData}
-                                                                        onChange={handleDisChange}
-                                                                        value={selectedDis}
+                                                                        onChange={handleDisChange1}
+                                                                        value={getDistrictName(address.district)}
 
                                                                     />
                                                                 </div>
@@ -994,22 +1418,28 @@ function Profile(props) {
                                                                             (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
                                                                         }
                                                                         options={warData}
-                                                                        onChange={handleWarChange}
-                                                                        value={selectedWar}
+                                                                        onChange={handleWarChange1}
+                                                                        value={getWardName(address.province)}
                                                                     />
                                                                 </div>
                                                                 <div className='d-flex center mb-3'>
                                                                     <label className='w-50'>Nhập địa chỉ chi tiết</label>
                                                                     <Input
                                                                         name="description"
-                                                                        value={description}
-                                                                        onChange={(e) => handleInputChange({ target: { name: 'description', value: e.target.value } })}
+                                                                        value={address.description}
+                                                                        onChange={(e) => handleInputChange1({ target: { name: 'description', value: e.target.value } })}
                                                                     />
                                                                 </div>
                                                             </form>
                                                         </Modal>
-                                                        <Button>Xóa</Button>
-                                                    </div>
+                                                        <Popconfirm
+                                                            title="Bạn có chắc muốn xóa địa chỉ này?"
+                                                            onConfirm={() => handleDelete(address.id)} // Xác nhận xóa
+                                                            okText="Xóa"
+                                                            cancelText="Hủy"
+                                                        >
+                                                            <Button type="danger">Xóa</Button> {/* Sử dụng Popconfirm cho nút Xóa */}
+                                                        </Popconfirm>                                                    </div>
                                                 </div>
                                                 <hr className="" style={{ marginTop: "0px", marginBottom: "0px" }} />
                                             </div>
