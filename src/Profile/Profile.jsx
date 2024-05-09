@@ -3,15 +3,21 @@ import PropTypes from 'prop-types';
 import './Profile.css'
 import avt from './avt.jpg'
 import User from '../API/User';
-import { addSession } from '../Redux/Action/ActionSession';
 import { useDispatch } from 'react-redux';
 
-import { Table, Tabs, Button, Modal, Input, Select, Form, Row, Col, Pagination ,Popconfirm, message  } from 'antd';
+
+
+import { Table, Tabs, Button, Modal, Input, Select, Form, Popconfirm, message,Row,Pagination,Col } from 'antd';
 import TabPane from "antd/es/tabs/TabPane";
 import axios from "axios";
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import Column from 'antd/es/table/Column';
+
+
 import { SearchOutlined } from '@ant-design/icons';
-import { FaEyeSlash, FaEye } from 'react-icons/fa';
-const { Column } = Table;
+
+
+
 const { Search } = Input;
 Profile.propTypes = {
 
