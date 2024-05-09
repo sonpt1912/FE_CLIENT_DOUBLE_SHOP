@@ -5,18 +5,12 @@ import avt from './avt.jpg'
 import User from '../API/User';
 import { addSession } from '../Redux/Action/ActionSession';
 import { useDispatch } from 'react-redux';
-<<<<<<< HEAD
-import { Table, Tabs, Button, Modal, Input, Select, Form, Popconfirm, message } from 'antd';
-import TabPane from "antd/es/tabs/TabPane";
-import axios from "axios";
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
-=======
-import { Table, Tabs, Button, Modal, Input, Select, Form, Row, Col, Pagination } from 'antd';
+
+import { Table, Tabs, Button, Modal, Input, Select, Form, Row, Col, Pagination ,Popconfirm, message  } from 'antd';
 import TabPane from "antd/es/tabs/TabPane";
 import axios from "axios";
 import { SearchOutlined } from '@ant-design/icons';
->>>>>>> efa4d46bce48228cf5c967783a197372c3f87ff3
-
+import { FaEyeSlash, FaEye } from 'react-icons/fa';
 const { Column } = Table;
 const { Search } = Input;
 Profile.propTypes = {
