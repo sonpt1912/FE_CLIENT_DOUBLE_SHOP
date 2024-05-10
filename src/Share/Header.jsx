@@ -12,9 +12,11 @@ import Product from "../API/Product";
 import { addSearch } from "../Redux/Action/ActionSearch";
 import CartsLocal from "./CartsLocal";
 import { FaUser, FaHeart, FaShoppingCart } from 'react-icons/fa';
-import { AiOutlineUser, AiOutlineHeart, AiOutlineShoppingCart } from 'react-icons/ai';
+import { AiOutlineUser, AiOutlineHeart, AiOutlineShoppingCart, AiOutlineDelete } from 'react-icons/ai';
 import { useHistory } from 'react-router-dom';
-import { Modal, Button, Row, Col, Pagination, Spin } from 'antd';
+import { Modal, Button, Row, Col, Pagination, Spin, Tooltip,Popconfirm } from 'antd';
+
+
 import axios from 'axios';
 
 
@@ -72,6 +74,16 @@ function Header(props) {
   const accessToken = localStorage.getItem('token');
 
   const [user, set_user] = useState({});
+  const handleDeleteConfirm = async (id) => {
+    try {
+      // Gọi API xóa sản phẩm khỏi danh sách yêu thích
+      await axios.post(`http://localhost:8071/favorite/delete-favorite`, { id: id });
+      // Cập nhật lại danh sách yêu thích sau khi xóa
+      fetchData();
+    } catch (error) {
+      console.error('Error deleting favorite:', error);
+    }
+  };
 
   // Hàm này dùng để hiện thị
   // useEffect(() => {
@@ -360,7 +372,7 @@ function Header(props) {
                             <div className="modal-content">
                               {/* Nút đóng modal */}
                               <span className="close" onClick={() => setIsModalVisible(false)}>&times;</span>
-                              <h2 style={{ textAlign: "center" }}>Danh sách sản phẩm</h2>
+                              <h2 style={{ textAlign: "center" }}>Danh sách yêu thích</h2>
                               <Spin spinning={loading} size="large" style={{ margin: '0 auto' }}>
 
                                 <Row style={{ border: '1px solid white', padding: '15px', height: "280px", overflow: "auto" }}>
@@ -380,17 +392,17 @@ function Header(props) {
                                         <Row>
                                           <Col span={8}>
                                             {/* Kiểm tra xem có ảnh không */}
-                                            {i.listImage ? (
+                                            {i.listImages && i.listImages.resources.length > 0 ? (
                                               // Nếu có ảnh, hiển thị ảnh
-                                              <img src={i.listImage.resource[0].url} alt={i.name} style={{ width: "150px", height: "75px" }} />
+                                              <img src={i.listImages.resources[0].url} alt={i.name} style={{ width: "150px", height: "75px" }} />
                                             ) : (
                                               // Nếu không có ảnh, hiển thị div
                                               <div style={{ width: "150px", backgroundColor: '#f0f0f0', height: "75px" }} />
                                             )}
                                           </Col>
                                           <Col span={16} style={{ position: 'relative' }}>
-                                            <div style={{ position: 'absolute', top: 40, right: 0, transform: 'translateY(-50%)' }}>
-                                              Tên sản phẩm: {i.name} {/* Product name */}
+                                            <div style={{ position: 'absolute', top: 60, right: 0, transform: 'translateY(-50%)' }}>
+                                              {i.name} {/* Product name */}
                                             </div>
                                           </Col>
                                         </Row>
@@ -402,6 +414,34 @@ function Header(props) {
                                         }}>
                                           {/* HSD: <br></br>{i.product.code} */}
                                         </div>
+                                        <Tooltip title="Xóa">
+                                          <Popconfirm
+                                            title="Bạn có chắc chắn muốn xóa?"
+                                            okText="Xóa"
+                                            cancelText="Hủy"
+                                            onConfirm={() => handleDeleteConfirm(i.id)}
+                                          >
+                                            <Button
+                                              type="danger"
+                                              style={{
+                                                position: 'absolute',
+                                                top: '5px',
+                                                right: '5px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                padding: '5px',
+                                                borderRadius: '50%',
+                                                backgroundColor: '#ff4d4f',
+                                                color: 'white',
+                                                cursor: 'pointer',
+                                                height: '25px',
+                                              }}
+                                            >
+                                              <AiOutlineDelete style={{ fontSize: '15px' }} />
+                                            </Button>
+                                          </Popconfirm>
+                                        </Tooltip>
+
                                       </div>
                                     </Col>
                                   ))}

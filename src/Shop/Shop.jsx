@@ -183,7 +183,7 @@ function Shop(props) {
             // Gọi API search và truyền requestBody
             const response = await axios.post('http://localhost:8071/public/product/get-all-by-condition', requestBody);
             console.log(response)
-            window.scrollTo({ top: 100, behavior: 'smooth' });
+            // window.scrollTo({ top: 100, behavior: 'smooth' });
             return response.data;
         } catch (error) {
             console.error('Error fetching products:', error);
@@ -263,7 +263,7 @@ function Shop(props) {
         finally {
             setLoading(false); // Đặt trạng thái loading là false khi kết thúc gọi API
         }
-        window.scrollTo({ top: 100, behavior: 'smooth' });
+        // window.scrollTo({ top: 100, behavior: 'smooth' });
     };
 
     useEffect(() => {
