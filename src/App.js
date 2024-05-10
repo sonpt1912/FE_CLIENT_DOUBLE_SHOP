@@ -163,7 +163,7 @@ function App() {
                 <Route path="/fail" component={OrderFail} />
                 <Route path="/momo" component={OrderMomo} />
                 <Route path="/history" component={History} />
-                <Route path="/profile/:id" component={Profile} />
+                <Route path="/profile" component={Profile} />
                 <Route path="/search" component={Search} />
                 <Route path="/about" component={About} />
               </Switch>

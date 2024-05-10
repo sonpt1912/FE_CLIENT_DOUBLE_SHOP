@@ -5,9 +5,7 @@ import avt from './avt.jpg'
 import User from '../API/User';
 import { useDispatch } from 'react-redux';
 
-
-
-import { Table, Tabs, Button, Modal, Input, Select, Form, Popconfirm, message,Row,Pagination,Col } from 'antd';
+import { Table, Tabs, Button, Modal, Input, Select, Form, Popconfirm, message, Row, Pagination, Col } from 'antd';
 import TabPane from "antd/es/tabs/TabPane";
 import axios from "axios";
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
@@ -15,7 +13,6 @@ import Column from 'antd/es/table/Column';
 
 
 import { SearchOutlined } from '@ant-design/icons';
-
 
 
 const { Search } = Input;
@@ -100,7 +97,7 @@ function Profile(props) {
                 `https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province`,
                 header
             );
-            console.log(response);
+
             setCityData(
                 response.data.data.map((city) => ({
                     label: city.ProvinceName,
@@ -114,26 +111,26 @@ function Profile(props) {
 
     const dataDis = async (selectedCityCode) => {
         try {
-          const requestData = {
-            province_id: selectedCityCode,
-          };
-    
-          const response = await axios.post(
-            `https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district`,
-            requestData,
-            header
-          );
-    
-          setDisData(
-            response.data.data.map((city) => ({
-              label: city.DistrictName,
-              value: city.DistrictID,
-            }))
-          );
+            const requestData = {
+                province_id: selectedCityCode,
+            };
+
+            const response = await axios.post(
+                `https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district`,
+                requestData,
+                header
+            );
+
+            setDisData(
+                response.data.data.map((city) => ({
+                    label: city.DistrictName,
+                    value: city.DistrictID,
+                }))
+            );
         } catch (error) {
-          console.error("Error fetching city data:", error);
+            console.error("Error fetching city data:", error);
         }
-      };
+    };
     const dataWar = async (selectedDisCode) => {
         try {
             const requestData1 = {
@@ -157,39 +154,34 @@ function Profile(props) {
     };
     const handleCityChange = (value) => {
         setSelectedCity(value);
-        const selectedCityCode = cityData.find((city) => city.value === value)?.value;
-        const selectedCityName = cityData.find((city) => city.value === value)?.label;
+        const selectedCityCode = cityData.find(city => city.value === value)?.value;
+        const selectedCityName = cityData.find(city => city.value === value)?.label;
         setCity(selectedCityName);
+        dataDis(selectedCityCode);
         setSelectedDis("");
-        setSelectedWar("");
     };
-    
+
     const handleDisChange = (value) => {
         setSelectedDis(value);
-        const selectedDisCode = disData.find((dis) => dis.value === value)?.value;
-        const selectedDisName = disData.find((dis) => dis.value === value)?.label;
+        const selectedDisCode = disData.find(dis => dis.value === value)?.value;
+        const selectedDisName = disData.find(dis => dis.value === value)?.label;
         setDistrict(selectedDisName);
-        setSelectedWar(""); // Reset selectedWar khi thay đổi quận/huyện
-        // Gọi lại hàm dataWar khi thay đổi quận/huyện
-        dataWar(selectedDisCode); // Fetch lại dataWar với selectedDisCode (ID của quận/huyện)
+
+        dataWar(selectedDisCode);
+        setSelectedWar("");
     };
+
     const handleWarChange = (value) => {
         setSelectedWar(value);
-        const selectedWarName = warData.find((war) => war.value === value)?.label;
+        const selectedWarName = warData.find(war => war.value === value)?.label;
         setWard(selectedWarName);
-        // Gọi lại hàm dataWar khi thay đổi lựa chọn phường/xã
-        dataWar(selectedDis); // Fetch lại dataWar với selectedDisCode (ID của quận/huyện)
     };
-    
-      useEffect(() => {
-        dataCity();
-      }, []);
-    
-      // UseEffect to fetch dataDis and dataWar upon successful addition or edit
-    
-    
-  
 
+
+    useEffect(() => {
+        dataCity();
+
+    }, []);
     const handleInputChange = (e) => {
         const { name, value } = e.target;
 
@@ -214,12 +206,13 @@ function Profile(props) {
         setSelectedCity(value);
         const selectedCityCode = cityData.find(city => city.value === value)?.value;
         const selectedCityName = cityData.find(city => city.value === value)?.label;
-        setCity(selectedCityCode); // Đây có vẻ là lỗi, phải là setCity(selectedCityCode);
-        setSelectedDis(""); // Reset giá trị của huyện/quận khi chọn thành phố mới
-        setSelectedWar(""); // Reset giá trị của xã/phường khi chọn thành phố mới
-        setDistrict(""); // Reset giá trị của huyện/quận khi chọn thành phố mới
-        setWard(""); // Reset giá trị của xã/phường khi chọn thành phố mới
-        dataDis(selectedCityCode); // Gọi hàm để lấy danh sách huyện/quận mới
+        setCity(selectedCityName);
+        setSelectedDis(""); 
+        setSelectedWar(""); 
+        setDistrict(""); 
+        setWard(""); 
+        dataDis(selectedCityCode); 
+     
     };
 
 
@@ -227,7 +220,7 @@ function Profile(props) {
         setSelectedDis(value);
         const selectedDisCode = disData.find((dis) => dis.value === value)?.value;
         const selectedDisName = disData.find((dis) => dis.value === value)?.label;
-        setDistrict(selectedDisCode);
+        setDistrict(selectedDisName);
         setSelectedWar("");
         dataWar(selectedDisCode);
     };
@@ -236,7 +229,7 @@ function Profile(props) {
         setSelectedWar(value);
         const selectedWarName = warData.find((war) => war.value === value)?.label;
         const selectedWarCode = warData.find((war) => war.value === value)?.value;
-        setWard(selectedWarCode);
+        setWard(selectedWarName);
     };
     const handleInputChange1 = (e) => {
         const { name, value } = e.target;
@@ -255,7 +248,7 @@ function Profile(props) {
             setDefaul(parseInt(value));
         }
     };
-   
+
     // Hàm này dùng để render html cho từng loại edit profile hoặc change password
     // Tùy theo người dùng chọn
 
@@ -314,15 +307,16 @@ function Profile(props) {
     const [status, setStatus] = useState('');
 
     const [userData, setUserData] = useState(null);
+    const [addedAddress, setAddedAddress] = useState(false);
 
     const fetchUserData = async () => {
         try {
-            const token = localStorage.getItem("token"); // Lấy token từ localStorage hoặc nơi lưu trữ khác
-            const headerss = {
-                "Authorization": `Bearer ${token}`
-            };
-            console.log(token);
-            const response = await axios.post("http://localhost:8071/customer/user-info", headerss);
+            // const token = localStorage.getItem("token");
+            // const headerss = {
+            //     "Authorization": `Bearer ${token}`
+            // };
+
+            const response = await axios.post("http://localhost:8071/customer/user-info");
             console.log(response);
             setUserData(response.data);
             setCreatedBy(response.data.createdBy);
@@ -523,6 +517,7 @@ function Profile(props) {
     };
     const [showPassword, setShowPassword] = useState(false); // Trạng thái hiển thị mật khẩu
 
+    const [editAddress, setEditAddress] = useState(null); // State để lưu trữ dữ liệu của bản ghi đang được chỉnh sửa
 
     const [activeTab, setActiveTab] = useState("choXacNhan", "choGiaoHang", "giaoHang", "hoanThanh", "huy", "tra");
     const handleTabChange = (key) => {
@@ -530,8 +525,8 @@ function Profile(props) {
     };
 
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const showModal = () => {
-
+    const showModal = (address) => {
+       setEditAddress(address)
         setIsModalVisible(true);
     };
 
@@ -540,58 +535,62 @@ function Profile(props) {
     };
     const [addresses, setAddresses] = useState([]);
 
-    const fetchAddressesByIdCustomer = async (id, token) => {
+    const fetchAddressesByIdCustomer = async () => {
         try {
-            const response = await axios.get(`http://localhost:8071/customer/get-all-address`, {
+            const response = await axios.get(`http://localhost:8071/customer/get-all-address`);
 
-            });
-            console.log(response);
-            setAddresses(response.data)
-            return addAddress;
+            const data = response.data; // Lưu giữ kết quả vào biến data
 
+            console.log(data); // Log dữ liệu để kiểm tra
+
+            setAddresses(data); // Gán dữ liệu vào state addresses
+            console.log(addresses);
+            return data; // Trả về dữ liệu cho các xử lý khác nếu cần
         } catch (error) {
             console.error('Lỗi khi hiển thị dữ liệu:', error);
-
         }
     };
+
     const [ids, setIds] = useState(false)
 
     useEffect(() => {
         fetchAddressesByIdCustomer();
-    }, []);
+
+    }, [addedAddress]);
 
 
     const [is_defaul, setIsDefault] = useState('')
     const token = localStorage.getItem("token")
     const addAddress = async () => {
-        if (!city || !district || !ward || !description) {
+        if (!selectedCity || !selectedDis || !selectedWar || !description) {
             message.error('Vui lòng điền đầy đủ thông tin.');
             return;
         }
-    
+
         try {
             const requestBody = {
                 id_customer: id,
-                city: selectedCity,
-                district: selectedDis,
-                province: selectedWar,
+                city: city,
+                district: district,
+                province: ward,
                 description: description,
             };
-    
+
             console.log(requestBody);
             const response = await axios.post('http://localhost:8071/customer/create-address', requestBody);
-            console.log(response.data); // Log dữ liệu phản hồi từ API
-          
-            console.log(selectedCity);
-            await dataDis(selectedCity);
-            console.log("Selected District:", selectedDis); // Log giá trị selectedDis sau khi được cập nhật bởi hàm dataDis
-    
-            await dataWar(selectedDis);
-            console.log("Selected Ward:", selectedWar); // Log giá trị selectedWar sau khi được cập nhật bởi hàm dataWar
-            fetchAddressesByIdCustomer();
-        
+            console.log(response.data);
+
+            // console.log(selectedCity);
+            // await dataDis(selectedCity);
+            // console.log("Selected District:", selectedDis); 
+
+            // await dataWar(selectedDis);
+            // console.log("Selected Ward:", selectedWar); 
+
+            await fetchAddressesByIdCustomer();
+
             message.success('Thêm địa chỉ thành công:');
-            
+            setAddedAddress(!addedAddress)
             form.resetFields();
             handleAddCancel();
         } catch (error) {
@@ -605,7 +604,7 @@ function Profile(props) {
             handleAddCancel();
         }
     };
-    
+
 
 
     const handleAddAddress = async () => {
@@ -619,7 +618,7 @@ function Profile(props) {
         province: '',
         description: ''
     });
-   
+
     const updateAddress = async (id) => {
 
 
@@ -718,15 +717,29 @@ function Profile(props) {
 
     // Hàm để lấy tên của district từ ID
     const getDistrictName = (districtId) => {
-        const district = disData.find(dis => dis.value == districtId);
+        // Chỉ thực hiện khi dữ liệu đã được tải thành công
+
+        console.log("Truyền vào districtId:", districtId);
+
+        const district = disData.find(dis => parseInt(dis.value) === parseInt(districtId));
+
+        console.log("Kết quả tìm kiếm district:", district);
 
         return district ? district.label : '';
     };
-    // Hàm để lấy tên của ward từ ID
+
     const getWardName = (wardId) => {
+        // Chỉ thực hiện khi dữ liệu đã được tải thành công
+
+        console.log("Truyền vào wardId:", wardId);
+
         const ward = warData.find(ward => ward.value == wardId);
+
+        console.log("Kết quả tìm kiếm ward:", ward);
+
         return ward ? ward.label : '';
     };
+
     const [password1, set_password1] = useState('');
 
     const [listVoucher, setListVoucher] = useState([])
@@ -1227,10 +1240,10 @@ function Profile(props) {
                                 <div className="voucher" style={{ width: "1000px" }}>
                                     <Input
                                         placeholder="Tìm kiếm theo mã voucher"
-                                        style={{ margin: "10px", height: "55px", width: "300px"}}
+                                        style={{ margin: "10px", height: "55px", width: "300px" }}
                                         onChange={handleSearchChange}
-                                        prefix={<SearchOutlined/>}
-                                        
+                                        prefix={<SearchOutlined />}
+
                                     />
                                     <div>
                                         <Row style={{ border: '1px solid while', padding: '15px', height: "280px", overflow: "auto" }}>
@@ -1359,15 +1372,16 @@ function Profile(props) {
                                     </div>
                                     <hr className="" style={{ marginTop: "0px", marginBottom: "0px" }} />
                                     <div>
-                                        {addresses.map(address => (
-                                            <div key={address.id} >
+                                        {addresses.map((address, index) => (
+                                            <div key={index}>
                                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "10px" }}>
                                                     <p className='m-3'>
-                                                        Tỉnh/Thành phố: {address.city && getProvinceName(address.city)} <br />
-                                                        Huyện/Quận: {address.district && getDistrictName(address.district)} <br />
-                                                        Xã/Phường: {address.province && getWardName(address.province)} <br />
+                                                        Tỉnh/Thành phố: {(address.city)} <br />
+                                                        Huyện/Quận: {(address.district)} <br />
+                                                        Xã/Phường: {(address.province)} <br />
                                                         Địa chỉ: {address.description}
                                                     </p>
+
                                                     <div style={{ textAlign: "center" }}>
                                                         <Popconfirm
                                                             title="Bạn muốn đặt địa chỉ này làm mặc định chứ?"
@@ -1382,11 +1396,11 @@ function Profile(props) {
                                                                 Mặc định
                                                             </Button>
                                                         </Popconfirm>
-                                                        <Button className='m-2' type='primary' onClick={showModal}>Cập nhật</Button>
+                                                        <Button className='m-2' type='primary' onClick={() => showModal(address)}>Cập nhật</Button>
                                                         <Modal title="Sửa địa chỉ" visible={isModalVisible} onCancel={handleCancel}
                                                             footer={[
                                                                 <Button key="cancel" onClick={handleCancel}>Hủy</Button>,
-                                                                <Button key="ok" type="primary" onClick={() => updateAddress(address.id)}>Sửa</Button>,
+                                                                <Button key="ok" type="primary" onClick={() => updateAddress(index)}>Sửa</Button>,
                                                             ]}>
                                                             <form>
                                                                 <div className='d-flex center mb-3'>
@@ -1402,7 +1416,7 @@ function Profile(props) {
                                                                         }
                                                                         options={cityData}
                                                                         onChange={handleCityChange1}
-                                                                        value={getProvinceName(address.city)}
+                                                                        value={(editAddress && editAddress.city) || ''}
                                                                     />
                                                                 </div>
                                                                 <div className='d-flex center mb-3'>
@@ -1413,13 +1427,9 @@ function Profile(props) {
                                                                         placeholder="--- Chọn Quận/Huyện ---"
                                                                         optionFilterProp="children"
                                                                         filterOption={(input, option) => (option?.label ?? '').includes(input)}
-                                                                        // filterSort={(optionA, optionB) =>
-                                                                        //     (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                                                                        // }
                                                                         options={disData}
                                                                         onChange={handleDisChange1}
-                                                                        value={getDistrictName(address.district)}
-
+                                                                        value={(editAddress && editAddress.district) || ''}
                                                                     />
                                                                 </div>
                                                                 <div className='d-flex center mb-3'>
@@ -1435,14 +1445,14 @@ function Profile(props) {
                                                                         }
                                                                         options={warData}
                                                                         onChange={handleWarChange1}
-                                                                        value={getWardName(address.province)}
+                                                                        value={(editAddress && editAddress.province) || ''}
                                                                     />
                                                                 </div>
                                                                 <div className='d-flex center mb-3'>
                                                                     <label className='w-50'>Nhập địa chỉ chi tiết</label>
                                                                     <Input
                                                                         name="description"
-                                                                        value={address.description}
+                                                                        value={(editAddress && editAddress.description) || ''}
                                                                         onChange={(e) => handleInputChange1({ target: { name: 'description', value: e.target.value } })}
                                                                     />
                                                                 </div>
@@ -1454,12 +1464,14 @@ function Profile(props) {
                                                             okText="Xóa"
                                                             cancelText="Hủy"
                                                         >
-                                                            <Button type="danger">Xóa</Button> {/* Sử dụng Popconfirm cho nút Xóa */}
-                                                        </Popconfirm>                                                    </div>
+                                                            <Button className='m-2' type='primary'>Xóa</Button> {/* Sử dụng Popconfirm cho nút Xóa */}
+                                                        </Popconfirm>
+                                                    </div>
                                                 </div>
                                                 <hr className="" style={{ marginTop: "0px", marginBottom: "0px" }} />
                                             </div>
                                         ))}
+
                                     </div>
                                 </div>
                             )

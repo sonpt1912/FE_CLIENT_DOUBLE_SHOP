@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, Redirect } from "react-router-dom";
+import { Link, Redirect, useLocation } from "react-router-dom";
 import Cart from "../API/CartAPI";
 import User from "../API/User";
 import logo from "../Image/1.jpg";
@@ -14,13 +14,13 @@ import CartsLocal from "./CartsLocal";
 import { FaUser, FaHeart, FaShoppingCart } from 'react-icons/fa';
 import { AiOutlineUser, AiOutlineHeart, AiOutlineShoppingCart } from 'react-icons/ai';
 import { useHistory } from 'react-router-dom';
-import { Modal, Button, Row, Col, Pagination,Spin } from 'antd';
+import { Modal, Button, Row, Col, Pagination, Spin } from 'antd';
 import axios from 'axios';
 
 
 function Header(props) {
   // State count of cart
-
+  const { pathname } = useLocation();
 
   const [count_cart, set_count_cart] = useState(0);
 
@@ -171,24 +171,24 @@ function Header(props) {
   const [keyword_search, set_keyword_search] = useState("");
 
   const [products, set_products] = useState([]);
-  const [loading,setLoading]=useState(false)
+  const [loading, setLoading] = useState(false)
   useEffect(() => {
     const fetchData = async () => {
       try {
-      
+
         const response = await Product.Get_All_Product();
         set_products(response);
         // Đặt loading thành false khi fetch hoàn thành
       } catch (error) {
         console.error('Error fetching data:', error);
         // Xử lý lỗi ở đây
-      } 
+      }
     };
-  
+
     fetchData();
   }, []);
-  
-  
+
+
 
   // Hàm này trả ra list product mà khách hàng tìm kiếm
   // sử dụng useMemo để performance hơn vì nếu mà dữ liệu mới giống với dữ liệu cũ thì nó sẽ lấy cái
@@ -204,7 +204,7 @@ function Header(props) {
 
     return new_data;
   }, [keyword_search]);
-
+  const [idCustomer, setIdCustomer] = useState('')
   const handler_search = (e) => {
     e.preventDefault();
 
@@ -235,10 +235,24 @@ function Header(props) {
   };
   const [data, setData] = useState([]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.post("http://localhost:8071/customer/user-info");
+        // Lưu idCustomer từ dữ liệu nhận được vào state
+        console.log(response);
+        setIdCustomer(response.data.id);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
 
   const showModal = () => {
     setIsModalVisible(true);
   };
+  const profileRegex = /^\/profile\/[a-zA-Z0-9-_]+$/;
 
   const handleCancel = () => {
     setIsModalVisible(false);
@@ -248,8 +262,9 @@ function Header(props) {
       setLoading(true);
       const response = await axios.post('http://localhost:8071/favorite/get-all-by-id-customer'); // Replace with your API endpoint
       console.log(response);
-
+      console.log(response.data);
       setData(response.data);
+
       setLoading(false) // Set the data state with the fetched data
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -257,7 +272,7 @@ function Header(props) {
     finally {
       setLoading(false); // Đặt loading thành false dù có lỗi xảy ra hay không
     }
-    
+
   };
 
 
@@ -286,6 +301,7 @@ function Header(props) {
     setCurrentPage(1); // Reset trang về trang đầu tiên khi thay đổi kích thước của trang
     setPageSize(size);
   };
+
 
   return (
     <header >
@@ -322,11 +338,14 @@ function Header(props) {
                           <Link to="/about" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>VỀ CHÚNG TÔI</Link>
                         </li>
                       </ul>
+
                       <li style={{ display: "flex", alignItems: "center" }}>
-                        <Link to={accessToken ? "/profile/1" : "/signin"} style={{ margin: "0 15px", fontSize: "25px" }}>
+                        <Link to={accessToken ? `/profile` : "/signin"} style={{ margin: "0 15px", fontSize: "25px" }} >
                           <AiOutlineUser style={{ color: "black" }} /> {/* Biểu tượng user */}
+
+
                         </Link>
-                        <div style={{ marginTop: "10px",marginLeft:"20px",marginRight:"20px", fontSize: "25px", cursor: "pointer" }} onClick={handleFavoriteClick}>
+                        <div style={{ marginTop: "10px", marginLeft: "20px", marginRight: "20px", fontSize: "25px", cursor: "pointer" }} onClick={handleFavoriteClick}>
                           <AiOutlineHeart style={{ color: "black" }} />
                         </div>
                         {isModalVisible && ( // Kiểm tra nếu isModalVisible là true thì mới hiển thị modal
@@ -344,42 +363,50 @@ function Header(props) {
                               <h2 style={{ textAlign: "center" }}>Danh sách sản phẩm</h2>
                               <Spin spinning={loading} size="large" style={{ margin: '0 auto' }}>
 
-                              <Row style={{ border: '1px solid white', padding: '15px', height: "280px", overflow: "auto" }}>
-                                {slicedVouchers.map(i => (
-                                  <Col span={12}>
-                                    <div style={{
-                                      margin: '10px',
-                                      border: '1px solid #ccc',
-                                      padding: '10px',
-                                      marginBottom: '10px',
-                                      backgroundColor: '',
-                                      borderRadius: '5px',
-                                      boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.1)',
-                                      position: 'relative',
-                                      height: "100px"
-                                    }}>
-                                      <Row>
-                                        <Col span={8}>
-                                          <div style={{ width: "150px", backgroundColor: '#f0f0f0', height: "75px" }} />{/* Add your image component here */}
-                                        </Col>
-                                        <Col span={16} style={{ position: 'relative' }}>
-                                          <div style={{ position: 'absolute', top: 40, right: 0, transform: 'translateY(-50%)' }}>
-                                            Tên sản phẩm: {i.name} {/* Product name */}
-                                          </div>
-                                        </Col>
-                                      </Row>
+                                <Row style={{ border: '1px solid white', padding: '15px', height: "280px", overflow: "auto" }}>
+                                  {slicedVouchers.map(i => (
+                                    <Col span={12} key={i.id}>
                                       <div style={{
-                                        position: 'absolute', // Sử dụng absolute position để đặt endDate
-                                        bottom: '5px',
-                                        right: '10px',
-                                        fontStyle: 'italic'
+                                        margin: '10px',
+                                        border: '1px solid #ccc',
+                                        padding: '10px',
+                                        marginBottom: '10px',
+                                        backgroundColor: '',
+                                        borderRadius: '5px',
+                                        boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.1)',
+                                        position: 'relative',
+                                        height: "100px"
                                       }}>
-                                        {/* HSD: <br></br>{i.product.code} */}
+                                        <Row>
+                                          <Col span={8}>
+                                            {/* Kiểm tra xem có ảnh không */}
+                                            {i.listImage ? (
+                                              // Nếu có ảnh, hiển thị ảnh
+                                              <img src={i.listImage.resource[0].url} alt={i.name} style={{ width: "150px", height: "75px" }} />
+                                            ) : (
+                                              // Nếu không có ảnh, hiển thị div
+                                              <div style={{ width: "150px", backgroundColor: '#f0f0f0', height: "75px" }} />
+                                            )}
+                                          </Col>
+                                          <Col span={16} style={{ position: 'relative' }}>
+                                            <div style={{ position: 'absolute', top: 40, right: 0, transform: 'translateY(-50%)' }}>
+                                              Tên sản phẩm: {i.name} {/* Product name */}
+                                            </div>
+                                          </Col>
+                                        </Row>
+                                        <div style={{
+                                          position: 'absolute', // Sử dụng absolute position để đặt endDate
+                                          bottom: '5px',
+                                          right: '10px',
+                                          fontStyle: 'italic'
+                                        }}>
+                                          {/* HSD: <br></br>{i.product.code} */}
+                                        </div>
                                       </div>
-                                    </div>
-                                  </Col>
-                                ))}
-                              </Row>
+                                    </Col>
+                                  ))}
+
+                                </Row>
                               </Spin>
 
                               <Pagination

@@ -1,14 +1,16 @@
-import React, { useState } from "react";
-import { Link, Redirect } from "react-router-dom";
+import React, { useState,useEffect } from "react";
+import { Link, Redirect ,useHistory} from "react-router-dom";
 import User from "../API/User";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { useDispatch, useSelector } from "react-redux";
 import { changeCount } from "../Redux/Action/ActionCount";
 import { Button, Form, Input } from "antd";
 import "./Signin.css";
-
+import axios from 'axios';
+import { message } from 'antd';
 function SignIn(props) {
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const [username, set_username] = useState("");
   const [password, set_password] = useState("");
@@ -23,7 +25,14 @@ function SignIn(props) {
 
   // Get isLoad từ redux để load lại phần header
   const count_change = useSelector((state) => state.Count.isLoad);
-
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token || token === "undefined") {
+      history.push("/signin");
+    } else  {
+      history.push("/shop/all");
+    }
+  }, [history]);
   const handler_signin = (e) => {
     e.preventDefault();
 
@@ -58,6 +67,51 @@ function SignIn(props) {
 
     fetchData();
   };
+  const onFailureGoogle = (error) => {
+    if (error.response && error.response.status === 401) {
+      console.error("Unauthorized: Please log in.");
+      history.push("/signin");
+    } else {
+      console.error("Google login failed:", error);
+    }
+  };
+  const onSuccessGoogle = async (response) => {
+    console.log(response);
+    try {
+      // Gọi hàm dispatch(loginGoogle()) và truyền tokenId từ response vào
+      const result = await dispatch(loginGoogle(response.credential));
+      console.log("Got result:", result);
+  
+      // Kiểm tra kết quả trả về từ hàm loginGoogle
+      if (result.error && result.error.message === "Rejected") {
+        message.error("Không có quyền truy cập !");
+      } else {
+        // Nếu không có lỗi, chuyển hướng đến trang /dashboard/thongKe
+        history.push("/shop/all");
+      }
+    } catch (error) {
+      // Nếu có lỗi, hiển thị thông báo lỗi
+      message.error("Login failed:", error);
+    }
+  };
+  
+  // Hàm gọi API để đăng nhập bằng Google và lưu token vào localStorage
+  const loginGoogle = async (tokenId) => {
+    try {
+      // Gọi API để đăng nhập bằng Google và truyền tokenId
+      const response = await axios.post(`http://localhost:8071/auth/google`, {
+        crenditial: tokenId,
+      });
+      console.log(tokenId,response);
+      // Lưu token vào localStorage và trả về
+      localStorage.setItem("token", response.data.access_token);
+      return response.data.access_token;
+    } catch (error) {
+      // Nếu có lỗi, ném lỗi
+      throw error.response.data;
+    }
+  };
+
 
   return (
     <GoogleOAuthProvider clientId="371453517569-sdlqpnul2t1iihsrk3u2apb6qvik0cvh.apps.googleusercontent.com">
@@ -109,8 +163,8 @@ function SignIn(props) {
 
             <Form.Item>
               <GoogleLogin
-                //   onSuccess={onSuccessGoogle}
-                //   onFailure={onFailureGoogle}
+                onSuccess={onSuccessGoogle}
+                onFailure={onFailureGoogle}
                 shape="square"
                 useOneTap="true"
               />

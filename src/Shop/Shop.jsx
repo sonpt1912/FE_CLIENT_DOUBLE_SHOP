@@ -36,10 +36,10 @@ function Shop(props) {
 
     //Hàm này dùng để thay đổi state pagination.page
     //Nó sẽ truyền xuống Component con và nhận dữ liệu từ Component con truyền lên
-    const handleChangePage = (pageNumber, newPageSize) => {
-        console.log(pageNumber);
+    const handleChangePage = (pageNumber) => {
+        // console.log(pageNumber,newPageSize);
         setCurrentPage(pageNumber);
-
+        // setPageSize(newPageSize)
     };
 
 
@@ -251,6 +251,8 @@ function Shop(props) {
 
             // }));
             setProducts(response.listData);
+            console.log(products);
+            setCurrentPage(1)
             // setPageSize(pagination.pageSize)
             setTotalRecord(response.totalRecord);
             setTotalPage(Math.ceil(response.totalRecord / 9));
@@ -354,7 +356,7 @@ function Shop(props) {
             try {
                 setLoading(true);
                 // const calculatedPageSize = calculatePageSize(currentPage, totalRecord);
-                const requestBody = { page: currentPage - 1, pageSize: 9 };
+                const requestBody = { page: currentPage - 1, pageSize: 9 ,idBrand:selectedBrand,idMaterial:selectedMaterial,idSize:selectedSize,idColor:selectedColor,idCollar:selectedCollar,idCategory:selectedCategory};
                 console.log(requestBody);
 
                 const response = await Product.Get_All_Product(requestBody);
@@ -370,6 +372,7 @@ function Shop(props) {
                 // setTotalRecord(response.totalRecord);
                 console.log(newData.length); // Đảm bảo newData có đúng 4 phần tử
                 setProducts(newData)
+                
                 // Kiểm tra dữ liệu sau khi set
                 console.log("products sau khi set:", newData);
             } catch (error) {
@@ -381,7 +384,7 @@ function Shop(props) {
 
         fetchData();
 
-    }, [pageSize, currentPage]);
+    }, [currentPage,pageSize]);
 
 
     // useEffect(() => {
@@ -613,12 +616,12 @@ function Shop(props) {
                                         <div className="product-area shop-product-area">
                                             <div className="row">
                                                 {loading ? (
-                                                    <Spin size="large" style={{ margin: 'auto',marginTop:'250px' ,marginBottom:'200px'}} />
+                                                    <Spin size="large" style={{ margin: 'auto', marginTop: '250px', marginBottom: '200px' }} />
                                                 ) : (
-                                                    products.map(product => (
-                                                        <div className="col-lg-4 col-md-6" key={product.id}>
+                                                    products.map((product, index) => (
+                                                        <div className="col-lg-4 col-md-6" key={index}>
                                                             <div className="single-product-wrap">
-                                                                <div className="product-image" style={{marginTop:'20px'}}>
+                                                                <div className="product-image" style={{ marginTop: '20px' }}>
                                                                     <Link to={`/detail/${product.id}`}>
                                                                         {product.listImages && product.listImages.resources.length > 0 ? (
                                                                             <img src={product.listImages.resources[0].url} alt={product.name} />
@@ -652,6 +655,7 @@ function Shop(props) {
                                                         </div>
                                                     ))
                                                 )}
+
                                             </div>
                                         </div>
                                     </div>
@@ -666,6 +670,7 @@ function Shop(props) {
                                                 pageSize={pageSize}
                                                 total={totalRecord}
                                                 onChange={handleChangePage}
+                                             
                                                 showQuickJumper
                                                 showSizeChanger
                                                 showTotal={(totalRecord) => `Tổng ${totalRecord} sản phẩm`}
