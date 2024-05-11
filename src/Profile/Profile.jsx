@@ -293,30 +293,20 @@ function Profile(props) {
     };
 
     const handleInputChange1 = (value) => {
-        // const { name, value } = e.target;
-
-        // if (name === "city") {
-        //     setCity(value);
-        // } else if (name === "dis") {
-        //     setSelectedDis(value);
-        // } else if (name === "war") {
-        //     setWard(value);
-        // } else if (name === "ngo") {
-        //     setNgo(value);
-        // } 
-        // else 
-
-        console.log(value);
-
+        // Đặt mô tả mới
         setDescription(value);
         console.log(description);
-        Diachi.description = value;
-        Diachi.city = city;
-        Diachi.district = district;
-        Diachi.province = ward;
-        setEditAddress(Diachi);
-
+    
+        // Tạo một bản sao của địa chỉ hiện tại
+        const updatedAddress = { ...editAddress };
+    
+        // Cập nhật mô tả trong bản sao
+        updatedAddress.description = value;
+    
+        // Đặt bản sao đã cập nhật vào state
+        setEditAddress(updatedAddress);
     };
+    
 
 
     // Hàm này dùng để render html cho từng loại edit profile hoặc change password
@@ -349,29 +339,22 @@ function Profile(props) {
 
     const [user, set_user] = useState({})
 
-    // useEffect(() => {
+    useEffect(() => {
+        const token = localStorage.getItem('token'); // Lấy token từ localStorage hoặc nơi khác
+        const headers = {
+            Authorization: `Bearer ${token}`
+        };
 
-    //     const fetchData = async () => {
-
-    //         const response = await User.Get_User(sessionStorage.getItem('id_user'))
-
-    //         set_user(response)
-
-    //         set_name(response.fullname)
-
-    //         set_username(response.username)
-
-    //         set_email(response.email)
-
-    //         set_password(response.password)
-    //         set_new_password(response.password)
-    //         set_compare_password(response.password)
-
-    //     }
-
-    //     fetchData()
-
-    // }, [])
+        axios.post('http://localhost:8071/customer/check-address-defaul', null, { headers })
+            .then(response => {
+                console.log('Address default check result:', response.data);
+                // Xử lý kết quả nếu cần
+            })
+            .catch(error => {
+                console.error('Error checking default address:', error);
+                // Xử lý lỗi nếu cần
+            });
+    }, []); 
     const [gender, setGender] = useState('');
     const [birthday, setBirthDay] = useState([]);
     const [status, setStatus] = useState('');
@@ -381,12 +364,11 @@ function Profile(props) {
 
     const fetchUserData = async () => {
         try {
-            // const token = localStorage.getItem("token");
-            // const headerss = {
-            //     "Authorization": `Bearer ${token}`
-            // };
-
-            const response = await axios.post("http://localhost:8071/customer/user-info");
+            const headers = {
+                "Authorization": `Bearer ${token}`
+            };
+    
+            const response = await axios.post("http://localhost:8071/customer/user-info", {}, { headers });
             console.log(response);
             setUserData(response.data);
             setCreatedBy(response.data.createdBy);
@@ -398,13 +380,13 @@ function Profile(props) {
             set_password(response.data.password);
             setStatus(response.data.status);
             set_email(response.data.email);
-            set_sdt(response.data.phone)
-            setId(response.data.id)
+            set_sdt(response.data.phone);
+            setId(response.data.id);
         } catch (error) {
-            console.error("Lỗi khi hiển thị dữ liệu:");
+            console.error("Lỗi khi hiển thị dữ liệu:", error);
         }
     };
-
+    
     useEffect(() => {
 
         fetchUserData();
@@ -431,12 +413,9 @@ function Profile(props) {
 
     const handler_update = async () => {
         try {
-
             const requestBody = {
-                // _id: sessionStorage.getItem('id_user'),
                 name: name,
                 username: username,
-                // password: compare_password,
                 email: email,
                 phone: sdt,
                 createdTime: createdTime,
@@ -447,24 +426,27 @@ function Profile(props) {
                 gender: gender,
                 status: status
             };
+    
             if (/\s/.test(sdt)) {
                 message.error('Số điện thoại không được chứa dấu cách.');
                 return;
             }
-
-            // Kiểm tra xem tên có chứa dấu cách ở đầu không
+    
             if (/^\s/.test(name)) {
                 message.error('Tên không được chứa dấu cách ở đầu.');
                 return;
             }
+    
             if (sdt.trim() === '') {
-                message.error('Vui lòng điền đầy đủ thông tin số điện thoại ');
+                message.error('Vui lòng điền đầy đủ thông tin số điện thoại.');
                 return;
             }
+    
             if (name.trim() === '') {
-                message.error('Vui lòng điền đầy đủ thông tin tên ');
+                message.error('Vui lòng điền đầy đủ thông tin tên.');
                 return;
             }
+    
             const specialChars = /[!@#$%^&*(),.?":{}|<>]/g;
             if (specialChars.test(name)) {
                 message.error("Tên không được chứa ký tự đặc biệt!");
@@ -478,39 +460,39 @@ function Profile(props) {
                 message.error("Tên không được chỉ chứa số!");
                 return;
             }
-
-
+    
             if (!isValidPhoneNumber(sdt)) {
                 message.error('Số điện thoại không hợp lệ. Vui lòng kiểm tra lại!');
                 return;
             }
+    
             console.log(requestBody);
-
-            // Lấy bearerToken từ session storage hoặc nơi lưu trữ khác
-            const bearerToken = localStorage.getItem('token');
-            console.log(bearerToken);
-            const response = await axios.post("http://localhost:8071/customer/update-user-infor", requestBody, {
-                headers: {
-                    Authorization: `Bearer ${bearerToken}`
-                }
-            });
-            console.log(response);
-            setBirthDay(response.data.birthDay)
-            set_name(response.data.name)
-            setGender(response.data.gender)
-            set_sdt(response.data.phone)
+    
+            // Tạo object headers chứa tiêu đề Authorization
+            const headers = {
+                "Authorization": `Bearer ${token}`
+            };
+    
+            // Gửi yêu cầu POST với dữ liệu và tiêu đề Authorization
+            const response = await axios.post("http://localhost:8071/customer/update-user-infor", requestBody, { headers });
+    
+            console.log(response.data);
+    
+            // Cập nhật dữ liệu từ phản hồi
+            setBirthDay(response.data.birthDay);
+            set_name(response.data.name);
+            setGender(response.data.gender);
+            set_sdt(response.data.phone);
+    
             // Hiển thị thông báo thành công
             message.success('Cập nhật thành công!');
-            // window.location.reload();
         } catch (error) {
             // Xử lý lỗi và hiển thị thông báo lỗi
-            message.error('Cập nhật thất bại:');
-
-
-            // Kiểm tra nếu mã lỗi là 403 và có thông tin lỗi từ máy chủ
-
+            console.error('Cập nhật thất bại:', error);
+            message.error('Cập nhật thất bại!');
         }
     };
+    
     const [isAddModalVisible, setIsAddModalVisible] = useState(false);
     const handleAddCancel = () => {
         setIsAddModalVisible(false);
@@ -521,14 +503,13 @@ function Profile(props) {
     const handler_change = async () => {
         // Kiểm tra xác thực mật khẩu mới và mật khẩu nhập lại
         const whitespaceRegex = /\s/;
-
-
+    
         // Tạo đối tượng requestBody từ dữ liệu nhập liệu
         const requestBody = {
             password: password1,
             newPassword: new_password
         };
-
+    
         if (new_password.trim() !== compare_password.trim()) {
             message.error('Mật khẩu mới và mật khẩu nhập lại không khớp.');
             return;
@@ -563,18 +544,24 @@ function Profile(props) {
             message.error('Vui lòng điền nhập lại mật khẩu mới ');
             return;
         }
+    
         try {
-            // Gọi API để thay đổi mật khẩu
-            const response = await axios.post('http://localhost:8071/customer/update-password', requestBody);
-
+            // Tạo object headers chứa tiêu đề Authorization
+            const headers = {
+                "Authorization": `Bearer ${token}`
+            };
+    
+            // Gọi API để thay đổi mật khẩu với headers
+            const response = await axios.post('http://localhost:8071/customer/update-password', requestBody, { headers });
+    
             // Xử lý kết quả từ API nếu cần
             console.log(response);
-
+    
             // Hiển thị thông báo hoặc chuyển hướng trang sau khi thay đổi mật khẩu thành công
             message.success('Mật khẩu đã được thay đổi thành công.');
         } catch (error) {
             // Xử lý lỗi nếu có
-
+    
             // Kiểm tra nếu mã lỗi là 403 và có thông tin lỗi từ máy chủ
             if (error.response && error.response.status === 403) {
                 // Hiển thị thông báo nếu mật khẩu cũ không chính xác
@@ -585,6 +572,7 @@ function Profile(props) {
             }
         }
     };
+    
     const [showPassword, setShowPassword] = useState(false); // Trạng thái hiển thị mật khẩu
 
     const [editAddress, setEditAddress] = useState(null); // State để lưu trữ dữ liệu của bản ghi đang được chỉnh sửa
@@ -610,12 +598,18 @@ const [bien,setBien]=useState("")
 
     const fetchAddressesByIdCustomer = async () => {
         try {
-            const response = await axios.get(`http://localhost:8071/customer/get-all-address`);
-
+            // Tạo object headers chứa tiêu đề Authorization
+            const headers = {
+                "Authorization": `Bearer ${token}`
+            };
+    
+            // Gửi yêu cầu GET với tiêu đề Authorization
+            const response = await axios.get('http://localhost:8071/customer/get-all-address', { headers });
+    
             const data = response.data; // Lưu giữ kết quả vào biến data
-
+    
             console.log(data); // Log dữ liệu để kiểm tra
-
+    
             setAddresses(data); // Gán dữ liệu vào state addresses
             console.log(addresses);
             return data; // Trả về dữ liệu cho các xử lý khác nếu cần
@@ -623,6 +617,7 @@ const [bien,setBien]=useState("")
             console.error('Lỗi khi hiển thị dữ liệu:', error);
         }
     };
+    
 
     const [ids, setIds] = useState(false)
 
@@ -635,12 +630,17 @@ const [bien,setBien]=useState("")
     const [is_defaul, setIsDefault] = useState('')
     const token = localStorage.getItem("token")
     const addAddress = async () => {
-        if (!city || !district || !ward || des.trim()=='') {
+        if (!city || !district || !ward || des.trim() === '') {
             message.error('Vui lòng điền đầy đủ thông tin.');
             return;
         }
-
+    
         try {
+            // Tạo object headers chứa tiêu đề Authorization
+            const headers = {
+                "Authorization": `Bearer ${token}`
+            };
+    
             const requestBody = {
                 id_customer: id,
                 city: city,
@@ -648,22 +648,18 @@ const [bien,setBien]=useState("")
                 province: ward,
                 description: des,
             };
-
+    
             console.log(requestBody);
-            const response = await axios.post('http://localhost:8071/customer/create-address', requestBody);
+    
+            // Gửi yêu cầu POST với tiêu đề Authorization
+            const response = await axios.post('http://localhost:8071/customer/create-address', requestBody, { headers });
             console.log(response.data);
-
-            // console.log(selectedCity);
-            // await dataDis(selectedCity);
-            // console.log("Selected District:", selectedDis); 
-
-            // await dataWar(selectedDis);
-            // console.log("Selected Ward:", selectedWar); 
-
+    
+            // Gọi lại hàm fetchAddressesByIdCustomer để cập nhật danh sách địa chỉ
             await fetchAddressesByIdCustomer();
-
+    
             message.success('Thêm địa chỉ thành công:');
-            setAddedAddress(!addedAddress)
+            setAddedAddress(!addedAddress);
             form.resetFields();
             handleAddCancel();
         } catch (error) {
@@ -677,6 +673,7 @@ const [bien,setBien]=useState("")
             handleAddCancel();
         }
     };
+    
 
 
 
@@ -700,6 +697,10 @@ const [bien,setBien]=useState("")
         }
     
         try {
+            const headers = {
+                "Authorization": `Bearer ${token}`
+            };
+    
             const requestBody = {
                 id: bien, // Truyền id của địa chỉ cần sửa
                 city: editAddress.city,
@@ -707,11 +708,14 @@ const [bien,setBien]=useState("")
                 province: editAddress.province,
                 description: editAddress.description,
             };
+    
             console.log(requestBody);
-            // Gọi API thêm mới địa chỉ
-            const response = await axios.post('http://localhost:8071/customer/update-address', requestBody);
+            
+            // Gửi yêu cầu POST với tiêu đề Authorization
+            const response = await axios.post('http://localhost:8071/customer/update-address', requestBody, { headers });
             console.log(response);
     
+            // Gọi hàm fetchAddressesByIdCustomer để cập nhật danh sách địa chỉ
             fetchAddressesByIdCustomer();
     
             message.success('Thành công:');
@@ -730,16 +734,27 @@ const [bien,setBien]=useState("")
         }
     };
     
+    
     const [ia, setIa] = useState(true)
     const updateOtherAddresses = async (id) => {
         try {
-            // Gọi API để cập nhật defaul của các bản ghi còn lại
-            const response = await axios.post('http://localhost:8071/customer/update-other-addresses', { id: id });
+            // Tạo object headers chứa tiêu đề Authorization
+            const headers = {
+                "Authorization": `Bearer ${token}`
+            };
+    
+            // Tạo requestBody chứa id của địa chỉ
+            const requestBody = {
+                id: id
+            };
+    
+            // Gửi yêu cầu POST với tiêu đề Authorization và requestBody
+            const response = await axios.post('http://localhost:8071/customer/update-other-addresses', requestBody, { headers });
+            
             if (response.status === 200) {
-                fetchAddressesByIdCustomer()
+                // Nếu thành công, cập nhật lại danh sách địa chỉ
+                fetchAddressesByIdCustomer();
                 console.log('Cập nhật defaul thành công!');
-                // setIa(false)
-
             } else {
                 console.log('Cập nhật defaul không thành công!');
             }
@@ -747,6 +762,7 @@ const [bien,setBien]=useState("")
             console.error('Lỗi khi cập nhật defaul của các bản ghi còn lại:', error);
         }
     };
+    
     const handleUpdateOther = (id) => {
         updateOtherAddresses(id);
     }
@@ -814,15 +830,25 @@ const [bien,setBien]=useState("")
     const [password1, set_password1] = useState('');
 
     const [listVoucher, setListVoucher] = useState([])
-    useEffect(() => {
-        axios.post('http://localhost:8071/customer/get-voucher-by-user-login')
-            .then(response => {
-                setListVoucher(response.data);
-            })
-            .catch(error => {
-                console.error('Lỗi khi hiển thị dữ liệu:', error);
-            });
-    }, []);
+  useEffect(() => {
+    const fetchData = async () => {
+        try {
+            // Tạo object headers chứa tiêu đề Authorization
+            const headers = {
+                "Authorization": `Bearer ${token}`
+            };
+
+            const response = await axios.post('http://localhost:8071/customer/get-voucher-by-user-login', {}, { headers });
+            setListVoucher(response.data);
+        } catch (error) {
+            console.error('Lỗi khi hiển thị dữ liệu:', error);
+        }
+    };
+
+    fetchData(); // Gọi hàm fetchData để lấy dữ liệu
+
+}, []); // Tham số thứ hai là một mảng rỗng để đảm bảo hiệu ứng chỉ chạy một lần khi component mount
+
 
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(6);
@@ -856,23 +882,28 @@ const [bien,setBien]=useState("")
         setShowPassword3(!showPassword3);
     };
 
-
     const handleDelete = async (id) => {
         try {
-            // Đặt trạng thái loading
-            const data = { id: id }
-            await axios.post('http://localhost:8071/customer/delete-address', data); // Gọi API DELETE với requestBody
+            // Tạo object headers chứa tiêu đề Authorization
+            const headers = {
+                "Authorization": `Bearer ${token}`
+            };
+    
+            // Tạo requestBody chứa id của địa chỉ
+            const data = { id: id };
+    
+            // Gửi yêu cầu POST với tiêu đề Authorization và requestBody
+            await axios.post('http://localhost:8071/customer/delete-address', data, { headers });
+    
             // Thực hiện các bước cần thiết sau khi xóa địa chỉ thành công
             message.success('Xóa địa chỉ thành công');
-            fetchAddressesByIdCustomer()
-
-
+            fetchAddressesByIdCustomer();
         } catch (error) {
-            message.error('Lỗi khi xóa địa chỉ:');
             // Xử lý lỗi nếu có
+            message.error('Lỗi khi xóa địa chỉ:', error);
         }
     };
-
+    
     const formatCurrency = (value) => {
         return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     };
@@ -1243,10 +1274,10 @@ const [bien,setBien]=useState("")
                                 <div className="setting_change_password">
                                     <div>
                                         <div className="txt_setting_edit mt-3 pb-2">
-                                            <div className="d-flex justify-content-center align-items-center" style={{ marginTop: '50px' }}>
+                                            <div className="d-flex justify-content-center align-items-center" style={{ marginTop: '20px' }}>
                                                 <span style={{ fontWeight: '600' }}>Mật khẩu cũ</span>
                                             </div>
-                                            <div className="input-group" style={{ width: '70%', marginTop: '50px' }} >
+                                            <div className="input-group" style={{ width: '70%', marginTop: '20px' }} >
                                                 <input
                                                     type={showPassword1 ? "text" : "password"}
                                                     className="txt_input_edit form-control"
@@ -1303,7 +1334,7 @@ const [bien,setBien]=useState("")
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="d-flex justify-content-center pt-3 pb-4 align-items-center">
+                                    <div className="d-flex justify-content-center pt-3 pb-4 align-items-center" style={{marginTop:'10px'}}>
                                         <button className="btn btn-secondary" onClick={handler_change}>Lưu</button>
                                     </div>
                                 </div>
@@ -1459,10 +1490,12 @@ const [bien,setBien]=useState("")
                                                             onConfirm={() => handleUpdateOther(address.id)} // Xác nhận thực hiện hành động
                                                             okText="Đồng ý"
                                                             cancelText="Hủy"
+                                                            
                                                         >
                                                             <Button
                                                                 type='primary'
                                                                 disabled={address.defaul === 0}
+                                                                className='m-2'
                                                             >
                                                                 Mặc định
                                                             </Button>

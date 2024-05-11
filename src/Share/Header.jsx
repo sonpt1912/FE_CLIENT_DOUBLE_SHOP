@@ -269,23 +269,29 @@ function Header(props) {
   const handleCancel = () => {
     setIsModalVisible(false);
   };
+  const token=localStorage.getItem("token")
   const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await axios.post('http://localhost:8071/favorite/get-all-by-id-customer'); // Replace with your API endpoint
+      
+      // Tạo object headers chứa tiêu đề Authorization
+      const headers = {
+          "Authorization": `Bearer ${token}`
+      };
+      
+      const response = await axios.post('http://localhost:8071/favorite/get-all-by-id-customer', {}, { headers }); // Thêm headers vào yêu cầu
+      
       console.log(response);
       console.log(response.data);
       setData(response.data);
 
-      setLoading(false) // Set the data state with the fetched data
     } catch (error) {
       console.error('Error fetching data:', error);
     }
     finally {
       setLoading(false); // Đặt loading thành false dù có lỗi xảy ra hay không
     }
-
-  };
+};
 
 
   useEffect(() => {
