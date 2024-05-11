@@ -13,8 +13,22 @@ const Product = {
     },
 
     Get_Detail_Product: (id) => {
-        const url = `/api/Product/${id}`
+        const url = `/public/product/get-product?id=${id}`
         return axiosClient.get(url)
+    },
+
+    Get_Detail_Product_Detail: (params) => {
+        const url = `/public/product/get-detail-product-by-product`
+        return axiosClient.post(url, params)
+    },
+
+    Get_Detail_Product_Size: (params) => {
+        const url = `public/size/get-all-by-conditoin`
+        return axiosClient.post(url, params)
+    },
+    Get_Detail_Product_Color: (id) => {
+        const url = `/public/color/get-all-color-by-condition`
+        return axiosClient.post(url,id)
     },
 
     Get_Category_Gender: (query) => {

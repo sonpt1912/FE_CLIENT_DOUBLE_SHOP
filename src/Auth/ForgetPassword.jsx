@@ -50,6 +50,7 @@ function ForgetPassword(props) {
           dispatch(action_count_change);
         }
       } catch (error) {
+        message.error("Vui lòng kiểm tra lại thông tin email!")
         console.error("Error: ", error);
       }
     };

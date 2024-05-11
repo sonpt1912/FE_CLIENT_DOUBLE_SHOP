@@ -1,27 +1,30 @@
-// import axiosClient from './axiosClient'
+import axiosClient from "./axiosClient";
 
-// const Cart = {
+const CartAPI = {
+  Get_Cart: (data) => {
+    const url = `/cart/get-product-from-cart`;
+    return axiosClient.post(url, data);
+  },
 
-//     Get_Cart: (query) => {
-//         const url = `/api/Cart${query}`
-//         return axiosClient.get(url)
-//     },
+  Add_Product_To_Cart: (data) => {
+    const url = "/cart/add-product-to-cart";
+    return axiosClient.post(url, data);
+  },
 
-//     Post_Cart: (data) => {
-//         const url = '/api/Cart'
-//         return axiosClient.post(url, data)
-//     },
+  Update_Quantity_Product: (data) => {
+    const url = "/cart/update-cart";
+    return axiosClient.post(url, data);
+  },
 
-//     Put_Cart: (query) => {
-//         const url = `/api/Cart${query}`
-//         return axiosClient.put(url)
-//     },
+  Put_Cart: (query) => {
+    const url = `/api/Cart${query}`;
+    return axiosClient.put(url);
+  },
 
-//     Delete_Cart: (id) => {
-//         const url = `/api/Cart/${id}`
-//         return axiosClient.delete(url)
-//     }
+  Delete_Cart: (id) => {
+    const url = `cart/delete-product-from-cart`;
+    return axiosClient.post(url, id);
+  },
+};
 
-// }
-
-// export default Cart
+export default CartAPI;

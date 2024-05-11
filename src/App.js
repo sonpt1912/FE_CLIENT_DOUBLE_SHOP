@@ -97,6 +97,12 @@ const SignUp = lazy(() => {
   });
 });
 
+const ForgotPassword = lazy(() => {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(import("./Auth/ForgetPassword")));
+  });
+});
+
 const History = lazy(() => {
   return new Promise((resolve) => {
     setTimeout(() => resolve(import("./History/History")));
@@ -143,6 +149,7 @@ function App() {
           <Switch>
             <Route path="/signin" component={SignIn} />
             <Route path="/signup" component={SignUp} />
+            <Route path="/forgotpassword" component={ForgotPassword} />
 
             <Route>
               <Header />

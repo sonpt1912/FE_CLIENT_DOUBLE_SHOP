@@ -329,7 +329,7 @@ function Header(props) {
                           <Link to="/" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>TRANG CHỦ</Link>
                         </li>
                         <li style={{ marginRight: '10px' }}>
-                          <Link to="/shop/all" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>BỘ SƯU TẬP</Link>
+                          <Link to="/shop/product" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>BỘ SƯU TẬP</Link>
                         </li>
                         <li>
                           <Link to="/contact" style={{ fontSize: '18px', color: 'black', textDecoration: 'none' }}>LIÊN HỆ</Link>

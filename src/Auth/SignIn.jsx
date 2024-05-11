@@ -4,10 +4,9 @@ import User from "../API/User";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { useDispatch, useSelector } from "react-redux";
 import { changeCount } from "../Redux/Action/ActionCount";
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, message } from "antd";
 import "./Signin.css";
 import axios from 'axios';
-import { message } from 'antd';
 function SignIn(props) {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -30,7 +29,7 @@ function SignIn(props) {
     if (!token || token === "undefined") {
       history.push("/signin");
     } else  {
-      history.push("/shop/all");
+      history.push("/shop/product");
     }
   }, [history]);
   const handler_signin = (e) => {
@@ -41,7 +40,6 @@ function SignIn(props) {
         username,
         password,
       };
-
       try {
         const response = await User.Get_Detail_User(params);
         console.log("Response: ", response);
@@ -61,6 +59,7 @@ function SignIn(props) {
           set_redirect(true);
         }
       } catch (error) {
+        message.error("Đăng nhập không thành công! Vui lòng kiểm tra lại");
         console.error("Error: ", error);
       }
     };
@@ -87,7 +86,7 @@ function SignIn(props) {
         message.error("Không có quyền truy cập !");
       } else {
         // Nếu không có lỗi, chuyển hướng đến trang /dashboard/thongKe
-        history.push("/shop/all");
+        history.push("/shop/product");
       }
     } catch (error) {
       // Nếu có lỗi, hiển thị thông báo lỗi
@@ -188,7 +187,7 @@ function SignIn(props) {
             </div>
 
             <div className=" text-left text-md-right">
-            <Link to="/forgetpassword"> Forgotten password?</Link>
+            <Link to="/forgotpassword"> Forgotten password?</Link>
             </div>
             </div>
            
