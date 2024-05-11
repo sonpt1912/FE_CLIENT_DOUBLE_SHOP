@@ -74,16 +74,25 @@ function Header(props) {
   const accessToken = localStorage.getItem('token');
 
   const [user, set_user] = useState({});
-  const handleDeleteConfirm = async (id) => {
-    try {
-      // Gọi API xóa sản phẩm khỏi danh sách yêu thích
-      await axios.post(`http://localhost:8071/favorite/delete-favorite`, { id: id });
-      // Cập nhật lại danh sách yêu thích sau khi xóa
-      fetchData();
-    } catch (error) {
-      console.error('Error deleting favorite:', error);
-    }
-  };
+const handleDeleteConfirm = async (id) => {
+  try {
+    // Tạo một đối tượng cấu hình chứa các headers bạn muốn truyền
+    const headers = {
+      "Authorization": `Bearer ${token}`
+        };
+
+    // Gọi API xóa sản phẩm khỏi danh sách yêu thích với đối tượng cấu hình
+    const response = await axios.post(`http://localhost:8071/favorite/delete-favorite`, { id: id }, {
+      headers: headers
+    });
+
+    // Cập nhật lại danh sách yêu thích sau khi xóa
+    fetchData();
+  } catch (error) {
+    console.error('Error deleting favorite:', error);
+  }
+};
+
 
   // Hàm này dùng để hiện thị
   // useEffect(() => {
