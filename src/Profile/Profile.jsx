@@ -182,72 +182,142 @@ function Profile(props) {
         dataCity();
 
     }, []);
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
+    const [des, setDes] = useState('')
+    const handleInputChange = (value) => {
+        // const { name, value } = e.target;
 
-        if (name === "city") {
-            setCity(value);
-        } else if (name === "dis") {
-            selectedDis(value);
-        } else if (name === "war") {
-            setWard(value);
-        } else if (name === "ngo") {
-            setNgo(value);
-        } else if (name === "description") {
-            setDescription(value);
+        // if (name === "city") {
+        //     setCity(value);
+        // } else if (name === "dis") {
+        //     selectedDis(value);
+        // } else if (name === "war") {
+        //     setWard(value);
+        // } else if (name === "ngo") {
+        //     setNgo(value);
+        // }
+
+        setDes(value);
 
 
-        } else if (name === "defaul") {
-            setDefaul(parseInt(value));
+
+
+    };
+    const Diachi = {
+        city: "",
+        district: "",
+        province: "",
+        description: ""
+    }
+    const handleCityChange1 = async (value) => {
+        setSelectedCity(value);
+        console.log(value);
+        const selectedCityCode = cityData.find(city => city.value === value)?.value;
+        const selectedCityName = cityData.find(city => city.value === value)?.label;
+        console.log(selectedCityCode);
+        console.log(selectedCityName)
+        setCity(selectedCityName);
+        Diachi.city = selectedCityName
+        setEditAddress(Diachi)
+
+        setSelectedDis("");
+        setSelectedWar("");
+        setDistrict("");
+        setWard("");
+        try {
+            const requestData = {
+                province_id: value,
+            };
+
+            const response = await axios.post(
+                `https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district`,
+                requestData,
+                header
+            );
+
+            setDisData(
+                response.data.data.map((city) => ({
+                    label: city.DistrictName,
+                    value: city.DistrictID,
+                }))
+            );
+        } catch (error) {
+            console.error("Error fetching city data:", error);
         }
 
     };
-    const handleCityChange1 = (value) => {
-        setSelectedCity(value);
-        const selectedCityCode = cityData.find(city => city.value === value)?.value;
-        const selectedCityName = cityData.find(city => city.value === value)?.label;
-        setCity(selectedCityName);
-        setSelectedDis(""); 
-        setSelectedWar(""); 
-        setDistrict(""); 
-        setWard(""); 
-        dataDis(selectedCityCode); 
-     
-    };
 
-
-    const handleDisChange1 = (value) => {
+    const handleDisChange1 = async (value) => {
         setSelectedDis(value);
+
         const selectedDisCode = disData.find((dis) => dis.value === value)?.value;
         const selectedDisName = disData.find((dis) => dis.value === value)?.label;
-        setDistrict(selectedDisName);
-        setSelectedWar("");
-        dataWar(selectedDisCode);
+        if (selectedDisCode && selectedDisName) {
+            setDistrict(selectedDisName);
+            Diachi.district = selectedDisName; // Lưu giá trị vào Diachi
+            Diachi.city = city; // Reset giá trị của province
+            setEditAddress(Diachi);
+
+            setSelectedWar("");
+            try {
+                const requestData1 = {
+                    district_id: value,
+                };
+                const response = await axios.post(
+                    `https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id`,
+                    requestData1,
+                    header
+                );
+                setWarData(
+                    response.data.data.map((city) => ({
+                        label: city.WardName,
+                        value: city.WardCode,
+                    }))
+                );
+            } catch (error) {
+                console.error("Error fetching city data:", error);
+            }
+        }
     };
 
     const handleWarChange1 = (value) => {
         setSelectedWar(value);
         const selectedWarName = warData.find((war) => war.value === value)?.label;
         const selectedWarCode = warData.find((war) => war.value === value)?.value;
-        setWard(selectedWarName);
-    };
-    const handleInputChange1 = (e) => {
-        const { name, value } = e.target;
-
-        if (name === "city") {
-            setCity(value);
-        } else if (name === "dis") {
-            selectedDis(value);
-        } else if (name === "war") {
-            setWard(value);
-        } else if (name === "ngo") {
-            setNgo(value);
-        } else if (name === "description") {
-            setDescription(value);
-        } else if (name === "defaul") {
-            setDefaul(parseInt(value));
+        if (selectedWarName && selectedWarCode) {
+            setWard(selectedWarName);
+            Diachi.province = selectedWarName;
+            Diachi.city = city
+            Diachi.district = district
+            setEditAddress(Diachi);
         }
     };
+
+    const handleInputChange1 = (value) => {
+        // const { name, value } = e.target;
+
+        // if (name === "city") {
+        //     setCity(value);
+        // } else if (name === "dis") {
+        //     setSelectedDis(value);
+        // } else if (name === "war") {
+        //     setWard(value);
+        // } else if (name === "ngo") {
+        //     setNgo(value);
+        // } 
+        // else 
+
+        console.log(value);
+
+        setDescription(value);
+        console.log(description);
+        Diachi.description = value;
+        Diachi.city = city;
+        Diachi.district = district;
+        Diachi.province = ward;
+        setEditAddress(Diachi);
+
+    };
+
 
     // Hàm này dùng để render html cho từng loại edit profile hoặc change password
     // Tùy theo người dùng chọn
@@ -523,11 +593,14 @@ function Profile(props) {
     const handleTabChange = (key) => {
         setActiveTab(key);
     };
-
+const [bien,setBien]=useState("")
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const showModal = (address) => {
-       setEditAddress(address)
+    const showModal = (address,id) => {
+        console.log(id);
         setIsModalVisible(true);
+        setEditAddress(address);
+        setBien(id)
+        // Làm bất cứ điều gì khác cần thiết với index ở đây
     };
 
     const handleCancel = () => {
@@ -562,7 +635,7 @@ function Profile(props) {
     const [is_defaul, setIsDefault] = useState('')
     const token = localStorage.getItem("token")
     const addAddress = async () => {
-        if (!selectedCity || !selectedDis || !selectedWar || !description) {
+        if (!city || !district || !ward || des.trim()=='') {
             message.error('Vui lòng điền đầy đủ thông tin.');
             return;
         }
@@ -573,7 +646,7 @@ function Profile(props) {
                 city: city,
                 district: district,
                 province: ward,
-                description: description,
+                description: des,
             };
 
             console.log(requestBody);
@@ -600,7 +673,7 @@ function Profile(props) {
             setSelectedCity('');
             setSelectedDis('');
             setSelectedWar('');
-            setDescription('');
+            setDes('');
             handleAddCancel();
         }
     };
@@ -619,42 +692,44 @@ function Profile(props) {
         description: ''
     });
 
-    const updateAddress = async (id) => {
-
-
+    const updateAddress = async () => {
+        console.log(editAddress);
+        if (!editAddress.city || !editAddress.district || !editAddress.province || editAddress.description.trim() === '') {
+            message.error('Vui lòng điền đầy đủ thông tin.');
+            return;
+        }
+    
         try {
             const requestBody = {
-                id: id,
-                city: selectedCity,
-                district: selectedDis,
-                province: selectedWar,
-                description: description,
-                // defaul: defaul 
+                id: bien, // Truyền id của địa chỉ cần sửa
+                city: editAddress.city,
+                district: editAddress.district,
+                province: editAddress.province,
+                description: editAddress.description,
             };
             console.log(requestBody);
             // Gọi API thêm mới địa chỉ
             const response = await axios.post('http://localhost:8071/customer/update-address', requestBody);
             console.log(response);
-
-            fetchAddressesByIdCustomer()
-
+    
+            fetchAddressesByIdCustomer();
+    
             message.success('Thành công:');
-
-            // window.location.reload();
-            // setIdss(false)
-            // console.log(ids);
+    
             // Đóng modal sau khi thêm thành công
             handleCancel();
-
-        }
-        catch (error) {
-
+        } catch (error) {
             message.error("Thất bại!");
         } finally {
+            setSelectedCity('');
+            setSelectedDis('');
+            setSelectedWar('');
+            setDescription('');
+    
             handleCancel();
-
         }
     };
+    
     const [ia, setIa] = useState(true)
     const updateOtherAddresses = async (id) => {
         try {
@@ -675,14 +750,10 @@ function Profile(props) {
     const handleUpdateOther = (id) => {
         updateOtherAddresses(id);
     }
-    const handleUpdate = (id) => {
+    const handleUpdate = (address) => {
 
-        //      const selectedAddress = addresses.find(address => address.id === id);
-
-        // setAddressData(selectedAddress);
-
-        // Hiển thị modal
-        showModal();
+       
+        updateAddress(address.id)
     };
 
     // useEffect(() => {
@@ -1362,8 +1433,8 @@ function Profile(props) {
                                                         <label className='w-50'>Nhập địa chỉ chi tiết</label>
                                                         <Input
                                                             name="description"
-                                                            value={description}
-                                                            onChange={(e) => handleInputChange({ target: { name: 'description', value: e.target.value } })}
+                                                            value={des}
+                                                            onChange={(e) => handleInputChange(e.target.value)}
                                                         />
                                                     </div>
                                                 </form>
@@ -1372,8 +1443,8 @@ function Profile(props) {
                                     </div>
                                     <hr className="" style={{ marginTop: "0px", marginBottom: "0px" }} />
                                     <div>
-                                        {addresses.map((address, index) => (
-                                            <div key={index}>
+                                    {addresses.map((address) => (
+                                            <div key={address.id}>
                                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "10px" }}>
                                                     <p className='m-3'>
                                                         Tỉnh/Thành phố: {(address.city)} <br />
@@ -1396,11 +1467,11 @@ function Profile(props) {
                                                                 Mặc định
                                                             </Button>
                                                         </Popconfirm>
-                                                        <Button className='m-2' type='primary' onClick={() => showModal(address)}>Cập nhật</Button>
+                                                        <Button className='m-2' type='primary' onClick={() => showModal(address,address.id)}>Cập nhật</Button>
                                                         <Modal title="Sửa địa chỉ" visible={isModalVisible} onCancel={handleCancel}
                                                             footer={[
                                                                 <Button key="cancel" onClick={handleCancel}>Hủy</Button>,
-                                                                <Button key="ok" type="primary" onClick={() => updateAddress(index)}>Sửa</Button>,
+                                                                <Button key="ok" type="primary" onClick={() => updateAddress(address)}>Sửa</Button>,
                                                             ]}>
                                                             <form>
                                                                 <div className='d-flex center mb-3'>
@@ -1453,7 +1524,7 @@ function Profile(props) {
                                                                     <Input
                                                                         name="description"
                                                                         value={(editAddress && editAddress.description) || ''}
-                                                                        onChange={(e) => handleInputChange1({ target: { name: 'description', value: e.target.value } })}
+                                                                        onChange={(e) => handleInputChange1(e.target.value)}
                                                                     />
                                                                 </div>
                                                             </form>
@@ -1471,6 +1542,8 @@ function Profile(props) {
                                                 <hr className="" style={{ marginTop: "0px", marginBottom: "0px" }} />
                                             </div>
                                         ))}
+
+
 
                                     </div>
                                 </div>
