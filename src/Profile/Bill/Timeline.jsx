@@ -108,14 +108,13 @@ const TimeLine = (props) => {
     form
       .validateFields()
       .then((values) => {
-        dispatch(
-          // updateBill({
-          //   id: selectedRowIdBill,
-          //   status: updatedStatus + 1,
-          //   description: description,
-          //   moneyShip: updatedStatus === 1 ? shippingCost : null,
-          // })
-        )
+        dispatch()
+        // updateBill({
+        //   id: selectedRowIdBill,
+        //   status: updatedStatus + 1,
+        //   description: description,
+        //   moneyShip: updatedStatus === 1 ? shippingCost : null,
+        // })
           .then((response) => {
             setIsModalVisible(false);
             // dispatch(getHistoryBill({ id: selectedRowIdBill }));
@@ -152,13 +151,12 @@ const TimeLine = (props) => {
     form
       .validateFields()
       .then(() => {
-        dispatch(
-          // updateBill({
-          //   id: selectedRowIdBill,
-          //   status: previousStatus,
-          //   description: descriptionRevert,
-          // })
-        )
+        dispatch()
+        // updateBill({
+        //   id: selectedRowIdBill,
+        //   status: previousStatus,
+        //   description: descriptionRevert,
+        // })
           .then((response) => {
             setIsModalVisibleRevert(false);
             // dispatch(getHistoryBill({ id: selectedRowIdBill }));
@@ -188,13 +186,12 @@ const TimeLine = (props) => {
     form
       .validateFields()
       .then(() => {
-        dispatch(
-          // updateBill({
-          //   id: selectedRowIdBill,
-          //   status: 8,
-          //   description: descriptionLost,
-          // })
-        )
+        dispatch()
+        // updateBill({
+        //   id: selectedRowIdBill,
+        //   status: 8,
+        //   description: descriptionLost,
+        // })
           .then((response) => {
             setIsModalVisibleLost(false);
             // dispatch(getHistoryBill({ id: selectedRowIdBill }));
@@ -224,13 +221,12 @@ const TimeLine = (props) => {
     form
       .validateFields()
       .then(() => {
-        dispatch(
-          // updateBill({
-          //   id: selectedRowIdBill,
-          //   status: 5,
-          //   description: descriptionCancel,
-          // })
-        )
+        dispatch()
+        // updateBill({
+        //   id: selectedRowIdBill,
+        //   status: 5,
+        //   description: descriptionCancel,
+        // })
           .then((response) => {
             console.log("Đã Hủy đơn hàng thành công!", response);
             setIsModalVisibleCancel(false);
@@ -262,13 +258,12 @@ const TimeLine = (props) => {
     form
       .validateFields()
       .then(() => {
-        dispatch(
-          // updateBill({
-          //   id: selectedRowIdBill,
-          //   status: 6,
-          //   description: descriptionReturn,
-          // })
-        )
+        dispatch()
+        // updateBill({
+        //   id: selectedRowIdBill,
+        //   status: 6,
+        //   description: descriptionReturn,
+        // })
           .then((response) => {
             console.log("Đã trả đơn hàng thành công!", response);
             setIsModalVisibleReturn(false);
@@ -414,7 +409,7 @@ const TimeLine = (props) => {
               >
                 Hủy đơn
               </Button>
-              {updatedStatus === 4 ? (
+              {updatedStatus === 4 && (
                 <Button
                   className="return-button"
                   type="primary"
@@ -422,31 +417,7 @@ const TimeLine = (props) => {
                 >
                   Trả hàng
                 </Button>
-              ) : (
-                <Button
-                  className="confirm-button"
-                  type="primary"
-                  onClick={showModal}
-                  disabled={
-                    updatedStatus === 4 ||
-                    updatedStatus === 5 ||
-                    updatedStatus === 6 ||
-                    updatedStatus === 8
-                  }
-                >
-                  Xác nhận
-                </Button>
               )}
-              {updatedStatus !== 0 &&
-                (updatedStatus !== 4 || billType !== 0) && (
-                  <Button
-                    className="revert-button"
-                    type="primary"
-                    onClick={showModalRevert}
-                  >
-                    Quay lại
-                  </Button>
-                )}
               {updatedStatus === 3 && (
                 <Button
                   className="confirm-button"
@@ -530,7 +501,7 @@ const TimeLine = (props) => {
         onCancel={handleCancelCancel}
         htmlType="submit"
       >
-        <Form form={form}> 
+        <Form form={form}>
           <Form.Item
             name="descriptionCancel"
             rules={[

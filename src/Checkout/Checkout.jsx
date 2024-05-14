@@ -1,13 +1,11 @@
 import {
   Button,
   Card,
-  Checkbox,
   Col,
   Image,
   Input,
   InputNumber,
   Modal,
-  Popconfirm,
   Popover,
   Row,
   Switch,
@@ -43,7 +41,7 @@ function Checkout(props) {
     const handleShipping = async () => {
       const payload = {
         toDistrictId: 202,
-        toWardCode: 510113,
+        toWardCode: 50113,
         height: 2,
         length: 1,
         weight: 3,
@@ -54,10 +52,10 @@ function Checkout(props) {
           {
             name: "TEST1",
             quantity: 1,
-            height: 202,
-            weight: 1002,
-            length: 202,
-            width: 202,
+            height: 1,
+            weight: 1,
+            length: 1,
+            width: 1,
           },
         ],
       };

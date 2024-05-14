@@ -1,6 +1,5 @@
 import { Button, Card, Col, Modal, Row, Form, Input, message } from "antd";
 import React, { useState } from "react";
-import { updateBill } from "../../../config/BillApi";
 import { useDispatch } from "react-redux";
 
 const InformationBill = ({ order, updatedData }) => {
@@ -15,47 +14,7 @@ const InformationBill = ({ order, updatedData }) => {
     setIsModalVisible(false);
   };
 
-  const onFinish = (values) => {
-    const { phone, address, note, moneyShip } = values;
-    let description = "Cập nhật thông tin: ";
 
-    if (phone !== order.phone) {
-      description += `Số điện thoại từ "${order.phone}" thành "${phone}". `;
-    }
-
-    if (address !== order.address) {
-      description += `Địa chỉ từ "${order.address}" thành "${address}". `;
-    }
-
-    if (note !== order.note) {
-      description += `Ghi chú từ "${order.note}" thành "${note}". `;
-    }
-
-    if (moneyShip !== order.moneyShip) {
-      description += `Phí vận chuyển từ "${order.moneyShip}" thành "${moneyShip}". `;
-    }
-
-    dispatch(
-      updateBill({
-        id: order.id,
-        status: 7,
-        description: description,
-        phone: phone,
-        address: address,
-        note: note,
-        moneyShip: moneyShip,
-      })
-    )
-      .then(() => {
-        message.success("Đã cập nhật đơn hàng thành công!");
-        setIsModalVisible(false);
-        updatedData();
-      })
-      .catch((error) => {
-        console.error("Lỗi khi cập nhật đơn hàng:", error);
-        setIsModalVisible(false);
-      });
-  };
 
   return (
     <Row gutter={[16, 16]}>
@@ -73,15 +32,6 @@ const InformationBill = ({ order, updatedData }) => {
               <h3 style={{ fontSize: "24px", fontWeight: "bold" }}>
                 Thông tin đơn hàng
               </h3>
-            </div>
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <Button
-                type="primary"
-                onClick={showModal}
-                disabled={order.status !== 0 && order.status !== 1 && order.status !== 7}
-              >
-                Cập nhật
-              </Button>
             </div>
           </div>
 
@@ -200,7 +150,6 @@ const InformationBill = ({ order, updatedData }) => {
             note: order.note,
             moneyShip: order.moneyShip,
           }}
-          onFinish={onFinish}
         >
           <Row gutter={[16, 16]}>
             <Col span={24}>

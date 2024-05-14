@@ -1,31 +1,10 @@
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  Row,
-  Col,
-  InputNumber,
-  Button,
-  Space,
-  Popconfirm,
-  message,
-  Image,
-  Popover,
-} from "antd";
-import { DeleteOutlined } from "@ant-design/icons";
+import { Card, Row, Col, InputNumber, Image, Popover } from "antd";
 import { useDispatch } from "react-redux";
-import { deleteDetailBill } from "../../../config/BillApi";
 
 const { Meta } = Card;
 
-const ProductListHorizontal = ({
-  products,
-  detailBillById,
-  billHistory,
-  setBillHistory,
-  updatedData,
-}) => {
-  const dispatch = useDispatch();
-
+const ProductListHorizontal = ({ products, detailBillById }) => {
   const [productList, setProductList] = useState(products);
   const [totalPrices, setTotalPrices] = useState(
     products.map((product) => product.price * product.quantity)
@@ -43,42 +22,6 @@ const ProductListHorizontal = ({
     const updatedProducts = [...productList];
     updatedProducts[index].quantity = value;
     setProductList(updatedProducts);
-  };
-
-  const handleDelete = (index) => {
-    const productId = productList[index].id;
-    const productName = productList[index].name;
-
-    const payload = {
-      id: detailBillById.id,
-      idDetailBill: productId,
-      productName: productName,
-    };
-
-    dispatch(deleteDetailBill(payload))
-      .unwrap()
-      .then(() => {
-        message.success("Product deleted successfully!");
-        const updatedProducts = [...productList];
-        updatedProducts.splice(index, 1);
-        setProductList(updatedProducts);
-
-        const updatedBillHistory = billHistory.map((bill) => {
-          if (bill.id === detailBillById.id) {
-            return {
-              ...bill,
-              products: updatedProducts,
-            };
-          }
-          return bill;
-        });
-
-        setBillHistory(updatedBillHistory);
-        updatedData();
-      })
-      .catch((error) => {
-        message.error("Failed to delete product: " + error.message);
-      });
   };
 
   return (
@@ -142,28 +85,6 @@ const ProductListHorizontal = ({
                 </Col>
                 <Col span={3}>
                   <p>{totalPrices[index]}</p>
-                </Col>
-                <Col span={2}>
-                  <Space>
-                    <Popconfirm
-                      title="Are you sure to delete this product?"
-                      onConfirm={() => handleDelete(index)}
-                      okText="Yes"
-                      cancelText="No"
-                    >
-                      <Button
-                        type="primary"
-                        danger
-                        icon={<DeleteOutlined />}
-                        disabled={
-                          (detailBillById.status !== 0 &&
-                            detailBillById.status !== 1 &&
-                            detailBillById.status !== 1) ||
-                          productList.length === 1
-                        }
-                      />
-                    </Popconfirm>
-                  </Space>
                 </Col>
               </Row>
             </Card>

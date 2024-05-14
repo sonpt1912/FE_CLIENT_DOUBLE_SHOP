@@ -81,9 +81,7 @@ const Payment = ({ visible, onCancel, total, onPayment }) => {
       orderCode: paymentLinkData.orderCode,
     };
     const reponse = await CartAPI.Check_Payment_Link(payload);
-    console.log("Paymentaaaaaaaaaaaaaaaaaaaaa", reponse.data.status);
     if (reponse.data.status === "PENDING") {
-      console.log("aaaaaaaaaaaaaa");
       message.error("Vui lòng kiểm tra lại trạng thái thanh toán");
     } else if (reponse.data.status === "PAID") {
       const change = customerPaid - total;

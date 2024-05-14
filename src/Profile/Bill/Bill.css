@@ -1,18 +1,50 @@
+.tl-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  display: flex;
+}
+
 .statusButton {
-    margin-right: 4px;
-    border: none;
-    cursor: pointer;
-    font-weight: 700;
-    background-color: #fff;
-    color: #141414;
-    border-radius: 4px;
-  }
-  
-  .statusButton.active {
-    background-color: #8dc4ff;
-    color: #2e2e2e;
-  }
-  
-  .statusButton:hover {
-    background-color: #f0f0f0;
-  }
+  margin-right: 4px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  background-color: #fff;
+  color: #141414;
+  border-radius: 4px;
+}
+
+.statusButton.active {
+  background-color: #8dc4ff;
+  color: #2e2e2e;
+}
+
+.statusButton:hover {
+  background-color: #f0f0f0;
+}
+.Timeline-wrapper-1 {
+  overflow-x: auto !important;
+  overflow-y: hidden;
+  height: 26vh !important;
+}
+
+
+.button-row {
+  margin-top: 20px; 
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between
+}
+
+.button-group {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+  margin-right: 20px; 
+}
+
+.history-button {
+  align-self: flex-start; 
+}

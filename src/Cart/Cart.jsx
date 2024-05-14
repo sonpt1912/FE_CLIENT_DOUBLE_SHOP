@@ -16,18 +16,24 @@ import {
 } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 import CartAPI from "../API/CartAPI";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 
 const { Meta } = Card;
 
 function Cart(props) {
-  const dispatch = useDispatch();
+  const history = useHistory();
   const [totalPrice, setTotalPrice] = useState(0);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [isloadData, setLoadData] = useState(false);
   const [list_carts, set_list_carts] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const handleCheckout = () => {
+    history.push({
+      pathname: "/checkout",
+      state: selectedProducts,
+    });
+  };
   useEffect(() => {
     const fetchDataCarts = async () => {
       try {
@@ -239,16 +245,9 @@ function Cart(props) {
                   height: "3rem",
                   backgroundColor: "#198754",
                 }}
-                onClick={() =>
-                  window.location.replace("/checkout", {
-                    state: selectedProducts,
-                  })
-                }
+                onClick={handleCheckout}
               >
-                <Link to={{ pathname: "/checkout", state: selectedProducts }}>
-                  {" "}
-                  Thanh Toán
-                </Link>
+                Thanh Toán
               </Button>
             </Col>
           </Card>
