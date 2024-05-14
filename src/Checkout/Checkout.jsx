@@ -1,23 +1,137 @@
 import {
+  Button,
   Card,
   Checkbox,
   Col,
   Image,
+  Input,
   InputNumber,
+  Modal,
   Popconfirm,
   Popover,
   Row,
-  Space,
+  Switch,
+  message,
 } from "antd";
 import "./Checkout.css";
-import { useState } from "react";
+import { useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import CartAPI from "../API/CartAPI";
+import Payment from "./Payment";
 
 Checkout.propTypes = {};
 const { Meta } = Card;
 
 function Checkout(props) {
-  const [list_carts, set_list_carts] = useState([]);
+  const location = useLocation();
+  const selectedProducts = location.state;
+  console.log("Checkout", selectedProducts);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [voucherCode, setVoucherCode] = useState("");
+  const [voucherModal, setVoucherModal] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState(false);
+  const [visiblePaymentModal, setVisiblePaymentModal] = useState(false);
+  const [vouchers, setVouchers] = useState([]);
+  const [totalShippingFee, setTotalShippingFee] = useState(0);
+  const [totalPayment, setTotalPayment] = useState(0);
 
+  useEffect(() => {
+    setTotalPayment(totalPrice + totalShippingFee);
+  }, [totalPrice, totalShippingFee]);
+
+  useEffect(() => {
+    const handleShipping = async () => {
+      const payload = {
+        toDistrictId: 202,
+        toWardCode: 510113,
+        height: 2,
+        length: 1,
+        weight: 3,
+        width: 2,
+        insurance_value: 0,
+        coupon: null,
+        items: [
+          {
+            name: "TEST1",
+            quantity: 1,
+            height: 202,
+            weight: 1002,
+            length: 202,
+            width: 202,
+          },
+        ],
+      };
+      try {
+        const response = await CartAPI.Get_Shipping_Fee(payload);
+        setTotalShippingFee(response.data.total);
+      } catch (error) {
+        console.log("Error", error);
+      }
+    };
+
+    handleShipping();
+  }, [totalShippingFee]);
+
+  useEffect(() => {
+    let sum = 0;
+    selectedProducts?.forEach((product) => {
+      sum += product.price * product.quantity;
+    });
+    setTotalPrice(sum);
+  }, [selectedProducts, totalPrice]);
+
+  const handleClosePaymentModal = () => {
+    setVisiblePaymentModal(false);
+  };
+
+  const handleVoucherCodeChange = (e) => {
+    setVoucherCode(e.target.value);
+  };
+
+  const openVoucherModal = async () => {
+    setVoucherModal(true);
+    try {
+      const reponse = await CartAPI.Get_Voucher();
+      console.log("1 vocher", reponse);
+    } catch (error) {
+      console.log("Error", error);
+    }
+  };
+
+  const closeVoucherModal = () => {
+    setVoucherModal(false);
+  };
+
+  const handlePaymentMethodChange = (checked) => {
+    setPaymentMethod(checked);
+  };
+
+  const Create_Bill = async (value, idProduct) => {
+    try {
+      const listCart = selectedProducts.map((product) => ({
+        id: product.id,
+        quantity: product.quantity,
+      }));
+      const params = {
+        idVoucher: "",
+        totalAmout: totalPrice,
+        discoutAmout: "",
+        address: "",
+        payment: "",
+        note: "",
+        receiver: "",
+        listCart: listCart,
+      };
+      const reponse = await CartAPI.Create_Bill(params);
+      if (!reponse) {
+        message.error("Cập nhật số lượng thất bại");
+      } else {
+        message.success("Đặt hàng thành công");
+      }
+    } catch (error) {
+      message.error("Cập nhật số lượng thất bại");
+    }
+  };
   return (
     <>
       <div className="container_payment">
@@ -68,7 +182,7 @@ function Checkout(props) {
           >
             <h2 class="card-title">Giỏ hàng của bạn</h2>
             <Row gutter={[16, 16]}>
-              {list_carts.map((product, index) => (
+              {selectedProducts?.map((product, index) => (
                 <Col span={24} key={index}>
                   <Card hoverable style={{ width: "100%" }}>
                     <Row gutter={[16, 16]} align="middle">
@@ -124,7 +238,9 @@ function Checkout(props) {
                         <InputNumber value={product.quantity} />
                       </Col>
                       <Col span={3}>
-                        <h6 style={{ marginTop: "5px" }}>{product.price}đ</h6>
+                        <h6 style={{ marginTop: "5px" }}>
+                          {product.price.toLocaleString("en-US")}đ
+                        </h6>
                       </Col>
                     </Row>
                   </Card>
@@ -135,9 +251,11 @@ function Checkout(props) {
             <div class="IyTouc">
               <div class="TSU9pp">
                 <h3 class="o13Lc4 hERTPn ZAZB4U">
-                  <div>Tổng số tiền (1 sản phẩm):</div>
+                  <div>Tổng số tiền (1 Sản Phẩm):</div>
                 </h3>
-                <div class="total_card">₫135.500</div>
+                <div class="total_card">
+                  {totalPrice.toLocaleString("en-US")} VNĐ
+                </div>
               </div>
             </div>
           </Card>
@@ -146,31 +264,111 @@ function Checkout(props) {
           <div class="aSiS8B">
             <div class="IN_fAG">
               <div class="UPSKhT wp5W5e">Phương thức thanh toán</div>
-              <div class="LhNuge">Thanh toán khi nhận hàng</div>
-              <button class="btn_change_payment_by">Thay đổi</button>
             </div>
           </div>
           <div class="vhebLm"></div>{" "}
           <div class="yHG0SE" aria-live="polite">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "1rem",
+              }}
+            >
+              <div>
+                <Switch
+                  checked={paymentMethod}
+                  onChange={handlePaymentMethodChange}
+                />
+              </div>
+              {paymentMethod ? (
+                <span style={{ marginLeft: "1rem" }}>
+                  Thanh toán trực tuyến
+                </span>
+              ) : (
+                <span style={{ marginLeft: "1rem" }}>
+                  Thanh toán khi nhận hàng
+                </span>
+              )}
+            </div>
+
             <h3 class="o13Lc4 hERTPn cFXdGN">Tổng tiền hàng</h3>
-            <div class="o13Lc4 X9R_0O cFXdGN">₫119.000</div>
+            <div class="o13Lc4 X9R_0O cFXdGN">
+              {" "}
+              {totalPrice.toLocaleString("en-US")} VNĐ
+            </div>
+
             <h3 class="o13Lc4 hERTPn fwPZIN">Phí vận chuyển</h3>
-            <div class="o13Lc4 X9R_0O fwPZIN">₫16.500</div>
+            <div class="o13Lc4 X9R_0O fwPZIN">
+              {totalShippingFee.toLocaleString("en-US")} VNĐ
+            </div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "1rem",
+              }}
+            >
+              <Input
+                placeholder="Nhập mã voucher"
+                value={voucherCode}
+                onChange={handleVoucherCodeChange}
+                style={{ marginRight: "1rem", width: "30%" }}
+              />
+              <Button type="primary" onClick={openVoucherModal}>
+                Chọn Voucher
+              </Button>
+              <Modal
+                title="Chọn Voucher"
+                visible={voucherModal}
+                onCancel={closeVoucherModal}
+                footer={[
+                  <Button key="back" onClick={closeVoucherModal}>
+                    Hủy
+                  </Button>,
+                  <Button
+                    key="submit"
+                    type="primary"
+                    onClick={closeVoucherModal}
+                  >
+                    Xác nhận
+                  </Button>,
+                ]}
+              ></Modal>
+            </div>
             <h3 class="o13Lc4 hERTPn cNgneA">Tổng thanh toán</h3>
-            <div class="o13Lc4 fYeyE4 X9R_0O cNgneA">₫135.500</div>
+            <div class="o13Lc4 fYeyE4 X9R_0O cNgneA">
+              {totalPayment.toLocaleString("en-US")} VNĐ
+            </div>
             <div class="s7CqeD">
               <div class="sQArKu">
                 <div class="xINqui">
-                  Nhấn "Đặt hàng" đồng nghĩa với việc bạn đồng ý tuân theo điều khoản của cửa hàng
+                  Nhấn "Đặt hàng" đồng nghĩa với việc bạn đồng ý tuân theo điều
+                  khoản của cửa hàng
                 </div>
               </div>
-              <button class="stardust-button stardust-button--primary stardust-button--large LtH6tW">
+              <button
+                class="stardust-button stardust-button--primary stardust-button--large LtH6tW"
+                onClick={() => {
+                  if (paymentMethod) {
+                    setVisiblePaymentModal(true);
+                  } else {
+                    Create_Bill();
+                  }
+                }}
+              >
                 Đặt hàng
               </button>
             </div>
           </div>
         </div>
       </div>
+      <Payment
+        visible={visiblePaymentModal}
+        onCancel={handleClosePaymentModal}
+        total={totalPrice}
+        onPayment={Create_Bill}
+      />
     </>
   );
 }

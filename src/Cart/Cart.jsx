@@ -12,9 +12,11 @@ import {
   Image,
   Popover,
   Checkbox,
+  Spin,
 } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 import CartAPI from "../API/CartAPI";
+import { Link } from "react-router-dom";
 
 const { Meta } = Card;
 
@@ -24,16 +26,20 @@ function Cart(props) {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [isloadData, setLoadData] = useState(false);
   const [list_carts, set_list_carts] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchDataCarts = async () => {
       try {
+        setLoading(true);
         const reponse = await CartAPI.Get_Cart({});
         set_list_carts(reponse);
         setLoadData(false);
         console.log("Cart", reponse);
       } catch (error) {
         console.log("Error", error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchDataCarts();
@@ -103,93 +109,107 @@ function Cart(props) {
             }}
           >
             <h4 class="card-title mb-4">Giỏ hàng của bạn</h4>
-
-            <Row gutter={[16, 16]}>
-              {list_carts.map((product, index) => (
-                <Col span={24} key={index}>
-                  <Card hoverable style={{ width: "100%" }}>
-                    <Row gutter={[16, 16]} align="middle">
-                      <Col span={2}>
-                        <Checkbox
-                          checked={selectedProducts.some(
-                            (p) => p.id === product.id
-                          )}
-                          onChange={(e) =>
-                            handleProductSelect(product, e.target.checked)
-                          }
-                        />
-                      </Col>
-                      <Col span={5}>
-                        <Col span={5}>
-                          <Popover
-                            placement="right"
-                            title={null}
-                            content={
-                              <div
-                                style={{ display: "flex", flexWrap: "wrap" }}
-                              >
-                                {product.listImages?.resources.map(
-                                  (image, index) => (
-                                    <div key={index}>
-                                      <Image
-                                        width={70}
-                                        src={image.url}
-                                        alt={`Ảnh ${index + 1}`}
-                                      />
-                                    </div>
-                                  )
-                                )}
-                              </div>
+            {loading && (
+              <Row
+                justify="center"
+                align="middle"
+                style={{ minHeight: "300px" }}
+              >
+                <Spin size="large" />
+              </Row>
+            )}
+            {!loading && (
+              <Row gutter={[16, 16]}>
+                {list_carts.map((product, index) => (
+                  <Col span={24} key={index}>
+                    <Card hoverable style={{ width: "100%" }}>
+                      <Row gutter={[16, 16]} align="middle">
+                        <Col span={2}>
+                          <Checkbox
+                            checked={selectedProducts.some(
+                              (p) => p.id === product.id
+                            )}
+                            onChange={(e) =>
+                              handleProductSelect(product, e.target.checked)
                             }
-                          >
-                            <Image
-                              width={110}
-                              src={product.listImages?.resources[0]?.url || ""}
-                              alt={`Ảnh 1`}
-                              preview={false}
-                            />
-                          </Popover>
+                          />
                         </Col>
-                      </Col>
-                      <Col span={7}>
-                        <Meta
-                          title={product.product.name}
-                          description={`Kích cỡ: ${product.size.name} - Màu: ${product.color.name}`}
-                        />
-                      </Col>
-                      <Col span={4}>
-                        <InputNumber
-                          value={product.quantity}
-                          onChange={(value) =>
-                            handleQuantityChange(value, product.id)
-                          }
-                        />
-                      </Col>
-                      <Col span={3}>
-                        <h6 style={{ marginTop: "5px" }}>{product.price}đ</h6>
-                      </Col>
-                      {/* <Col span={3}><p>{totalPrices[index]}</p></Col> */}
-                      <Col span={2}>
-                        <Space>
-                          <Popconfirm
-                            title="Are you sure to delete this product?"
-                            onConfirm={() => handleDelete(product.id)}
-                            okText="Yes"
-                            cancelText="No"
-                          >
-                            <Button
-                              type="primary"
-                              danger
-                              icon={<DeleteOutlined />}
-                            />
-                          </Popconfirm>
-                        </Space>
-                      </Col>
-                    </Row>
-                  </Card>
-                </Col>
-              ))}
-            </Row>
+                        <Col span={5}>
+                          <Col span={5}>
+                            <Popover
+                              placement="right"
+                              title={null}
+                              content={
+                                <div
+                                  style={{ display: "flex", flexWrap: "wrap" }}
+                                >
+                                  {product.listImages?.resources.map(
+                                    (image, index) => (
+                                      <div key={index}>
+                                        <Image
+                                          width={70}
+                                          src={image.url}
+                                          alt={`Ảnh ${index + 1}`}
+                                        />
+                                      </div>
+                                    )
+                                  )}
+                                </div>
+                              }
+                            >
+                              <Image
+                                width={110}
+                                src={
+                                  product.listImages?.resources[0]?.url || ""
+                                }
+                                alt={`Ảnh 1`}
+                                preview={false}
+                              />
+                            </Popover>
+                          </Col>
+                        </Col>
+                        <Col span={7}>
+                          <Meta
+                            title={product.product.name}
+                            description={`Kích cỡ: ${product.size.name} - Màu: ${product.color.name}`}
+                          />
+                        </Col>
+                        <Col span={4}>
+                          <InputNumber
+                            value={product.quantity}
+                            onChange={(value) =>
+                              handleQuantityChange(value, product.id)
+                            }
+                          />
+                        </Col>
+                        <Col span={3}>
+                          <h6 style={{ marginTop: "5px" }}>
+                            {product.price.toLocaleString("en-US")}đ
+                          </h6>
+                        </Col>
+                        {/* <Col span={3}><p>{totalPrices[index]}</p></Col> */}
+                        <Col span={2}>
+                          <Space>
+                            <Popconfirm
+                              title="Are you sure to delete this product?"
+                              onConfirm={() => handleDelete(product.id)}
+                              okText="Yes"
+                              cancelText="No"
+                            >
+                              <Button
+                                type="primary"
+                                danger
+                                icon={<DeleteOutlined />}
+                              />
+                            </Popconfirm>
+                          </Space>
+                        </Col>
+                      </Row>
+                    </Card>
+                  </Col>
+                ))}
+              </Row>
+            )}
           </Card>
         </Col>
         <Col span={5} style={{ padding: " 3rem 0" }}>
@@ -205,27 +225,30 @@ function Cart(props) {
                 <h6>Tổng tiền :</h6>
               </Col>
               <Col span={10}>
-                <h6>{calculateTotalPrice()} VNĐ</h6>
-              </Col>
-              <Col span={14}>
-                <h6>Giảm giá :</h6>
-              </Col>
-              <Col span={10}>
-                <h6>0 VNĐ</h6>
+                <h6>{calculateTotalPrice().toLocaleString("en-US")} VNĐ</h6>
               </Col>
             </Row>
             <hr />
             <Col span={24}>
               <Button
+                disabled={selectedProducts.length === 0}
                 type="primary"
                 style={{
                   width: "100%",
+                  fontSize: "1.2rem",
                   height: "3rem",
                   backgroundColor: "#198754",
                 }}
-                onClick={() => window.location.replace("/checkout")}
+                onClick={() =>
+                  window.location.replace("/checkout", {
+                    state: selectedProducts,
+                  })
+                }
               >
-                Thanh Toán
+                <Link to={{ pathname: "/checkout", state: selectedProducts }}>
+                  {" "}
+                  Thanh Toán
+                </Link>
               </Button>
             </Col>
           </Card>

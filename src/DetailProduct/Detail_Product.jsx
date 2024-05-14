@@ -114,7 +114,7 @@ function Detail_Product(props) {
     };
 
     fetchDataColor();
-  }, [product.id, selectedSize, selectedColor]);
+  }, [product.id, selectedSize]);
 
   useEffect(() => {
     const params = {
@@ -134,7 +134,7 @@ function Detail_Product(props) {
   const handleAddToCart = async (e) => {
     e.preventDefault();
     try {
-      let params = {
+      let payload = {
         idDetailProduct: detailProduct.id,
         quantity: quantity,
       };
@@ -142,7 +142,7 @@ function Detail_Product(props) {
       const token = localStorage.getItem("token");
 
       if (token) {
-        const response = await CartAPI.Add_Product_To_Cart(params);
+        const response = await CartAPI.Add_Product_To_Cart(payload);
 
         if (response) {
           message.success("Bạn Đã Thêm Hàng Thành Công!");
@@ -152,12 +152,12 @@ function Detail_Product(props) {
       } else {
         let cartItems = JSON.parse(localStorage.getItem("cart")) || [];
         const existingItemIndex = cartItems.findIndex(
-          (item) => item.idDetailProduct === params.idDetailProduct
+          (item) => item.idDetailProduct === payload.idDetailProduct
         );
         if (existingItemIndex !== -1) {
-          cartItems[existingItemIndex].quantity += params.quantity;
+          cartItems[existingItemIndex].quantity += payload.quantity;
         } else {
-          cartItems.push(params);
+          cartItems.push(payload);
         }
         localStorage.setItem("cart", JSON.stringify(cartItems));
 

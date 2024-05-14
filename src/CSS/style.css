@@ -1881,7 +1881,7 @@ textarea:focus {
 .header-bottom {
   background: rgb(149 209 245);
   margin-bottom: 20px;
-  z-index: 99999 !important;
+  z-index: 999 !important;
 }
 .hb-menu > nav > ul {
   position: relative;
