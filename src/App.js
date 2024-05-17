@@ -16,7 +16,7 @@ import Footer from "./Share/Footer";
 // import Shop from "./Shop/Shop";
 // import Detail_Product from "./DetailProduct/Detail_Product";
 // import Cart from "./Cart/Cart";
-import Checkout from "./Checkout/Checkout";
+// import Checkout from "./Checkout/Checkout";
 // import Favorite from "./Favorite/Favorite";
 // import About from "./About/About";
 // import Contact from "./Contact/Contact";
@@ -55,11 +55,11 @@ const Cart = lazy(() => {
   });
 });
 
-// const Checkout = lazy(() => {
-//   return new Promise((resolve) => {
-//     setTimeout(() => resolve(import("./Checkout/Checkout")));
-//   });
-// });
+const Checkout = lazy(() => {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(import("./Checkout/Checkout")));
+  });
+});
 
 const Favorite = lazy(() => {
   return new Promise((resolve) => {

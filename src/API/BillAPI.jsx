@@ -17,6 +17,10 @@ const BillAPI = {
     const url = `/bill/get-bill-history`;
     return axiosClient.post(url, data);
   },
+  Get_Address_Bill: () => {
+    const url = `/customer/get-all-address`;
+    return axiosClient.get(url);
+  }
 
 };
 

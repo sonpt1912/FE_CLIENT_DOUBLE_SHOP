@@ -42,7 +42,7 @@ const CartAPI = {
   },
 
   Get_Shipping_Fee : (data) => {
-    const url = "/ghn/get-shipping-fee";
+    const url = "/public/ghn/get-shipping-fee";
     return axiosClient.post(url, data);
   }
 

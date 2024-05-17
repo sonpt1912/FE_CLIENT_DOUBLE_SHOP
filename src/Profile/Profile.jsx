@@ -309,6 +309,8 @@ function Profile(props) {
   // Hàm này dùng để render html cho từng loại edit profile hoặc change password
   // Tùy theo người dùng chọn
 
+
+
   const [edit_status, set_edit_status] = useState("thong_tin_ca_nhan");
   const [showDangXuat, setShowDangXuat] = useState(false);
 
@@ -328,7 +330,13 @@ function Profile(props) {
   const huyDangXuat = () => {
     setShowDangXuat(false);
   };
-
+  useEffect(() => {
+    const storedStatus = localStorage.getItem('edit_status_checkout');
+    if (storedStatus) {
+      set_edit_status(JSON.parse(storedStatus));
+      localStorage.removeItem('edit_status_checkout');
+    }
+  }, []);
   const [user, set_user] = useState({});
 
   useEffect(() => {
@@ -1187,220 +1195,6 @@ function Profile(props) {
                 </div>
               </div>
             ) : edit_status === "lich_su" ? (
-              // <div className="setting_history">
-              //     <Tabs justify={"center"} tabBarStyle={{ justifyContent: "center" }} style={{ textAlign: "center", margin: "10px" }} activeKey={activeTab} onChange={handleTabChange}>
-              //         <TabPane tab="Chờ xác nhận" key="choXacNhan">
-              //             <Table
-              //                 className="text-center"
-              //                 pagination={{
-              //                     showTotal: (totalPages) => `Số lượng Sản phẩm: ${totalPages} `,
-              //                 }}
-              //             >
-              //                 <Column
-              //                     title="STT"
-              //                     dataIndex="index"
-              //                     key="index"
-              //                     render={(text, record, index) => index + 1}
-              //                 />
-              //                 <Column
-              //                     title="Mã"
-              //                     dataIndex={['productCode']}
-              //                     key="productCode"
-              //                 />
-              //                 <Column
-              //                     title="Tên"
-              //                     dataIndex={['productName']}
-              //                     key="productName"
-              //                 />
-              //                 <Column
-              //                     title="Ngày"
-              //                     dataIndex={['productName']}
-              //                     key="productName"
-              //                 />
-              //                 <Column
-              //                     title="Giá trị đơn hàng"
-              //                     dataIndex={['quantity']}
-              //                     key="quantity"
-              //                 />
-              //             </Table>
-              //         </TabPane>
-              //         <TabPane tab="Chờ Lấy Hàng" key="choGiaoHang">
-              //             <Table
-              //                 className="text-center"
-              //                 pagination={{
-              //                     showTotal: (totalPages) => `Số lượng Sản phẩm: ${totalPages} `,
-              //                 }}
-              //             >
-              //                 <Column
-              //                     title="STT"
-              //                     dataIndex="index"
-              //                     key="index"
-              //                     render={(text, record, index) => index + 1}
-              //                 />
-              //                 <Column
-              //                     title="Mã"
-              //                     dataIndex={['productCode']}
-              //                     key="productCode"
-              //                 />
-              //                 <Column
-              //                     title="Tên"
-              //                     dataIndex={['productName']}
-              //                     key="productName"
-              //                 />
-              //                 <Column
-              //                     title="Ngày"
-              //                     dataIndex={['productName']}
-              //                     key="productName"
-              //                 />
-              //                 <Column
-              //                     title="Giá trị đơn hàng"
-              //                     dataIndex={['quantity']}
-              //                     key="quantity"
-              //                 />
-              //             </Table>
-              //         </TabPane>
-              //         <TabPane tab="Giao hàng" key="giaoHang">
-              //             <Table
-              //                 className="text-center"
-              //                 pagination={{
-              //                     showTotal: (totalPages) => `Số lượng Sản phẩm: ${totalPages} `,
-              //                 }}
-              //             >
-              //                 <Column
-              //                     title="STT"
-              //                     dataIndex="index"
-              //                     key="index"
-              //                     render={(text, record, index) => index + 1}
-              //                 />
-              //                 <Column
-              //                     title="Mã"
-              //                     dataIndex={['productCode']}
-              //                     key="productCode"
-              //                 />
-              //                 <Column
-              //                     title="Tên"
-              //                     dataIndex={['productName']}
-              //                     key="productName"
-              //                 />
-              //                 <Column
-              //                     title="Ngày"
-              //                     dataIndex={['productName']}
-              //                     key="productName"
-              //                 />
-              //                 <Column
-              //                     title="Giá trị đơn hàng"
-              //                     dataIndex={['quantity']}
-              //                     key="quantity"
-              //                 />
-              //             </Table>
-              //         </TabPane>
-              //         <TabPane tab="Hoàn thành" key="hoanThanh">
-              //             <Table
-              //                 className="text-center"
-              //                 pagination={{
-              //                     showTotal: (totalPages) => `Số lượng Sản phẩm: ${totalPages} `,
-              //                 }}
-              //             >
-              //                 <Column
-              //                     title="STT"
-              //                     dataIndex="index"
-              //                     key="index"
-              //                     render={(text, record, index) => index + 1}
-              //                 />
-              //                 <Column
-              //                     title="Mã"
-              //                     dataIndex={['productCode']}
-              //                     key="productCode"
-              //                 />
-              //                 <Column
-              //                     title="Tên"
-              //                     dataIndex={['productName']}
-              //                     key="productName"
-              //                 />
-              //                 <Column
-              //                     title="Ngày"
-              //                     dataIndex={['productName']}
-              //                     key="productName"
-              //                 />
-              //                 <Column
-              //                     title="Giá trị đơn hàng"
-              //                     dataIndex={['quantity']}
-              //                     key="quantity"
-              //                 />
-              //             </Table>
-              //         </TabPane>
-              //         <TabPane tab="Hủy hàng" key="huy">
-              //             <Table
-              //                 className="text-center"
-              //                 pagination={{
-              //                     showTotal: (totalPages) => `Số lượng Sản phẩm: ${totalPages} `,
-              //                 }}
-              //             >
-              //                 <Column
-              //                     title="STT"
-              //                     dataIndex="index"
-              //                     key="index"
-              //                     render={(text, record, index) => index + 1}
-              //                 />
-              //                 <Column
-              //                     title="Mã"
-              //                     dataIndex={['productCode']}
-              //                     key="productCode"
-              //                 />
-              //                 <Column
-              //                     title="Tên"
-              //                     dataIndex={['productName']}
-              //                     key="productName"
-              //                 />
-              //                 <Column
-              //                     title="Ngày"
-              //                     dataIndex={['productName']}
-              //                     key="productName"
-              //                 />
-              //                 <Column
-              //                     title="Giá trị đơn hàng"
-              //                     dataIndex={['quantity']}
-              //                     key="quantity"
-              //                 />
-              //             </Table>
-              //         </TabPane>
-              //         <TabPane tab="Trả hàng" key="tra">
-              //             <Table
-              //                 className="text-center"
-              //                 pagination={{
-              //                     showTotal: (totalPages) => `Số lượng Sản phẩm: ${totalPages} `,
-              //                 }}
-              //             >
-              //                 <Column
-              //                     title="STT"
-              //                     dataIndex="index"
-              //                     key="index"
-              //                     render={(text, record, index) => index + 1}
-              //                 />
-              //                 <Column
-              //                     title="Mã"
-              //                     dataIndex={['productCode']}
-              //                     key="productCode"
-              //                 />
-              //                 <Column
-              //                     title="Tên"
-              //                     dataIndex={['productName']}
-              //                     key="productName"
-              //                 />
-              //                 <Column
-              //                     title="Ngày"
-              //                     dataIndex={['productName']}
-              //                     key="productName"
-              //                 />
-              //                 <Column
-              //                     title="Giá trị đơn hàng"
-              //                     dataIndex={['quantity']}
-              //                     key="quantity"
-              //                 />
-              //             </Table>
-              //         </TabPane>
-              //     </Tabs>
-              // </div>
               <Bill />
             ) : edit_status === "quen_mat_khau" ? (
               <div className="setting_change_password">

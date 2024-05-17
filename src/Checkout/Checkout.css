@@ -72,7 +72,7 @@
   font-weight: 500;
 }
 .address_customer {
-  margin-left: 20px;
+  margin-left: 4rem;
   word-break: break-word;
 }
 .checked_address {
@@ -88,7 +88,7 @@
 .change_address {
   color: #4080ee;
   cursor: pointer;
-  margin-left: 2.5rem;
+  margin-left: auto;
   background: #ebebeb;
   text-transform: capitalize;
   border: 0;
@@ -256,4 +256,9 @@ h3.o13Lc4.hERTPn {
   text-transform: capitalize;
   padding: 6px 44px; 
   font-size: 16px;
+}
+.selected-button {
+  /* background-color: #1890ff;  */
+  color: #1890ff; 
+  border-color: #1890ff; 
 }

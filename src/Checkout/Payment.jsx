@@ -47,32 +47,34 @@ const Payment = ({ visible, onCancel, total, onPayment }) => {
     );
   };
   useEffect(() => {
-    const createBill = async () => {
-      if (total !== prevTotal || !hasCalledApi) {
-        const payload = {
-          orderCode: generateOrderCode(),
-          amount: total,
-          description: "VQRIO123",
-          cancelUrl: "https://your-cancel-url.com",
-          returnUrl: "https://your-success-url.com",
-        };
-        try {
-          const reponse = await CartAPI.Create_Payment_Link(payload);
-          SetPaymentLinkData(reponse.data);
-          setHasCalledApi(true);
-        } catch (error) {
-          console.error("Error creating payment link:", error);
+    if (visible) {
+      const createBill = async () => {
+        if (total !== prevTotal || !hasCalledApi) {
+          const payload = {
+            orderCode: generateOrderCode(),
+            amount: total,
+            description: "VQRIO123",
+            cancelUrl: "https://your-cancel-url.com",
+            returnUrl: "https://your-success-url.com",
+          };
+          try {
+            const reponse = await CartAPI.Create_Payment_Link(payload);
+            SetPaymentLinkData(reponse.data);
+            setHasCalledApi(true);
+          } catch (error) {
+            console.error("Error creating payment link:", error);
+          }
+        } else {
+          setHasCalledApi(false);
         }
-      } else {
-        setHasCalledApi(false);
-      }
-      setPrevTotal(total);
-    };
-    createBill();
-  }, [total, prevTotal]);
+        setPrevTotal(total);
+      };
+      createBill();
+    }
+  }, [total, prevTotal, visible]);
 
   useEffect(() => {
-    setDescription(paymentLinkData?.description);
+    if (total > prevTotal) setDescription(paymentLinkData?.description);
     setQrCode(paymentLinkData?.qrCode);
   }, [paymentLinkData]);
 
@@ -98,14 +100,14 @@ const Payment = ({ visible, onCancel, total, onPayment }) => {
 
   return (
     <Modal
-    style={{
-      position: "fixed",
-      bottom: 0,
-      left: 0,
-      right: 0,
-      top: "10rem",
-      margin: "auto",
-    }}
+      style={{
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        top: "10rem",
+        margin: "auto",
+      }}
       visible={visible}
       onCancel={onCancel}
       footer={[

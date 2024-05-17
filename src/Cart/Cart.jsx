@@ -35,20 +35,33 @@ function Cart(props) {
     });
   };
   useEffect(() => {
-    const fetchDataCarts = async () => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const fetchDataCarts = async () => {
+        try {
+          setLoading(true);
+          const reponse = await CartAPI.Get_Cart({});
+          console.log("Cart response: ",reponse);
+          set_list_carts(reponse);
+          setLoadData(false);
+        } catch (error) {
+          console.log("Error", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchDataCarts();
+    } else {
       try {
-        setLoading(true);
-        const reponse = await CartAPI.Get_Cart({});
-        set_list_carts(reponse);
+        const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+        set_list_carts(cartItems);
         setLoadData(false);
-        console.log("Cart", reponse);
       } catch (error) {
-        console.log("Error", error);
+        message.error(error);
       } finally {
         setLoading(false);
       }
-    };
-    fetchDataCarts();
+    }
   }, [isloadData]);
 
   const handleQuantityChange = async (value, idProduct) => {
