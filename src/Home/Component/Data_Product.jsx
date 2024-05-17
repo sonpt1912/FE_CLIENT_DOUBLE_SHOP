@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-
+import { Link } from "react-router-dom";
 const FakeProductData = [
   {
-    id: 1,
+    id: 23,
     name: "Áo Sơ mi dài tay Café-DriS",
     price: 299000,
     image:
@@ -14,7 +14,7 @@ const FakeProductData = [
     sale: false,
   },
   {
-    id: 2,
+    id: 8,
     name: "Áo khoác gió nam KBP Sport",
     price: 450000,
     image:
@@ -26,7 +26,7 @@ const FakeProductData = [
     sale: false,
   },
   {
-    id: 3,
+    id: 10,
     name: "Áo gió nam AJDSB19-4",
     price: 799000,
     image:
@@ -38,11 +38,11 @@ const FakeProductData = [
     sale: true,
   },
   {
-    id: 4,
-    name: "Áo polo comfort Double Bold Fox Head Polo",
+    id: 18,
+    name: "Áo thun polo cotton pha cotton có họa tiết",
     price: 199000,
     image:
-      "http://res.cloudinary.com/dm256lpnu/image/upload/v1714836603/double_shop/product/55978794/xkfdprnu0p9mnsuifn2f.webp",
+      "http://res.cloudinary.com/dm256lpnu/image/upload/v1714838191/double_shop/product/44496916/exfmzx686j1tiefyhrhj.webp",
     description:
       "Áo thun nam cổ tròn chất liệu cotton mềm mại, thoáng mát, phù hợp mặc đi chơi hoặc làm việc nhà.",
     hot: false,
@@ -50,7 +50,7 @@ const FakeProductData = [
     sale: true,
   },
   {
-    id: 5,
+    id: 3,
     name: "Hoodie ",
     price: 500000,
     image: "http://res.cloudinary.com/dm256lpnu/image/upload/v1714819044/double_shop/product/8835871/ssyxdydtc9a1qtdxgwto.jpg",
@@ -60,7 +60,7 @@ const FakeProductData = [
     sale: false,
   },
   {
-    id: 6,
+    id: 4,
     name: "Sweater Old Sailor",
     price: 550000,
     image: "http://res.cloudinary.com/dm256lpnu/image/upload/v1714819202/double_shop/product/89798547/dpkjmjuoltfxj0dm9l81.jpg",
@@ -70,7 +70,7 @@ const FakeProductData = [
     sale: true,
   },
   {
-    id: 7,
+    id: 6,
     name: "Áo thun nam trung niên Pixi",
     price: 600000,
     image: "http://res.cloudinary.com/dm256lpnu/image/upload/v1714821410/double_shop/product/27453808/ombvopopfx64ithziipt.jpg",
@@ -80,27 +80,27 @@ const FakeProductData = [
     sale: false,
   },
   {
-    id: 8,
-    name: "Sweater Old Sailor",
+    id: 13,
+    name: "Áo polo comfort Double Bold Fox Head Polo",
     price: 650000,
-    image: "http://res.cloudinary.com/dm256lpnu/image/upload/v1714819200/double_shop/product/89798547/hxk8ihxdh2u8s0gazvdv.jpg",
+    image: "http://res.cloudinary.com/dm256lpnu/image/upload/v1714836603/double_shop/product/55978794/xkfdprnu0p9mnsuifn2f.webp",
     description: "Mô tả sản phẩm 4",
     hot: false,
     new: true,
     sale: true,
   },
   {
-    id: 9,
-    name: "Áo thun polo cotton pha cotton có họa tiết",
+    id: 31,
+    name: "Áo Sơ Mi Ngắn Tay Nam Columbia Canyon",
     price: 700000,
-    image: "http://res.cloudinary.com/dm256lpnu/image/upload/v1714838191/double_shop/product/44496916/exfmzx686j1tiefyhrhj.webp",
+    image: "http://res.cloudinary.com/dm256lpnu/image/upload/v1714840214/double_shop/product/12065595/kbtgxuytg4ppaeyi1yyh.webp",
     description: "Mô tả sản phẩm 5",
     hot: false,
     new: false,
     sale: true,
   },
   {
-    id: 10,
+    id: 19,
     name: "Áo hoodie trùm đầu cỡ lớn KENZO Target",
     price: 750000,
     image: "http://res.cloudinary.com/dm256lpnu/image/upload/v1714838330/double_shop/product/58806284/budknzvx4185vqy36qxh.webp",
@@ -110,7 +110,7 @@ const FakeProductData = [
     sale: false,
   },
   {
-    id: 11,
+    id: 27,
     name: "Áo Hoodie Nam Puma X-Playstation",
     price: 800000,
     image: "http://res.cloudinary.com/dm256lpnu/image/upload/v1714839671/double_shop/product/84892955/ukaaze245e5sptusinvx.webp",
@@ -120,7 +120,7 @@ const FakeProductData = [
     sale: true,
   },
   {
-    id: 12,
+    id: 29,
     name: "Áo Khoác Nam Columbia Titan Pass™ Lightweight",
     price: 850000,
     image: "http://res.cloudinary.com/dm256lpnu/image/upload/v1714839927/double_shop/product/68218205/jb1ifosb9g7y592y0kxr.webp",
@@ -141,17 +141,19 @@ const DataProduct = () => {
     <div className="container mt-4">
       <div className="row">
         <div className="col">
-          <h3 className="text-center" style={{marginBottom:"20px"}}>Sản phẩm bán chạy</h3>
+          <h3 className="text-center" style={{ marginBottom: "20px" }}>Sản phẩm bán chạy</h3>
           <div className="row">
             {firstRowProducts.map((product) => (
               <div key={product.id} className="col-md-3 mb-4">
                 <div className="card h-100">
-                  <img
-                    src={product.image}
-                    className="card-img-top"
-                    alt={product.name}
-                    style={{ width: "100%", height: "300px" }} // Thiết lập kích thước của hình ảnh
-                  />
+                  <Link to={`/detail/${product.id}`}>
+                    <img
+                      src={product.image}
+                      className="card-img-top"
+                      alt={product.name}
+                      style={{ width: "100%", height: "300px" }}
+                    />
+                  </Link>
                   <div className="card-body">
                     <h5 className="card-title">{product.name}</h5>
                   </div>
@@ -163,17 +165,19 @@ const DataProduct = () => {
       </div>
       <div className="row">
         <div className="col">
-          <h3 className="text-center" style={{marginBottom:"20px"}}>Sản phẩm mới</h3>
+          <h3 className="text-center" style={{ marginBottom: "20px" }}>Sản phẩm mới</h3>
           <div className="row">
             {secondRowProducts.map((product) => (
               <div key={product.id} className="col-md-3 mb-4">
                 <div className="card h-100">
-                  <img
-                    src={product.image}
-                    className="card-img-top"
-                    alt={product.name}
-                    style={{ width: "100%", height: "300px" }} // Thiết lập kích thước của hình ảnh
-                  />
+                  <Link to={`/detail/${product.id}`}>
+                    <img
+                      src={product.image}
+                      className="card-img-top"
+                      alt={product.name}
+                      style={{ width: "100%", height: "300px" }}
+                    />
+                  </Link>
                   <div className="card-body">
                     <h5 className="card-title">{product.name}</h5>
                   </div>
@@ -185,17 +189,19 @@ const DataProduct = () => {
       </div>
       <div className="row">
         <div className="col">
-          <h3 className="text-center" style={{marginBottom:"20px"}}>Sản phẩm giảm giá</h3>
+          <h3 className="text-center" style={{ marginBottom: "20px" }}>Sản phẩm giảm giá</h3>
           <div className="row">
             {thirdRowProducts.map((product) => (
               <div key={product.id} className="col-md-3 mb-4">
                 <div className="card h-100">
-                  <img
-                    src={product.image}
-                    className="card-img-top"
-                    alt={product.name}
-                    style={{ width: "100%", height: "300px" }} // Thiết lập kích thước của hình ảnh
-                  />
+                  <Link to={`/detail/${product.id}`}>
+                    <img
+                      src={product.image}
+                      className="card-img-top"
+                      alt={product.name}
+                      style={{ width: "100%", height: "300px" }}
+                    />
+                  </Link>
                   <div className="card-body">
                     <h5 className="card-title">{product.name}</h5>
                   </div>
