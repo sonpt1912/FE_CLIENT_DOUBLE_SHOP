@@ -69,11 +69,11 @@ function Header(props) {
 
   // Get carts từ redux khi user chưa đăng nhập
   // const carts = useSelector(state => state.Cart.listCart)
-  const [active_user, set_active_user] = useState(false);
+  const [active, setActive] = useState(false);
   // Trong bất kỳ thành phần nào của ứng dụng, bạn có thể lấy accessToken từ localStorage như sau:
   const accessToken = localStorage.getItem('token');
 
-  const [user, set_user] = useState({});
+  
 const handleDeleteConfirm = async (id) => {
   try {
     // Tạo một đối tượng cấu hình chứa các headers bạn muốn truyền
@@ -82,11 +82,10 @@ const handleDeleteConfirm = async (id) => {
         };
 
     // Gọi API xóa sản phẩm khỏi danh sách yêu thích với đối tượng cấu hình
-    const response = await axios.post(`http://localhost:8071/favorite/delete-favorite`, { id: id }, {
+   const response= await axios.post(`http://localhost:8071/favorite/delete-favorite`, { id: id }, {
       headers: headers
     });
-
-    // Cập nhật lại danh sách yêu thích sau khi xóa
+    //   console.log(response);
     fetchData();
   } catch (error) {
     console.error('Error deleting favorite:', error);
@@ -291,7 +290,7 @@ const handleDeleteConfirm = async (id) => {
       const response = await axios.post('http://localhost:8071/favorite/get-all-by-id-customer', {}, { headers }); // Thêm headers vào yêu cầu
       
       console.log(response);
-      console.log(response.data);
+    
       setData(response.data);
 
     } catch (error) {
@@ -407,9 +406,9 @@ const handleDeleteConfirm = async (id) => {
                                         <Row>
                                           <Col span={8}>
                                             {/* Kiểm tra xem có ảnh không */}
-                                            {i.listImages && i.listImages.resources.length > 0 ? (
+                                            {i.product.listImages && i.product.listImages.resources.length > 0 ? (
                                               // Nếu có ảnh, hiển thị ảnh
-                                              <img src={i.listImages.resources[0].url} alt={i.name} style={{ width: "150px", height: "75px" }} />
+                                              <img src={i.product.listImages.resources[0].url} alt={i.name} style={{ width: "150px", height: "75px" }} />
                                             ) : (
                                               // Nếu không có ảnh, hiển thị div
                                               <div style={{ width: "150px", backgroundColor: '#f0f0f0', height: "75px" }} />
@@ -417,7 +416,7 @@ const handleDeleteConfirm = async (id) => {
                                           </Col>
                                           <Col span={16} style={{ position: 'relative' }}>
                                             <div style={{ position: 'absolute', top: 60, right: 0, transform: 'translateY(-50%)' }}>
-                                              {i.name} {/* Product name */}
+                                              {i.product.name} {/* Product name */}
                                             </div>
                                           </Col>
                                         </Row>

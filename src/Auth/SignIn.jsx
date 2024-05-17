@@ -77,22 +77,19 @@ function SignIn(props) {
   const onSuccessGoogle = async (response) => {
     console.log(response);
     try {
-      // Gọi hàm dispatch(loginGoogle()) và truyền tokenId từ response vào
-      const result = await dispatch(loginGoogle(response.credential));
+      const result = await loginGoogle(response.credential);
       console.log("Got result:", result);
   
-      // Kiểm tra kết quả trả về từ hàm loginGoogle
-      if (result.error && result.error.message === "Rejected") {
-        message.error("Không có quyền truy cập !");
-      } else {
-        // Nếu không có lỗi, chuyển hướng đến trang /dashboard/thongKe
-        history.push("/shop/product");
-      }
+      // Dispatch any necessary actions here if needed
+      // e.g., update user state, load user data, etc.
+  
+      history.push("/");
     } catch (error) {
-      // Nếu có lỗi, hiển thị thông báo lỗi
-      message.error("Login failed:", error);
+      message.destroy();
+      message.error("Đăng nhập thất bại. Vui lòng kiểm tra lại !", 3);
     }
   };
+  
   
   // Hàm gọi API để đăng nhập bằng Google và lưu token vào localStorage
   const loginGoogle = async (tokenId) => {
