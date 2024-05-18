@@ -3520,6 +3520,8 @@ li.right-menu .cat-mega-menu-2 > li {
   border-radius: 2px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  text-align: center;
+  width: 12rem;
 }
 
 .add-to-cart:hover {
@@ -3537,6 +3539,7 @@ li.right-menu .cat-mega-menu-2 > li {
   cursor: pointer;
   transition: background-color 0.3s ease, color 0.3s ease;
   margin-right: 10px;
+  width: 12rem;
 }
 
 .btn-add-to-cart:hover {

@@ -1,6 +1,7 @@
 import {
   Button,
   Card,
+  Checkbox,
   Col,
   Image,
   Input,
@@ -8,6 +9,7 @@ import {
   Modal,
   Popover,
   Row,
+  Select,
   Spin,
   Switch,
   Table,
@@ -15,7 +17,7 @@ import {
 } from "antd";
 import "./Checkout.css";
 import { useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import CartAPI from "../API/CartAPI";
 import Payment from "./Payment";
 import BillAPI from "../API/BillAPI";
@@ -24,6 +26,7 @@ import axios from "axios";
 
 Checkout.propTypes = {};
 const { Meta } = Card;
+const { Option } = Select;
 
 function Checkout(props) {
   const location = useLocation();
@@ -31,12 +34,13 @@ function Checkout(props) {
   const [totalPrice, setTotalPrice] = useState(0);
   const [voucherCode, setVoucherCode] = useState("");
   const [voucherModal, setVoucherModal] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState(0);
   const [visiblePaymentModal, setVisiblePaymentModal] = useState(false);
   const [vouchers, setVouchers] = useState([]);
+  const [totalVoucher, setTotalVoucher] = useState(0);
   const [totalShippingFee, setTotalShippingFee] = useState(0);
   const [totalPayment, setTotalPayment] = useState(0);
-  const [quantity, setQuantity] = useState(0)
+  const [quantity, setQuantity] = useState(0);
 
   const [customerInfo, setCustomerInfo] = useState([]);
   const [provinces, setProvinces] = useState([]);
@@ -46,89 +50,116 @@ function Checkout(props) {
   const [selectedDistrict, setSelectedDistrict] = useState([]);
   const [selectedWard, setSelectedWard] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState([]);
-  const [showAddressModal, setShowAddressModal] = useState(true);
   const [addressCustom, setAddressCustom] = useState("");
   const [loadingAddress, setLoadingAddress] = useState(false);
   const [selectedModalAddress, setSelectedModalAddress] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+  const [recorqdSelect, setRecorqdSelect] = useState();
+  const [agreeTerms, setAgreeTerms] = useState(false);
 
-  useEffect(() => {}, [addressCustom,loadingAddress]);
-  useEffect(() => {
-    const fetchProvinces = async () => {
+  const token = localStorage.getItem("token");
+  const [showAddressModal, setShowAddressModal] = useState(!!token);
+  const [showAddressNewModal, setShowAddressNewModal] = useState(!token);
+
+  useEffect(() => {}, [addressCustom, loadingAddress]);
+  const fetchProvinces = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(
+        "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province",
+        {
+          headers: {
+            Token: "81e2108c-e9c6-11ee-b1d4-92b443b7a897",
+          },
+        }
+      );
+      setProvinces(response.data.data);
+      // setSelectedDistrict(response.data.data.DistrictID);
+    } catch (error) {
+      console.error("Error fetching provinces:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const fetchDistricts = async (province) => {
+    if (province) {
+      setIsLoading(true);
       try {
         const response = await axios.get(
-          "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province",
+          `https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id=${province}`,
           {
             headers: {
               Token: "81e2108c-e9c6-11ee-b1d4-92b443b7a897",
             },
           }
         );
-        setProvinces(response.data.data);
-        setSelectedDistrict(response.data.data.DistrictID);
+        setDistricts(response.data.data);
       } catch (error) {
-        console.error("Error fetching provinces:", error);
+        console.error("Error fetching districts:", error);
+      } finally {
+        setIsLoading(false);
       }
-    };
-
-    fetchProvinces();
-  }, [selectedDistrict]);
-
-  useEffect(() => {
-    const fetchDistricts = async () => {
-      if (selectedProvince) {
-        try {
-          const response = await axios.get(
-            `https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id=${selectedProvince}`,
-            {
-              headers: {
-                Token: "81e2108c-e9c6-11ee-b1d4-92b443b7a897",
-              },
-            }
-          );
-          setDistricts(response.data.data);
-        } catch (error) {
-          console.error("Error fetching districts:", error);
-        }
+    }
+  };
+  const fetchWards = async (districtId) => {
+    if (districtId) {
+      setIsLoading(true);
+      try {
+        const response = await axios.get(
+          `https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id=${districtId}`,
+          {
+            headers: {
+              Token: "81e2108c-e9c6-11ee-b1d4-92b443b7a897",
+            },
+          }
+        );
+        setWards(response.data.data);
+      } catch (error) {
+        console.error("Error fetching wards:", error);
+      } finally {
+        setIsLoading(false);
       }
-    };
-
-    fetchDistricts();
-  }, [selectedProvince]);
-
-  useEffect(() => {
-    const fetchWards = async () => {
-      if (selectedDistrict) {
-        try {
-          const response = await axios.get(
-            `https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id=${selectedDistrict}`,
-            {
-              headers: {
-                Token: "81e2108c-e9c6-11ee-b1d4-92b443b7a897",
-              },
-            }
-          );
-          setWards(response.data.data);
-        } catch (error) {
-          console.error("Error fetching wards:", error);
-        }
-      }
-    };
-
-    fetchWards();
-  }, [selectedDistrict]);
-
-  const handleShowAddressModal = () => {
-    setSelectedModalAddress(null);
-    setShowAddressModal(true);
+    }
   };
 
+  useEffect(() => {
+    Promise.all([]);
+  }, [selectedDistrict]);
+
+  const addressFull = useMemo(() => {
+    if (!recorqdSelect) return;
+    const province = provinces.find(
+      (p) => p.ProvinceID === parseInt(recorqdSelect.city, 10)
+    );
+    const provinceName = province ? province.ProvinceName : "";
+    const districtId = parseInt(recorqdSelect.district, 10);
+
+    const district = districts.find((p) => p.DistrictID === districtId);
+    const districtName = district ? district.DistrictName : "";
+
+    const ward = wards.find((p) => p.WardCode === recorqdSelect.province);
+    const wardName = ward ? ward.WardName : "";
+
+    return `${recorqdSelect.description}, ${wardName}, ${districtName}, ${provinceName}`;
+  }, [wards, districts, provinces, recorqdSelect]);
+
+  const handleShowAddressModal = () => {
+    if (token) {
+      setSelectedModalAddress(null);
+      setShowAddressModal(true);
+      setShowAddressNewModal(false);
+    } else {
+      setShowAddressModal(false);
+      setShowAddressNewModal(true);
+    }
+  };
   const fetchAllAddresses = async () => {
     setLoadingAddress(true);
     try {
       const addressResponse = await BillAPI.Get_Address_Bill();
-      const addressesWithSelection = addressResponse.map((address) => ({
+      const addressesWithSelection = addressResponse.map((address, index) => ({
         ...address,
-        isSelected: false,
+        isSelected: address.defaul === 0,
       }));
       setSelectedAddress(addressesWithSelection);
       selectDefaultAddress(addressesWithSelection);
@@ -143,12 +174,25 @@ function Checkout(props) {
     fetchAllAddresses();
   }, []);
 
-  const selectDefaultAddress = (addressList) => {
+  useEffect(() => {
+    const defaultAddress = selectedAddress.find(
+      (address) => address.defaul === 0
+    );
+    if (defaultAddress) {
+      handleSelectAddress(defaultAddress);
+    }
+  }, [loadingAddress]);
+
+  const selectDefaultAddress = async (addressList) => {
+    setLoadingAddress(true);
+
     const address =
       selectedModalAddress ||
-      addressList.find((address) => address.defaul === 1);
+      addressList.find((address) => address.defaul === 0);
     if (!address) return;
-
+    await fetchProvinces();
+    await fetchDistricts(address.city);
+    await fetchWards(address.district);
     const districtId = parseInt(address.district, 10);
     setSelectedDistrict(districtId);
 
@@ -165,60 +209,57 @@ function Checkout(props) {
 
     const addressFull = `${address.description}, ${wardName}, ${districtName}, ${provinceName}`;
     setAddressCustom(addressFull);
+    setLoadingAddress(false);
   };
+
+  useEffect(() => {
+    fetchProvinces();
+    fetchDistricts(selectedProvince);
+    fetchWards(selectedDistrict);
+  }, [addressCustom]);
 
   const handleSelectAddress = (record) => {
-      setLoadingAddress(true);
-      const updatedAddresses = selectedAddress.map((address) => ({
-        ...address,
-        isSelected: address === record,
-      }));
-      setSelectedAddress(updatedAddresses);
-      setSelectedModalAddress(record);
-
-      const districtId = parseInt(record.district, 10);
-      setSelectedDistrict(districtId);
-
-      const province = provinces.find(
-        (p) => p.ProvinceID === parseInt(record.city, 10)
-      );
-      const provinceName = province ? province.ProvinceName : "";
-
-      const district = districts.find((p) => p.DistrictID === districtId);
-      const districtName = district ? district.DistrictName : "";
-
-      const ward = wards.find((p) => p.WardCode === record.province);
-      const wardName = ward ? ward.WardName : "";
-
-      const addressFull = `${record.description}, ${wardName}, ${districtName}, ${provinceName}`;
-      setAddressCustom(addressFull);
-      setLoadingAddress(false);
+    setRecorqdSelect(record);
+    const updatedAddresses = selectedAddress.map((address) => ({
+      ...address,
+      isSelected: address === record,
+    }));
+    setSelectedAddress(updatedAddresses);
+    setSelectedModalAddress(record);
   };
 
-  const handleProvinceChange = (value) => {
-    if (value !== selectedProvince) {
-      setSelectedProvince(value);
-      setSelectedDistrict(null);
-      setSelectedWard(null);
-      setWards([]);
+  useEffect(() => {
+    const defaultAddress = selectedAddress.find(
+      (address) => address.defaul === 0
+    );
+    if (defaultAddress) {
+      handleSelectAddress(defaultAddress);
     }
+  }, []);
+
+  const handleProvinceChange = (value) => {
+    setSelectedProvince(value);
+    setSelectedDistrict(null);
+    setSelectedWard(null);
+    setDistricts([]);
+    setWards([]);
+    fetchDistricts(value);
   };
 
   const handleDistrictChange = (value) => {
-    if (value !== selectedDistrict) {
-      setSelectedDistrict(value);
-    }
+    setSelectedDistrict(value);
+    setSelectedWard(null);
+    setWards([]);
+    fetchWards(value);
   };
 
   const handleWardChange = (value) => {
-    if (value !== selectedWard) {
-      setSelectedWard(value);
-    }
+    setSelectedWard(value);
   };
 
   useEffect(() => {
     setTotalPayment(totalPrice + totalShippingFee);
-    setQuantity(selectedProducts.length)
+    setQuantity(selectedProducts.length);
   }, [selectedProducts.length, totalPrice, totalShippingFee]);
 
   useEffect(() => {
@@ -257,10 +298,11 @@ function Checkout(props) {
   useEffect(() => {
     let sum = 0;
     selectedProducts?.forEach((product) => {
-      sum += product.price * product.quantity;
+      const discountedPrice = product.price - product.discountAmount;
+      sum += discountedPrice * product.quantity;
     });
     setTotalPrice(sum);
-  }, [selectedProducts, totalPrice, showAddressModal]);
+  }, [selectedProducts]);
 
   useEffect(() => {
     const fetchDataUser = async () => {
@@ -297,7 +339,7 @@ function Checkout(props) {
   };
 
   const handlePaymentMethodChange = (checked) => {
-    setPaymentMethod(checked);
+    setPaymentMethod(checked ? 1 : 0);
   };
 
   const Create_Bill = async (value, idProduct) => {
@@ -312,19 +354,50 @@ function Checkout(props) {
         totalAmout: totalPrice,
         discoutAmout: "",
         address: addressCustom,
-        payment: "",
+        payment: paymentMethod,
         note: "",
         phone: customerInfo.phone,
         receiver: customerInfo.name,
         listCart: listCart,
       };
-      const reponse = await CartAPI.Create_Bill(params);
-      if (!reponse) {
-        message.error("Thanh toán thất bại!");
+      const listDetailProduct = selectedProducts.map((product) => ({
+        id: product.id,
+        quantity: product.quantity,
+        discountAmout: product.discountAmount,
+        price: product.price - product.discountAmount,
+      }));
+      const params_public = {
+        idVoucher: "",
+        totalAmout: totalPrice,
+        discoutAmout: "",
+        address: addressCustom,
+        payment: paymentMethod,
+        note: "",
+        phone: customerInfo.phone,
+        receiver: customerInfo.name,
+        listDetailProduct: listDetailProduct,
+      };
+      if (token) {
+        const reponse = await CartAPI.Create_Bill(params);
+        if (!reponse) {
+          message.error("Thanh toán thất bại!");
+        } else {
+          message.success("Đặt hàng thành công");
+          localStorage.setItem(
+            "edit_status_checkout",
+            JSON.stringify("lich_su")
+          );
+          window.location.href = "/profile";
+        }
       } else {
-        message.success("Đặt hàng thành công");
-        localStorage.setItem("edit_status_checkout", JSON.stringify("lich_su"));
-        window.location.href = "/profile";
+        const reponse = await CartAPI.Create_Bill_Public(params_public);
+        if (!reponse) {
+          message.error("Thanh toán thất bại!");
+        } else {
+          message.success("Đặt hàng thành công");
+
+          window.location.href = "/";
+        }
       }
     } catch (error) {
       message.error("Thanh toán thất bại!");
@@ -360,6 +433,7 @@ function Checkout(props) {
         <Button
           className={record.isSelected ? "selected-button" : ""}
           onClick={() => handleSelectAddress(record)}
+          disabled={loadingAddress}
           style={{ width: "7rem" }}
         >
           {record.isSelected ? "Đã chọn" : "Chọn"}
@@ -398,7 +472,9 @@ function Checkout(props) {
                   <div class="name_customer">
                     {customerInfo.name} <br /> {customerInfo.phone}
                   </div>
-                  <div class="address_customer">{addressCustom}</div>
+                  <div class="address_customer">
+                    {isLoading ? <Spin /> : addressFull}
+                  </div>
                 </div>
               </div>
               <button
@@ -425,16 +501,6 @@ function Checkout(props) {
                 <Col span={24} key={index}>
                   <Card hoverable style={{ width: "100%" }}>
                     <Row gutter={[16, 16]} align="middle">
-                      <Col span={2}>
-                        {/* <Checkbox
-                          checked={selectedProducts.some(
-                            (p) => p.id === product.id
-                          )}
-                          onChange={(e) =>
-                            handleProductSelect(product, e.target.checked)
-                          }
-                        /> */}
-                      </Col>
                       <Col span={5}>
                         <Col span={5}>
                           <Popover
@@ -476,10 +542,31 @@ function Checkout(props) {
                       <Col span={4}>
                         <InputNumber value={product.quantity} disabled />
                       </Col>
-                      <Col span={3}>
-                        <h6 style={{ marginTop: "5px" }}>
-                          {product.price.toLocaleString("en-US")}đ
-                        </h6>
+                      <Col span={4}>
+                        <div>
+                          {product.discountAmount > 0 ? (
+                            <>
+                              <span
+                                style={{
+                                  textDecoration: "line-through",
+                                  color: "red",
+                                }}
+                              >
+                                {product.price.toLocaleString("en-US")}đ
+                              </span>
+                              <span style={{ marginLeft: "8px" }}>
+                                {(
+                                  product.price - product.discountAmount
+                                ).toLocaleString("en-US")}
+                                đ
+                              </span>
+                            </>
+                          ) : (
+                            <span>
+                              {product.price.toLocaleString("en-US")}đ
+                            </span>
+                          )}
+                        </div>
                       </Col>
                     </Row>
                   </Card>
@@ -515,26 +602,44 @@ function Checkout(props) {
               }}
             >
               <div>
-                <Switch
-                  checked={paymentMethod}
-                  onChange={handlePaymentMethodChange}
-                />
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: "1rem",
+                  }}
+                >
+                  <div>
+                    <Switch
+                      checked={paymentMethod}
+                      onChange={(checked) => handlePaymentMethodChange(checked)}
+                    />
+                  </div>
+                  {paymentMethod === 1 ? (
+                    <span style={{ marginLeft: "1rem" }}>
+                      Thanh toán trực tuyến
+                    </span>
+                  ) : (
+                    <span style={{ marginLeft: "1rem" }}>
+                      Thanh toán khi nhận hàng
+                    </span>
+                  )}
+                </div>
               </div>
-              {paymentMethod ? (
-                <span style={{ marginLeft: "1rem" }}>
-                  Thanh toán trực tuyến
-                </span>
-              ) : (
-                <span style={{ marginLeft: "1rem" }}>
-                  Thanh toán khi nhận hàng
-                </span>
-              )}
             </div>
-
-            <h3 class="o13Lc4 hERTPn cFXdGN">Tổng tiền hàng</h3>
-            <div class="o13Lc4 X9R_0O cFXdGN">
-              {" "}
-              {totalPrice.toLocaleString("en-US")} VNĐ
+            <div>
+              <h3 class="o13Lc4 hERTPn cFXdGN">Tổng tiền hàng </h3>
+              <h3 class="o13Lc4 hERTPn cFXdGN">Giảm giá Voucher </h3>
+            </div>
+            <div>
+              <div class="o13Lc4 X9R_0O cFXdGN">
+                {" "}
+                {totalPrice.toLocaleString("en-US")} VNĐ
+              </div>{" "}
+              <div class="o13Lc4 X9R_0O cFXdGN">
+                {" "}
+                {totalVoucher.toLocaleString("en-US")} VNĐ
+              </div>
             </div>
 
             <h3 class="o13Lc4 hERTPn fwPZIN">Phí vận chuyển</h3>
@@ -545,7 +650,6 @@ function Checkout(props) {
               style={{
                 display: "flex",
                 alignItems: "center",
-                marginBottom: "1rem",
               }}
             >
               <Input
@@ -582,15 +686,24 @@ function Checkout(props) {
             <div class="s7CqeD">
               <div class="sQArKu">
                 <div class="xINqui">
-                  Nhấn "Đặt hàng" đồng nghĩa với việc bạn đồng ý tuân theo điều
-                  khoản của cửa hàng
+                  <Checkbox
+                    checked={agreeTerms}
+                    onChange={(e) => setAgreeTerms(e.target.checked)}
+                  >
+                    Nhấn "Đặt hàng" đồng nghĩa với việc bạn đồng ý tuân theo
+                    điều khoản của cửa hàng
+                  </Checkbox>
                 </div>
               </div>
               <button
-                class="stardust-button stardust-button--primary stardust-button--large LtH6tW"
+                className="stardust-button stardust-button--primary stardust-button--large LtH6tW"
                 onClick={() => {
-                  if (paymentMethod) {
+                  if (paymentMethod && agreeTerms) {
                     setVisiblePaymentModal(true);
+                  } else if (!agreeTerms) {
+                    message.error(
+                      "Vui lòng đồng ý với điều khoản của cửa hàng"
+                    );
                   } else {
                     Create_Bill();
                   }
@@ -605,7 +718,7 @@ function Checkout(props) {
       <Payment
         visible={visiblePaymentModal}
         onCancel={handleClosePaymentModal}
-        total={totalPrice}
+        total={totalPayment}
         onPayment={Create_Bill}
       />
       <Modal
@@ -619,9 +732,10 @@ function Checkout(props) {
           <Button
             key="confirm"
             type="primary"
-            disabled={!selectedModalAddress}
+            disabled={!selectedModalAddress || loadingAddress}
+            loading={loadingAddress}
             onClick={() => {
-              selectDefaultAddress([]);
+              selectDefaultAddress(selectedAddress);
               setShowAddressModal(false);
             }}
           >
@@ -630,14 +744,152 @@ function Checkout(props) {
         ]}
         width={650}
       >
-        <Table
-          key="id"
-          columns={columns}
-          dataSource={selectedAddress}
-          onRow={(record) => ({
-            onClick: () => handleSelectAddress(record),
-          })}
-        />
+        <Table key="id" columns={columns} dataSource={selectedAddress} />
+      </Modal>
+      <Modal
+        title="Nhập địa chỉ"
+        open={showAddressNewModal}
+        onCancel={() => setShowAddressNewModal(false)}
+        footer={[
+          <Button key="cancel" onClick={() => setShowAddressNewModal(false)}>
+            Hủy
+          </Button>,
+          <Button
+            key="confirm"
+            type="primary"
+            onClick={() => {
+              const selectedProvinceName = provinces.find(
+                (p) => p.ProvinceID === selectedProvince
+              )?.ProvinceName;
+              const selectedDistrictName = districts.find(
+                (d) => d.DistrictID === selectedDistrict
+              )?.DistrictName;
+              const selectedWardName = wards.find(
+                (w) => w.WardCode === selectedWard
+              )?.WardName;
+
+              const newAddress = {
+                receiver: customerInfo.name,
+                phone: customerInfo.phone,
+                city: selectedProvince,
+                district: selectedDistrict,
+                province: selectedWard,
+                description: recorqdSelect.description,
+                isSelected: true,
+              };
+
+              const fullAddress = `${newAddress.description}, ${selectedWardName}, ${selectedDistrictName}, ${selectedProvinceName}`;
+              setShowAddressNewModal(false);
+              setRecorqdSelect(newAddress);
+              setAddressCustom(fullAddress);
+            }}
+          >
+            Xác nhận
+          </Button>,
+        ]}
+        width={650}
+      >
+        <Row gutter={[16, 16]} style={{ marginTop: "20px" }}>
+          <Col span={12}>
+            <Input
+              placeholder="Họ và tên"
+              value={customerInfo.name}
+              onChange={(e) =>
+                setCustomerInfo({
+                  ...customerInfo,
+                  name: e.target.value,
+                })
+              }
+            />
+          </Col>
+          <Col span={12}>
+            <Input
+              placeholder="Số điện thoại"
+              value={customerInfo.phone}
+              onChange={(e) =>
+                setCustomerInfo({
+                  ...customerInfo,
+                  phone: e.target.value,
+                })
+              }
+            />
+          </Col>
+        </Row>
+
+        <Row gutter={[16, 16]} style={{ marginTop: "20px" }}>
+          <Col span={24}>
+            <Input
+              placeholder="Mô tả địa chỉ"
+              value={recorqdSelect ? recorqdSelect.description : ""}
+              onChange={(e) => {
+                const newAddress = {
+                  ...recorqdSelect,
+                  description: e.target.value,
+                };
+                setRecorqdSelect(newAddress);
+              }}
+            />
+          </Col>
+        </Row>
+
+        <Row gutter={[16, 16]} style={{ marginTop: "20px" }}>
+          <Col span={8}>
+            <Select
+              style={{ width: "100%" }}
+              showSearch
+              placeholder="Chọn tỉnh/thành phố"
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+              onChange={handleProvinceChange}
+            >
+              {provinces.map((province) => (
+                <Option key={province.ProvinceID} value={province.ProvinceID}>
+                  {province.ProvinceName}
+                </Option>
+              ))}
+            </Select>
+          </Col>
+          <Col span={8}>
+            <Select
+              style={{ width: "100%" }}
+              showSearch
+              placeholder="Chọn quận/huyện"
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+              onChange={handleDistrictChange}
+              value={selectedDistrict}
+            >
+              {districts.map((district) => (
+                <Option key={district.DistrictID} value={district.DistrictID}>
+                  {district.DistrictName}
+                </Option>
+              ))}
+            </Select>
+          </Col>
+          <Col span={8}>
+            <Select
+              style={{ width: "100%" }}
+              showSearch
+              placeholder="Chọn phường/xã"
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+              onChange={handleWardChange}
+              value={selectedWard}
+            >
+              {wards.map((ward) => (
+                <Option key={ward.WardCode} value={ward.WardCode}>
+                  {ward.WardName}
+                </Option>
+              ))}
+            </Select>
+          </Col>
+        </Row>
       </Modal>
     </>
   );

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import {
   Card,
   Row,
@@ -41,7 +40,7 @@ function Cart(props) {
         try {
           setLoading(true);
           const reponse = await CartAPI.Get_Cart({});
-          console.log("Cart response: ",reponse);
+          console.log("Cart response: ", reponse);
           set_list_carts(reponse);
           setLoadData(false);
         } catch (error) {
@@ -64,28 +63,51 @@ function Cart(props) {
     }
   }, [isloadData]);
 
-  const handleQuantityChange = async (value, idProduct) => {
+  const handleQuantityChange = async (value, productId) => {
     try {
-      const params = {
-        id: idProduct,
-        quantity: value,
-      };
-      const reponse = await CartAPI.Update_Quantity_Product(params);
-      setLoadData(true);
-      if (!reponse) {
-        message.error("Cập nhật số lượng thất bại");
+      const token = localStorage.getItem("token");
+      if (token) {
+        const params = {
+          id: productId,
+          quantity: value,
+        };
+        const response = await CartAPI.Update_Quantity_Product(params);
+        if (response) {
+          setSelectedProducts((prevSelectedProducts) =>
+            prevSelectedProducts.map((product) =>
+              product.id === productId
+                ? { ...product, quantity: value }
+                : product
+            )
+          );
+          setLoadData(true);
+        } else {
+          message.error("Cập nhật số lượng thất bại");
+        }
+      } else {
+        const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+        const updatedCartItems = cartItems.map((item) =>
+          item.id === productId ? { ...item, quantity: value } : item
+        );
+        localStorage.setItem("cart", JSON.stringify(updatedCartItems));
+        setSelectedProducts((prevSelectedProducts) =>
+          prevSelectedProducts.map((product) =>
+            product.id === productId ? { ...product, quantity: value } : product
+          )
+        );
+        setLoadData(true);
       }
     } catch (error) {
       message.error("Cập nhật số lượng thất bại");
     }
   };
-
   const calculateTotalPrice = () => {
     let total = 0;
     selectedProducts.forEach((selectedProduct) => {
       const product = list_carts.find((p) => p.id === selectedProduct.id);
       if (product) {
-        total += product.price * product.quantity;
+        const discountedPrice = product.price - product.discountAmount;
+        total += discountedPrice * product.quantity;
       }
     });
     return total;
@@ -102,17 +124,29 @@ function Cart(props) {
     }
   };
 
-  const handleDelete = async (idProduct) => {
-    try {
-      const response = await CartAPI.Delete_Cart({ id: idProduct });
-      if (response) {
-        message.success("Xóa sản phẩm thành công");
-        setLoadData(true);
-      } else {
-        message.error("Xóa thất bại! Vui lòng thử lại");
-      }
-    } catch (error) {
-      console.log("Error deleting product", error);
+  const handleDelete = (productId) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      CartAPI.Delete_Cart({ id: productId })
+        .then((response) => {
+          if (response) {
+            message.success("Xóa sản phẩm thành công");
+            setLoadData(true);
+          } else {
+            message.error("Xóa thất bại! Vui lòng thử lại");
+          }
+        })
+        .catch((error) => {
+          console.log("Error deleting product", error);
+        });
+    } else {
+      const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+      const updatedCartItems = cartItems.filter(
+        (item) => item.id !== productId
+      );
+      localStorage.setItem("cart", JSON.stringify(updatedCartItems));
+      setLoadData(true);
+      message.success("Xóa sản phẩm thành công");
     }
   };
 
@@ -201,12 +235,32 @@ function Cart(props) {
                             }
                           />
                         </Col>
-                        <Col span={3}>
-                          <h6 style={{ marginTop: "5px" }}>
-                            {product.price.toLocaleString("en-US")}đ
-                          </h6>
+                        <Col span={4}>
+                          <div>
+                            {product.discountAmount > 0 ? (
+                              <>
+                                <span
+                                  style={{
+                                    textDecoration: "line-through",
+                                    color: "red",
+                                  }}
+                                >
+                                  {product.price.toLocaleString("en-US")}đ
+                                </span>
+                                <span style={{ marginLeft: "8px" }}>
+                                  {(
+                                    product.price - product.discountAmount
+                                  ).toLocaleString("en-US")}
+                                  đ
+                                </span>
+                              </>
+                            ) : (
+                              <span>
+                                {product.price.toLocaleString("en-US")}đ
+                              </span>
+                            )}
+                          </div>
                         </Col>
-                        {/* <Col span={3}><p>{totalPrices[index]}</p></Col> */}
                         <Col span={2}>
                           <Space>
                             <Popconfirm

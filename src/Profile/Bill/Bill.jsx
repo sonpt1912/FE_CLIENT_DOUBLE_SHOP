@@ -1,7 +1,7 @@
 import { Button, Table, message } from "antd";
 import React, { useEffect, useState } from "react";
 import BillAPI from "../../API/BillAPI";
-import "./Bill.css"
+import "./Bill.css";
 import ModalDetailBill from "./ModalDetailBill";
 
 const Bill = () => {
@@ -9,10 +9,10 @@ const Bill = () => {
   const [pageSize, setPageSize] = useState(5);
   const [current, setCurrent] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [statusFilter, setStatusFilter] = useState(0);
-  const [pagination, setPagination] = useState(5);
+  const [statusFilter, setStatusFilter] = useState("0");
+  const [pagination, setPagination] = useState(0);
   const [modalBillVisible, setModalBillVisible] = useState(false);
-  const [activeButton, setActiveButton] = useState(0);
+  const [activeButton, setActiveButton] = useState("0");
   const [selectedRowIdBill, setSelectedRowIdBill] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState(null);
 
@@ -26,7 +26,7 @@ const Bill = () => {
         pageSize: pageSize,
         status: value,
       });
-      console.log("Response",response);
+      console.log("Response", response);
       if (response && response.listData.length > 0) {
         console.log(2);
         setBills(response.listData);
@@ -65,17 +65,10 @@ const Bill = () => {
         });
         if (response && response.listData.length > 0) {
           setBills(response.listData);
+          setPagination(response.totalPages);
         } else {
           setBills([]);
         }
-        // if (response && response.error) {
-        //   if (
-        //     response.error.message === "Request failed with status code 403"
-        //   ) {
-        //     navigate("/login");
-        //     message.error(response.error.message);
-        //   }
-        // }
       } catch (error) {
         console.error("Error fetching data:", error);
         message.error("Error fetching data. Please try again later.");
@@ -201,7 +194,7 @@ const Bill = () => {
         <Button
           type="default"
           shape="round"
-            onClick={() => openModal(record.id, record.status)}
+          onClick={() => openModal(record.id, record.status)}
         >
           Chi Tiết
         </Button>
@@ -222,9 +215,9 @@ const Bill = () => {
         rowKey={(record) => record.id}
         dataSource={bills}
         pagination={{
-          //   pageSize: pageSize,
-          //   total: pagination.totalItems,
-          //   current: current,
+          pageSize: pageSize,
+          total: pagination,
+          current: current,
           showSizeChanger: true,
           showQuickJumper: true,
           showTotal: (totalPages) => `Total ${totalPages} items`,

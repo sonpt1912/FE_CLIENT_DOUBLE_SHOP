@@ -199,7 +199,7 @@ h3.o13Lc4.hERTPn {
 .yHG0SE {
   background: #ebebeb;
   border-top: 1px solid #f1f0ed;
-  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .05);
+  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.05);
   display: grid;
   grid-template-columns: 1fr -webkit-max-content -webkit-max-content;
   grid-template-columns: 1fr max-content max-content;
@@ -210,7 +210,7 @@ h3.o13Lc4.hERTPn {
   padding-right: 30px;
 }
 h3.o13Lc4.hERTPn {
-  color: rgba(0, 0, 0, .54);
+  color: rgba(0, 0, 0, 0.54);
   grid-column-end: 3;
   grid-column-start: 2;
 }
@@ -222,7 +222,7 @@ h3.o13Lc4.hERTPn {
   grid-row-start: 32;
   -ms-grid-row-span: 1;
   align-items: center;
-  border-top: 1px dashed rgba(0, 0, 0, .09);
+  border-top: 1px dashed rgba(0, 0, 0, 0.09);
   display: flex;
   justify-content: flex-end;
   margin: 10px 0 0;
@@ -237,16 +237,16 @@ h3.o13Lc4.hERTPn {
   padding: 0 15px;
 }
 .xINqui {
-  color: rgba(0, 0, 0, .54);
+  color: rgba(0, 0, 0, 0.54);
   font-size: 14px;
   padding: 12px 15px 0;
 }
 .stardust-button {
   background: #ee4d2d;
   color: #fff;
-  border: 1px solid rgba(0, 0, 0, .09);
+  border: 1px solid rgba(0, 0, 0, 0.09);
   border-radius: 2px !important;
-  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .03);
+  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.03);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -254,11 +254,15 @@ h3.o13Lc4.hERTPn {
   outline: none;
   margin-top: 1.9rem;
   text-transform: capitalize;
-  padding: 6px 44px; 
+  padding: 6px 44px;
   font-size: 16px;
 }
 .selected-button {
   /* background-color: #1890ff;  */
-  color: #1890ff; 
-  border-color: #1890ff; 
+  color: #1890ff;
+  border-color: #1890ff;
+}
+.disabled-button {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

@@ -409,29 +409,6 @@ const TimeLine = (props) => {
               >
                 Hủy đơn
               </Button>
-              {updatedStatus === 4 && (
-                <Button
-                  className="return-button"
-                  type="primary"
-                  onClick={showModalReturn}
-                >
-                  Trả hàng
-                </Button>
-              )}
-              {updatedStatus === 3 && (
-                <Button
-                  className="confirm-button"
-                  type="default"
-                  onClick={showModalLost}
-                >
-                  Thất Lạc
-                </Button>
-              )}
-              {updatedStatus !== 0 && updatedStatus !== 5 && (
-                <Button className="print-button" type="primary" ghost>
-                  In Hóa Đơn
-                </Button>
-              )}
             </div>
             <div>
               {" "}

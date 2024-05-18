@@ -26,13 +26,18 @@ const CartAPI = {
     return axiosClient.post(url, data);
   },
 
+  Create_Bill_Public: (data) => {
+    const url = "/public/create-bill";
+    return axiosClient.post(url, data);
+  },
+
   Create_Payment_Link: (data) => {
-    const url = "/payment/create-payment-link";
+    const url = "/public/payment/create-payment-link";
     return axiosClient.post(url, data);
   },
 
   Check_Payment_Link: (data) => {
-    const url = "/payment/check-payment";
+    const url = "/public/payment/check-payment";
     return axiosClient.post(url, data);
   },
 

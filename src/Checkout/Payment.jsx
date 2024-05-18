@@ -111,18 +111,32 @@ const Payment = ({ visible, onCancel, total, onPayment }) => {
       visible={visible}
       onCancel={onCancel}
       footer={[
-        <Button
-          key="back"
-          onClick={() => {
-            setCustomerPaid(0);
-            onCancel();
-          }}
-        >
-          Hủy
-        </Button>,
-        <Button key="submit" type="primary" onClick={handlePayment}>
-          Đã thanh toán
-        </Button>,
+        <>
+          <span
+            style={{
+              fontSize: "12px",
+              color: "#888",
+              fontStyle: "italic",
+              marginRight: "4.5rem",
+            }}
+          >
+            *Sau khi thanh toán vui lòng chờ 5-10s
+          </span>{" "}
+          <Button
+            key="back"
+            onClick={() => {
+              setCustomerPaid(0);
+              onCancel();
+            }}
+          >
+            Hủy
+          </Button>
+          ,
+          <Button key="submit" type="primary" onClick={handlePayment}>
+            Đã thanh toán
+          </Button>
+          ,
+        </>,
       ]}
     >
       <>
@@ -132,7 +146,7 @@ const Payment = ({ visible, onCancel, total, onPayment }) => {
             fontWeight: "bold",
           }}
         >
-          Tổng tiền cần thanh toán: {total} VND
+          Tổng tiền cần thanh toán: {total.toLocaleString("en-US")} VND
         </div>
 
         <div
@@ -158,7 +172,7 @@ const Payment = ({ visible, onCancel, total, onPayment }) => {
               <span>Số Tài Khoản:</span> <br /> <b>1556919122003</b>
             </div>
             <div style={{ marginBottom: "10px" }}>
-              <span>Số tiền:</span> <br /> <b>{total} VND</b>
+              <span>Số tiền:</span> <br /> <b>{total.toLocaleString("en-US")} VND</b>
             </div>
             <div style={{ marginBottom: "10px" }}>
               <span>Nội dung:</span> <br />
