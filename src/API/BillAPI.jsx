@@ -20,8 +20,11 @@ const BillAPI = {
   Get_Address_Bill: () => {
     const url = `/customer/get-all-address`;
     return axiosClient.get(url);
-  }
-
+  },
+  Update_Bill: (data) => {
+    const url = `/bill/update-bill`;
+    return axiosClient.post(url, data);
+  },
 };
 
 export default BillAPI;

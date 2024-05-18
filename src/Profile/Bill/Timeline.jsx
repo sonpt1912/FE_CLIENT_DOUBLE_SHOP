@@ -11,26 +11,19 @@ import "./Bill.css";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import HistoryModal from "./HistoryModal";
+import BillAPI from "../../API/BillAPI";
 const { Timeline } = require("@mailtop/horizontal-timeline");
 
 const TimeLine = (props) => {
   const dispatch = useDispatch();
   const { orderTimeLine, selectedRowIdBill, selectedStatus, updatedData } =
     props;
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalVisibleCancel, setIsModalVisibleCancel] = useState(false);
-  const [isModalVisibleReturn, setIsModalVisibleReturn] = useState(false);
-  const [isModalVisibleRevert, setIsModalVisibleRevert] = useState(false);
-  const [isModalVisibleLost, setIsModalVisibleLost] = useState(false);
-  const [description, setDescription] = useState("");
-  const [descriptionLost, setDescriptionLost] = useState("");
+
   const [descriptionCancel, setDescriptionCancel] = useState("");
-  const [descriptionRevert, setDescriptionRevert] = useState("");
-  const [descriptionReturn, setDescriptionReturn] = useState("");
   const [disableCancelButton, setDisableCancelButton] = useState(false);
   const [updatedStatus, setUpdatedStatus] = useState(selectedStatus);
   const [historyModalVisible, setHistoryModalVisible] = useState(false);
-  const [shippingCost, setShippingCost] = useState("");
   const [form] = Form.useForm();
   const [billType, setBillType] = useState(0);
 
@@ -40,15 +33,6 @@ const TimeLine = (props) => {
       setBillType(lastType || 0);
     }
   }, [orderTimeLine]);
-
-  const getStatusOfPreviousElement = () => {
-    if (orderTimeLine.length < 2) {
-      setUpdatedStatus(0);
-    }
-
-    const previousElement = orderTimeLine[orderTimeLine.length - 2];
-    return previousElement.status;
-  };
 
   const showHistoryModal = () => {
     setHistoryModalVisible(true);
@@ -78,239 +62,48 @@ const TimeLine = (props) => {
     }
   }, [filteredTimeLine]);
 
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
   const showModalCancel = () => {
     setIsModalVisibleCancel(true);
   };
 
-  const showModalRevert = () => {
-    setIsModalVisibleRevert(true);
-  };
-  const showModalReturn = () => {
-    setIsModalVisibleReturn(true);
-  };
-  const showModalLost = () => {
-    setIsModalVisibleLost(true);
-  };
-
-  const handleOk = () => {
-    if (description.trim() === "") {
-      message.error("Vui lòng nhập mô tả!");
-      return;
-    }
-    if (description.trim().length < 50) {
-      message.error("Mô tả phải có ít nhất 50 ký tự!");
-      return;
-    }
-    form
-      .validateFields()
-      .then((values) => {
-        dispatch()
-        // updateBill({
-        //   id: selectedRowIdBill,
-        //   status: updatedStatus + 1,
-        //   description: description,
-        //   moneyShip: updatedStatus === 1 ? shippingCost : null,
-        // })
-          .then((response) => {
-            setIsModalVisible(false);
-            // dispatch(getHistoryBill({ id: selectedRowIdBill }));
-            setUpdatedStatus((prevStatus) => prevStatus + 1);
-            updatedData();
-            form.resetFields();
-          })
-          .catch((error) => {
-            console.error("Lỗi khi cập nhật đơn hàng:", error);
-            setIsModalVisible(false);
-          });
-      })
-      .catch((error) => {
-        console.error("Vui lòng không để trống và nhập đúng định dạng", error);
-      });
-  };
-
-  const handleRevert = () => {
-    if (descriptionRevert.trim() === "") {
-      message.error("Vui lòng nhập mô tả!");
-      return;
-    }
-    if (descriptionRevert.trim().length < 50) {
-      message.error("Mô tả phải có ít nhất 50 ký tự!");
-      return;
-    }
-
-    const previousStatus = getStatusOfPreviousElement();
-    if (previousStatus === null) {
-      message.error("Không thể quay lại trạng thái trước đó!");
-      return;
-    }
-
-    form
-      .validateFields()
-      .then(() => {
-        dispatch()
-        // updateBill({
-        //   id: selectedRowIdBill,
-        //   status: previousStatus,
-        //   description: descriptionRevert,
-        // })
-          .then((response) => {
-            setIsModalVisibleRevert(false);
-            // dispatch(getHistoryBill({ id: selectedRowIdBill }));
-            setUpdatedStatus(previousStatus);
-            updatedData();
-            form.resetFields();
-          })
-          .catch((error) => {
-            console.error("Lỗi khi cập nhật đơn hàng:", error);
-            setIsModalVisibleRevert(false);
-          });
-      })
-      .catch((error) => {
-        console.error("Vui lòng không để trống và nhập đúng định dạng", error);
-      });
-  };
-  const handleLost = () => {
-    if (descriptionLost.trim() === "") {
-      message.error("Vui lòng nhập mô tả!");
-      return;
-    }
-    if (descriptionLost.trim().length < 50) {
-      message.error("Mô tả phải có ít nhất 50 ký tự!");
-      return;
-    }
-
-    form
-      .validateFields()
-      .then(() => {
-        dispatch()
-        // updateBill({
-        //   id: selectedRowIdBill,
-        //   status: 8,
-        //   description: descriptionLost,
-        // })
-          .then((response) => {
-            setIsModalVisibleLost(false);
-            // dispatch(getHistoryBill({ id: selectedRowIdBill }));
-            setUpdatedStatus(8);
-            updatedData();
-            form.resetFields();
-          })
-          .catch((error) => {
-            console.error("Lỗi khi cập nhật đơn hàng:", error);
-            setIsModalVisibleLost(false);
-          });
-      })
-      .catch((error) => {
-        console.error("Vui lòng không để trống và nhập đúng định dạng", error);
-      });
-  };
   const handleOkCancel = () => {
     if (descriptionCancel.trim() === "") {
       message.error("Vui lòng nhập mô tả!");
       return;
     }
-    if (descriptionCancel.trim().length < 50) {
-      message.error("Mô tả phải có ít nhất 50 ký tự!");
+    if (descriptionCancel.trim().length < 20) {
+      message.error("Mô tả phải có ít nhất 20 ký tự!");
       return;
     }
 
-    form
-      .validateFields()
-      .then(() => {
-        dispatch()
-        // updateBill({
-        //   id: selectedRowIdBill,
-        //   status: 5,
-        //   description: descriptionCancel,
-        // })
-          .then((response) => {
-            console.log("Đã Hủy đơn hàng thành công!", response);
-            setIsModalVisibleCancel(false);
-            // dispatch(getHistoryBill({ id: selectedRowIdBill }));
-            setUpdatedStatus(5);
-            updatedData();
-            form.resetFields();
-          })
-          .catch((error) => {
-            console.error("Lỗi khi hủy đơn hàng:", error);
-            setIsModalVisibleCancel(false);
-          });
-      })
-      .catch((error) => {
-        console.error("Vui lòng không để trống và nhập đúng định dạng", error);
-      });
+    const data = {
+      id: selectedRowIdBill,
+      status: 5,
+      description: descriptionCancel,
+    };
+    try {
+      const response = BillAPI.Update_Bill(data);
+      if (response) {
+        setIsModalVisibleCancel(false);
+        BillAPI.Get_History_Bill({ id: selectedRowIdBill });
+        setUpdatedStatus(5);
+        message.success("Hủy đơn thành công!")
+        updatedData();
+        form.resetFields();
+      }else{
+        message.error("Hủy đơn thất bại!")
+      }
+    } catch (error) {
+      console.error("Vui lòng không để trống và nhập đúng định dạng", error);
+    }
   };
-
-  const handleOkReturn = () => {
-    if (descriptionReturn.trim() === "") {
-      message.error("Vui lòng nhập mô tả!");
-      return;
-    }
-    if (descriptionReturn.trim().length < 50) {
-      message.error("Mô tả phải có ít nhất 50 ký tự!");
-      return;
-    }
-
-    form
-      .validateFields()
-      .then(() => {
-        dispatch()
-        // updateBill({
-        //   id: selectedRowIdBill,
-        //   status: 6,
-        //   description: descriptionReturn,
-        // })
-          .then((response) => {
-            console.log("Đã trả đơn hàng thành công!", response);
-            setIsModalVisibleReturn(false);
-            // dispatch(getHistoryBill({ id: selectedRowIdBill }));
-            setUpdatedStatus(5);
-            updatedData();
-            form.resetFields();
-          })
-          .catch((error) => {
-            console.error("Lỗi khi trả đơn hàng:", error);
-            setIsModalVisibleReturn(false);
-          });
-      })
-      .catch((error) => {
-        console.error("Vui lòng không để trống và nhập đúng định dạng", error);
-      });
-  };
-
   const handleCancelCancel = () => {
     setIsModalVisibleCancel(false);
     setDescriptionCancel("");
   };
-  const handleCancelReturn = () => {
-    setIsModalVisibleReturn(false);
-    setDescriptionReturn("");
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
-  };
-
-  const onChangeDescription = (e) => {
-    setDescription(e.target.value);
-  };
-  const onChangeDescriptionReturn = (e) => {
-    setDescriptionReturn(e.target.value);
-  };
 
   const onChangeDescriptionCancel = (e) => {
     setDescriptionCancel(e.target.value);
-  };
-
-  const onChangeDescriptionRevert = (e) => {
-    setDescriptionRevert(e.target.value);
-  };
-  const onChangeDescriptionLost = (e) => {
-    setDescriptionLost(e.target.value);
   };
 
   return (
@@ -424,52 +217,6 @@ const TimeLine = (props) => {
           </div>
         </Card>
       </Col>
-      <Modal
-        title="Xác nhận đơn hàng :"
-        visible={isModalVisible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-      >
-        <Form form={form}>
-          <Form.Item
-            name="description"
-            rules={[
-              {
-                required: true,
-                message: "Vui lòng nhập mô tả!",
-              },
-              {
-                min: 50,
-                message: "Mô tả phải có ít nhất 50 kí tự!",
-              },
-            ]}
-          >
-            <Input.TextArea
-              rows={4}
-              placeholder="Mô tả"
-              value={description}
-              onChange={onChangeDescription}
-            />
-          </Form.Item>
-          {updatedStatus === 1 && (
-            <Form.Item
-              name="shippingCost"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng nhập tiền ship!",
-                },
-              ]}
-            >
-              <Input
-                placeholder="Tiền ship"
-                value={shippingCost}
-                onChange={(e) => setShippingCost(e.target.value)}
-              />
-            </Form.Item>
-          )}
-        </Form>
-      </Modal>
 
       <Modal
         title="Xác nhận hủy đơn hàng :"
@@ -487,8 +234,8 @@ const TimeLine = (props) => {
                 message: "Vui lòng nhập mô tả để hủy đơn hàng!",
               },
               {
-                min: 50,
-                message: "Mô tả phải có ít nhất 50 kí tự!",
+                min: 20,
+                message: "Mô tả phải có ít nhất 20 kí tự!",
               },
             ]}
           >
@@ -497,95 +244,6 @@ const TimeLine = (props) => {
               placeholder="Mô tả"
               value={descriptionCancel}
               onChange={onChangeDescriptionCancel}
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      <Modal
-        title="Xác nhận trả đơn hàng :"
-        visible={isModalVisibleReturn}
-        onOk={handleOkReturn}
-        onCancel={handleCancelReturn}
-      >
-        <Form form={form}>
-          <Form.Item
-            name="descriptionReturn"
-            rules={[
-              {
-                required: true,
-                message: "Vui lòng nhập mô tả để trả đơn hàng!",
-              },
-              {
-                min: 50,
-                message: "Mô tả phải có ít nhất 50 kí tự!",
-              },
-            ]}
-          >
-            <Input.TextArea
-              rows={4}
-              placeholder="Mô tả"
-              value={descriptionReturn}
-              onChange={onChangeDescriptionReturn}
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      <Modal
-        title="Xác nhận quay lại trạng thái đơn hàng :"
-        visible={isModalVisibleRevert}
-        onOk={handleRevert}
-        onCancel={() => setIsModalVisibleRevert(false)}
-      >
-        <Form form={form}>
-          <Form.Item
-            name="descriptionRevert"
-            rules={[
-              {
-                required: true,
-                message: "Vui lòng nhập mô tả để quay lại đơn hàng!",
-              },
-              {
-                min: 50,
-                message: "Mô tả phải có ít nhất 50 kí tự!",
-              },
-            ]}
-          >
-            <Input.TextArea
-              rows={4}
-              placeholder="Mô tả"
-              value={descriptionRevert}
-              onChange={onChangeDescriptionRevert}
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
-      <Modal
-        title="Xác nhận trạng thái đơn hàng thất lạc:"
-        visible={isModalVisibleLost}
-        onOk={handleLost}
-        onCancel={() => setIsModalVisibleLost(false)}
-      >
-        <Form>
-          <Form.Item
-            name="descriptionLost"
-            rules={[
-              {
-                required: true,
-                message: "Vui lòng nhập mô tả!",
-              },
-              {
-                min: 50,
-                message: "Mô tả phải có ít nhất 50 ký tự!",
-              },
-            ]}
-          >
-            <Input.TextArea
-              rows={4}
-              placeholder="Mô tả"
-              value={descriptionLost}
-              onChange={onChangeDescriptionLost}
             />
           </Form.Item>
         </Form>

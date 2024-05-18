@@ -13,7 +13,7 @@ import {
   Checkbox,
   Spin,
 } from "antd";
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import CartAPI from "../API/CartAPI";
 import { Link, useHistory } from "react-router-dom";
 
@@ -26,7 +26,16 @@ function Cart(props) {
   const [isloadData, setLoadData] = useState(false);
   const [list_carts, set_list_carts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectAll, setSelectAll] = useState(false);
 
+  const handleSelectAll = (checked) => {
+    setSelectAll(checked);
+    if (checked) {
+      setSelectedProducts(list_carts);
+    } else {
+      setSelectedProducts([]);
+    }
+  };
   const handleCheckout = () => {
     history.push({
       pathname: "/checkout",
@@ -112,6 +121,7 @@ function Cart(props) {
     });
     return total;
   };
+
   useEffect(() => {
     setTotalPrice(calculateTotalPrice());
   }, [selectedProducts, list_carts]);
@@ -124,27 +134,30 @@ function Cart(props) {
     }
   };
 
-  const handleDelete = (productId) => {
+  const handleDelete = async (productId) => {
     const token = localStorage.getItem("token");
+
     if (token) {
-      CartAPI.Delete_Cart({ id: productId })
-        .then((response) => {
-          if (response) {
-            message.success("Xóa sản phẩm thành công");
-            setLoadData(true);
-          } else {
-            message.error("Xóa thất bại! Vui lòng thử lại");
-          }
-        })
-        .catch((error) => {
-          console.log("Error deleting product", error);
-        });
+      const response = await CartAPI.Delete_Cart({ id: productId });
+
+      if (response) {
+        message.success("Xóa sản phẩm thành công");
+        setSelectedProducts((prevSelectedProducts) =>
+          prevSelectedProducts.filter((product) => product.id !== productId)
+        );
+        setLoadData(true);
+      } else {
+        message.error("Xóa thất bại! Vui lòng thử lại");
+      }
     } else {
       const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
       const updatedCartItems = cartItems.filter(
         (item) => item.id !== productId
       );
       localStorage.setItem("cart", JSON.stringify(updatedCartItems));
+      setSelectedProducts((prevSelectedProducts) =>
+        prevSelectedProducts.filter((product) => product.id !== productId)
+      );
       setLoadData(true);
       message.success("Xóa sản phẩm thành công");
     }
@@ -162,6 +175,17 @@ function Cart(props) {
             }}
           >
             <h4 class="card-title mb-4">Giỏ hàng của bạn</h4>
+            <div
+              style={{
+                backgroundColor: "#fafdff",
+                borderBottom: "1px dashed rgba(0, 0, 0, 32%)",
+                display: "flex",
+                justifyContent: "flex-end",
+                minHeight: "0",
+                minWidth: "0",
+                marginBottom: "1.3rem",
+              }}
+            ></div>
             {loading && (
               <Row
                 justify="center"
@@ -172,116 +196,160 @@ function Cart(props) {
               </Row>
             )}
             {!loading && (
-              <Row gutter={[16, 16]}>
-                {list_carts.map((product, index) => (
-                  <Col span={24} key={index}>
-                    <Card hoverable style={{ width: "100%" }}>
-                      <Row gutter={[16, 16]} align="middle">
-                        <Col span={2}>
-                          <Checkbox
-                            checked={selectedProducts.some(
-                              (p) => p.id === product.id
-                            )}
-                            onChange={(e) =>
-                              handleProductSelect(product, e.target.checked)
-                            }
-                          />
-                        </Col>
-                        <Col span={5}>
-                          <Col span={5}>
-                            <Popover
-                              placement="right"
-                              title={null}
-                              content={
-                                <div
-                                  style={{ display: "flex", flexWrap: "wrap" }}
-                                >
-                                  {product.listImages?.resources.map(
-                                    (image, index) => (
-                                      <div key={index}>
-                                        <Image
-                                          width={70}
-                                          src={image.url}
-                                          alt={`Ảnh ${index + 1}`}
-                                        />
-                                      </div>
-                                    )
-                                  )}
-                                </div>
-                              }
-                            >
-                              <Image
-                                width={110}
-                                src={
-                                  product.listImages?.resources[0]?.url || ""
+              <>
+                {list_carts.length === 0 ? (
+                  <Row
+                    justify="center"
+                    align="middle"
+                    style={{ minHeight: "300px" }}
+                  >
+                    <Col>
+                      <ShoppingCartOutlined
+                        style={{
+                          fontSize: "7rem",
+                          color: "#aaa",
+                          marginLeft: "4rem",
+                        }}
+                      />
+                      <p style={{ textAlign: "center" }}>
+                        Bạn chưa có sản phẩm nào trong giỏ hàng.
+                      </p>
+                      <Button
+                        type="primary"
+                        style={{ display: "block", margin: "0 auto" }}
+                      >
+                        <Link to="/shop/product">Tiếp tục mua sắm</Link>
+                      </Button>
+                    </Col>
+                  </Row>
+                ) : (
+                  <Row gutter={[16, 16]}>
+                    {list_carts.map((product, index) => (
+                      <Col span={24} key={index}>
+                        <Card hoverable style={{ width: "100%" }}>
+                          <Row gutter={[16, 16]} align="middle">
+                            <Col span={2}>
+                              <Checkbox
+                                checked={
+                                  selectAll ||
+                                  selectedProducts.some(
+                                    (p) => p.id === product.id
+                                  )
                                 }
-                                alt={`Ảnh 1`}
-                                preview={false}
+                                onChange={(e) =>
+                                  handleProductSelect(product, e.target.checked)
+                                }
                               />
-                            </Popover>
-                          </Col>
-                        </Col>
-                        <Col span={7}>
-                          <Meta
-                            title={product.product.name}
-                            description={`Kích cỡ: ${product.size.name} - Màu: ${product.color.name}`}
-                          />
-                        </Col>
-                        <Col span={4}>
-                          <InputNumber
-                            value={product.quantity}
-                            onChange={(value) =>
-                              handleQuantityChange(value, product.id)
-                            }
-                          />
-                        </Col>
-                        <Col span={4}>
-                          <div>
-                            {product.discountAmount > 0 ? (
-                              <>
-                                <span
-                                  style={{
-                                    textDecoration: "line-through",
-                                    color: "red",
-                                  }}
+                            </Col>
+                            <Col span={5}>
+                              <Col span={5}>
+                                <Popover
+                                  placement="right"
+                                  title={null}
+                                  content={
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        flexWrap: "wrap",
+                                      }}
+                                    >
+                                      {product.listImages?.resources.map(
+                                        (image, index) => (
+                                          <div key={index}>
+                                            <Image
+                                              width={70}
+                                              src={image.url}
+                                              alt={`Ảnh ${index + 1}`}
+                                            />
+                                          </div>
+                                        )
+                                      )}
+                                    </div>
+                                  }
                                 >
-                                  {product.price.toLocaleString("en-US")}đ
-                                </span>
-                                <span style={{ marginLeft: "8px" }}>
-                                  {(
-                                    product.price - product.discountAmount
-                                  ).toLocaleString("en-US")}
-                                  đ
-                                </span>
-                              </>
-                            ) : (
-                              <span>
-                                {product.price.toLocaleString("en-US")}đ
-                              </span>
-                            )}
-                          </div>
-                        </Col>
-                        <Col span={2}>
-                          <Space>
-                            <Popconfirm
-                              title="Are you sure to delete this product?"
-                              onConfirm={() => handleDelete(product.id)}
-                              okText="Yes"
-                              cancelText="No"
-                            >
-                              <Button
-                                type="primary"
-                                danger
-                                icon={<DeleteOutlined />}
+                                  <Image
+                                    width={110}
+                                    src={
+                                      product.listImages?.resources[0]?.url ||
+                                      ""
+                                    }
+                                    alt={`Ảnh 1`}
+                                    preview={false}
+                                  />
+                                </Popover>
+                              </Col>
+                            </Col>
+                            <Col span={7}>
+                              <Meta
+                                title={product.product.name}
+                                description={`Kích cỡ: ${product.size.name} - Màu: ${product.color.name}`}
                               />
-                            </Popconfirm>
-                          </Space>
-                        </Col>
-                      </Row>
-                    </Card>
-                  </Col>
-                ))}
-              </Row>
+                            </Col>
+                            <Col span={4}>
+                              <InputNumber
+                                value={product.quantity}
+                                onChange={(value) =>
+                                  handleQuantityChange(value, product.id)
+                                }
+                              />
+                            </Col>
+                            <Col span={4}>
+                              <div>
+                                {product.discountAmount > 0 ? (
+                                  <>
+                                    <span
+                                      style={{
+                                        textDecoration: "line-through",
+                                        color: "red",
+                                      }}
+                                    >
+                                      {product.price.toLocaleString("en-US")}đ
+                                    </span>
+                                    <span style={{ marginLeft: "8px" }}>
+                                      {(
+                                        product.price - product.discountAmount
+                                      ).toLocaleString("en-US")}
+                                      đ
+                                    </span>
+                                  </>
+                                ) : (
+                                  <span>
+                                    {product.price.toLocaleString("en-US")}đ
+                                  </span>
+                                )}
+                              </div>
+                            </Col>
+                            <Col span={2}>
+                              <Space>
+                                <Popconfirm
+                                  title="Are you sure to delete this product?"
+                                  onConfirm={() => handleDelete(product.id)}
+                                  okText="Yes"
+                                  cancelText="No"
+                                >
+                                  <Button
+                                    type="primary"
+                                    danger
+                                    icon={<DeleteOutlined />}
+                                  />
+                                </Popconfirm>
+                              </Space>
+                            </Col>
+                          </Row>
+                        </Card>
+                      </Col>
+                    ))}
+                    <Col span={24} style={{ marginLeft: "1.5rem" }}>
+                      <Checkbox
+                        checked={selectAll}
+                        onChange={(e) => handleSelectAll(e.target.checked)}
+                      >
+                        Chọn tất cả
+                      </Checkbox>
+                    </Col>
+                  </Row>
+                )}
+              </>
             )}
           </Card>
         </Col>
