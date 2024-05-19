@@ -158,7 +158,7 @@ function Profile(props) {
     const selectedCityName = cityData.find(
       (city) => city.value === value
     )?.label;
-    setCity(selectedCityName);
+    setCity(selectedCityCode);
     dataDis(selectedCityCode);
     setSelectedDis("");
   };
@@ -167,7 +167,7 @@ function Profile(props) {
     setSelectedDis(value);
     const selectedDisCode = disData.find((dis) => dis.value === value)?.value;
     const selectedDisName = disData.find((dis) => dis.value === value)?.label;
-    setDistrict(selectedDisName);
+    setDistrict(selectedDisCode);
 
     dataWar(selectedDisCode);
     setSelectedWar("");
@@ -175,8 +175,9 @@ function Profile(props) {
 
   const handleWarChange = (value) => {
     setSelectedWar(value);
+    const selectedWarCode=warData.find((war)=>war.value===value)?.value;
     const selectedWarName = warData.find((war) => war.value === value)?.label;
-    setWard(selectedWarName);
+    setWard(selectedWarCode);
   };
 
   useEffect(() => {
@@ -215,8 +216,8 @@ function Profile(props) {
     )?.label;
     console.log(selectedCityCode);
     console.log(selectedCityName);
-    setCity(selectedCityName);
-    Diachi.city = selectedCityName;
+    setCity(selectedCityCode);
+    Diachi.city = selectedCityCode;
     setEditAddress(Diachi);
 
     setSelectedDis("");
@@ -251,8 +252,8 @@ function Profile(props) {
     const selectedDisCode = disData.find((dis) => dis.value === value)?.value;
     const selectedDisName = disData.find((dis) => dis.value === value)?.label;
     if (selectedDisCode && selectedDisName) {
-      setDistrict(selectedDisName);
-      Diachi.district = selectedDisName; // Lưu giá trị vào Diachi
+      setDistrict(selectedDisCode);
+      Diachi.district = selectedDisCode; // Lưu giá trị vào Diachi
       Diachi.city = city; // Reset giá trị của province
       setEditAddress(Diachi);
 
@@ -283,8 +284,8 @@ function Profile(props) {
     const selectedWarName = warData.find((war) => war.value === value)?.label;
     const selectedWarCode = warData.find((war) => war.value === value)?.value;
     if (selectedWarName && selectedWarCode) {
-      setWard(selectedWarName);
-      Diachi.province = selectedWarName;
+      setWard(selectedWarCode);
+      Diachi.province = selectedWarCode;
       Diachi.city = city;
       Diachi.district = district;
       setEditAddress(Diachi);
@@ -339,25 +340,25 @@ function Profile(props) {
   }, []);
   const [user, set_user] = useState({});
 
-  useEffect(() => {
-    const token = localStorage.getItem("token"); // Lấy token từ localStorage hoặc nơi khác
-    const headers = {
-      Authorization: `Bearer ${token}`,
-    };
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token"); 
+  //   const headers = {
+  //     Authorization: `Bearer ${token}`,
+  //   };
 
-    axios
-      .post("http://localhost:8071/customer/check-address-defaul", null, {
-        headers,
-      })
-      .then((response) => {
-        console.log("Address default check result:", response.data);
-        // Xử lý kết quả nếu cần
-      })
-      .catch((error) => {
-        console.error("Error checking default address:", error);
-        // Xử lý lỗi nếu cần
-      });
-  }, []);
+  //   axios
+  //     .post("http://localhost:8071/customer/check-address-defaul", null, {
+  //       headers,
+  //     })
+  //     .then((response) => {
+  //       console.log("Address default check result:", response.data);
+      
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error checking default address:", error);
+        
+  //     });
+  // }, []);
   const [gender, setGender] = useState("");
   const [birthday, setBirthDay] = useState([]);
   const [status, setStatus] = useState("");
@@ -829,9 +830,15 @@ function Profile(props) {
   // }, []);
   const getProvinceName = (provinceId) => {
     const province = cityData.find((city) => city.value == provinceId);
-
     return province ? province.label : "";
   };
+  
+  // const handleProvinceChange = (provinceId) => {
+  //   const provinceName = getProvinceName(provinceId);
+  //   dataDis(parseInt(provinceId));
+  //   return provinceName;
+  // };
+  
 
   // Hàm để lấy tên của district từ ID
   const getDistrictName = (districtId) => {
@@ -840,9 +847,9 @@ function Profile(props) {
     console.log("Truyền vào districtId:", districtId);
 
     const district = disData.find(
-      (dis) => parseInt(dis.value) === parseInt(districtId)
+      (dis) => dis.value==districtId
     );
-
+      console.log(disData);
     console.log("Kết quả tìm kiếm district:", district);
 
     return district ? district.label : "";
@@ -854,7 +861,7 @@ function Profile(props) {
     console.log("Truyền vào wardId:", wardId);
 
     const ward = warData.find((ward) => ward.value == wardId);
-
+      
     console.log("Kết quả tìm kiếm ward:", ward);
 
     return ward ? ward.label : "";
@@ -863,6 +870,8 @@ function Profile(props) {
   const [password1, set_password1] = useState("");
 
   const [listVoucher, setListVoucher] = useState([]);
+  const [filteredVouchers, setFilteredVouchers] = useState([]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -877,13 +886,17 @@ function Profile(props) {
           { headers }
         );
         setListVoucher(response.data);
+       
       } catch (error) {
         console.error("Lỗi khi hiển thị dữ liệu:", error);
       }
     };
 
     fetchData(); // Gọi hàm fetchData để lấy dữ liệu
-  }, []); // Tham số thứ hai là một mảng rỗng để đảm bảo hiệu ứng chỉ chạy một lần khi component mount
+  }, []);
+  useEffect(() => {
+    setFilteredVouchers(listVoucher);
+  }, [listVoucher]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(6);
@@ -891,17 +904,20 @@ function Profile(props) {
   //     setPageSize(newSize);
   // };
   const [searchText, setSearchText] = useState("");
-  const handleSearch = (value) => {
-    setSearchText(value);
+  const handleSearch = () => {
+    const filtered = listVoucher.filter((voucher) =>
+      voucher.code.toLowerCase().includes(searchText.toLowerCase())
+    );
+    setFilteredVouchers(filtered);
+    setCurrentPage(1); // Reset về trang đầu sau khi tìm kiếm
   };
-
   const handleSearchChange = (e) => {
     setSearchText(e.target.value);
   };
 
-  const filteredVouchers = listVoucher.filter((voucher) =>
-    voucher.code.toLowerCase().includes(searchText.toLowerCase())
-  );
+  // const filteredVouchers = listVoucher.filter((voucher) =>
+  //   voucher.code.toLowerCase().includes(searchText.toLowerCase())
+  // );
   const [showPassword1, setShowPassword1] = useState(false); // Trạng thái hiển thị mật khẩu
   const [showPassword2, setShowPassword2] = useState(false); // Trạng thái hiển thị mật khẩu
   const [showPassword3, setShowPassword3] = useState(false); // Trạng thái hiển thị mật khẩu
@@ -1282,78 +1298,88 @@ function Profile(props) {
               </div>
             ) : edit_status === "voucher" ? (
               <div className="voucher" style={{ width: "1000px" }}>
-                <Input
-                  placeholder="Tìm kiếm theo mã voucher"
-                  style={{ margin: "10px", height: "55px", width: "300px" }}
-                  onChange={handleSearchChange}
-                  prefix={<SearchOutlined />}
-                />
-                <div>
-                  <Row
-                    style={{
-                      border: "1px solid while",
-                      padding: "15px",
-                      height: "280px",
-                      overflow: "auto",
-                    }}
-                  >
-                    {slicedVouchers.map((i) => (
-                      <Col span={12}>
-                        <div
-                          style={{
-                            margin: "10px",
-                            border: "1px solid #ccc",
-                            padding: "10px",
-                            marginBottom: "10px",
-                            backgroundColor: "#B0E2FF",
-                            borderRadius: "5px",
-                            boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.1)",
-                            position: "relative",
-                          }}
-                        >
-                          <Row>
-                            <Col span={8}>Mã giảm giá {i.code}</Col>
-                            <Col span={16}>
-                              Giảm giá{" "}
-                              {i.discountAmount === 0
-                                ? i.discountPercent + "%"
-                                : formatCurrency(i.discountAmount)}{" "}
-                              cho hóa đơn tối thiểu{" "}
-                              {formatCurrency(i.minimumOrder)}
-                            </Col>
-                          </Row>
-                          <div
-                            style={{
-                              position: "absolute", // Sử dụng absolute position để đặt endDate
-                              bottom: "5px",
-                              right: "10px",
-                              fontStyle: "italic",
-                            }}
-                          >
-                            HSD: {i.endDate}
-                          </div>
-                        </div>
-                      </Col>
-                    ))}
-                  </Row>
-                  <Pagination
-                    style={{
-                      textAlign: "center",
-                      marginTop: "10px",
-                      margin: "5px",
-                    }}
-                    size="small"
-                    current={currentPage}
-                    total={listVoucher.length}
-                    pageSize={pageSize}
-                    onChange={handlePageChange}
-                    onShowSizeChange={handlePageSizeChange}
-                    showSizeChanger
-                    pageSizeOptions={["6", "10", "20", "50"]}
-                    showTotal={(record) => `Tổng: ${record}`}
-                  />
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <Input
+          placeholder="Tìm kiếm theo mã voucher"
+          style={{ margin: "10px", height: "40px", width: "300px" }}
+          onChange={handleSearchChange}
+          value={searchText}
+          // prefix={<SearchOutlined />}
+        />
+        <Button
+          type="primary"
+          style={{ height: "40px" }}
+          onClick={handleSearch}
+        >
+          Tìm kiếm
+        </Button>
+      </div>
+      <div>
+        <Row
+          style={{
+            border: "1px solid while",
+            padding: "15px",
+            height: "280px",
+            overflow: "auto",
+          }}
+        >
+          {slicedVouchers.map((i) => (
+            <Col span={12} key={i.id}>
+              <div
+                style={{
+                  margin: "10px",
+                  border: "1px solid #ccc",
+                  padding: "10px",
+                  marginBottom: "10px",
+                  backgroundColor: "#B0E2FF",
+                  borderRadius: "5px",
+                  boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.1)",
+                  position: "relative",
+                }}
+              >
+                <Row>
+                  <Col span={8}>Mã giảm giá {i.code}</Col>
+                  <Col span={16}>
+                    Giảm giá{" "}
+                    {i.discountAmount === 0
+                      ? i.discountPercent + "%"
+                      : formatCurrency(i.discountAmount)}{" "}
+                    cho hóa đơn tối thiểu{" "}
+                    {formatCurrency(i.minimumOrder)}
+                  </Col>
+                </Row>
+                <div
+                  style={{
+                    position: "absolute", // Sử dụng absolute position để đặt endDate
+                    bottom: "5px",
+                    right: "10px",
+                    fontStyle: "italic",
+                  }}
+                >
+                  HSD: {i.endDate}
                 </div>
               </div>
+            </Col>
+          ))}
+        </Row>
+        <Pagination
+          style={{
+            textAlign: "center",
+            marginTop: "10px",
+            margin: "5px",
+          }}
+          size="small"
+          current={currentPage}
+          total={filteredVouchers.length}
+          pageSize={pageSize}
+          onChange={handlePageChange}
+          onShowSizeChange={handlePageSizeChange}
+          showSizeChanger
+          pageSizeOptions={["6", "10", "20", "50"]}
+          showTotal={(total) => `Tổng: ${total}`}
+        />
+      </div>
+    </div>
             ) : (
               <div
                 style={{
@@ -1481,9 +1507,9 @@ function Profile(props) {
                         }}
                       >
                         <p className="m-3">
-                          Tỉnh/Thành phố: {address.city} <br />
-                          Huyện/Quận: {address.district} <br />
-                          Xã/Phường: {address.province} <br />
+                          Tỉnh/Thành phố: {(address.city)} <br />
+                          Huyện/Quận: {(address.district)} <br />
+                          Xã/Phường: {(address.province)} <br />
                           Địa chỉ: {address.description}
                         </p>
 

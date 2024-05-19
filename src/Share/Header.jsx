@@ -287,7 +287,7 @@ const handleDeleteConfirm = async (id) => {
           "Authorization": `Bearer ${token}`
       };
       
-      const response = await axios.post('http://localhost:8071/favorite/get-all-by-id-customer', {}, { headers }); // Thêm headers vào yêu cầu
+      const response = await axios.post('http://localhost:8071/favorite/get-all-by-user-login', {}, { headers }); // Thêm headers vào yêu cầu
       
       console.log(response);
     
