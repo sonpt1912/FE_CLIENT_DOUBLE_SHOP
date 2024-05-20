@@ -318,7 +318,9 @@ function Checkout(props) {
           setTotalVoucher(0);
         }
       }
+      message.success("Đã áp dụng voucher thành công")
     } catch (error) {
+      message.error("Đã xảy ra lỗi khi sử dụng voucher! Vui lòng thử lại")
       console.error("Error fetching voucher:", error);
     }
   };
