@@ -36,7 +36,6 @@ function Checkout(props) {
   const [voucherModal, setVoucherModal] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState(0);
   const [visiblePaymentModal, setVisiblePaymentModal] = useState(false);
-  const [vouchers, setVouchers] = useState([]);
   const [totalVoucher, setTotalVoucher] = useState(0);
   const [totalShippingFee, setTotalShippingFee] = useState(0);
   const [totalPayment, setTotalPayment] = useState(0);
@@ -65,7 +64,14 @@ function Checkout(props) {
   const [showAddressModal, setShowAddressModal] = useState(!!token);
   const [showAddressNewModal, setShowAddressNewModal] = useState(!token);
 
-  useEffect(() => {}, [addressCustom, loadingAddress]);
+  useEffect(() => {}, [
+    addressCustom,
+    loadingAddress,
+    voucherCode,
+    totalVoucher,
+    selectedDistrict,
+    selectedWard,
+  ]);
   useEffect(() => {
     const calculateTotals = () => {
       const totals = selectedProducts.reduce(
@@ -218,7 +224,7 @@ function Checkout(props) {
     await fetchWards(address.district);
     const districtId = parseInt(address.district, 10);
     setSelectedDistrict(districtId);
-    setSelectedWard(address.province)
+    setSelectedWard(address.province);
 
     const province = provinces.find(
       (p) => p.ProvinceID === parseInt(address.city, 10)
@@ -243,7 +249,6 @@ function Checkout(props) {
   }, [addressCustom]);
 
   const handleSelectAddress = (record) => {
-    console.log("recoer", record);
     setRecorqdSelect(record);
     const updatedAddresses = selectedAddress.map((address) => ({
       ...address,
@@ -283,19 +288,50 @@ function Checkout(props) {
   };
 
   useEffect(() => {
-    setTotalPayment(totalPrice + totalShippingFee);
+    const calculatedTotalPayment = calculateTotalPayment();
+    setTotalPayment(calculatedTotalPayment);
     setQuantity(selectedProducts.length);
-  }, [selectedProducts.length, totalPrice, totalShippingFee]);
+  }, [selectedProducts.length, totalPrice, totalShippingFee, totalVoucher]);
+
+  const calculateTotalPayment = () => {
+    const totalAfterDiscount = Math.max(totalPrice - totalVoucher, 0);
+    const totalPayment = totalAfterDiscount + totalShippingFee;
+    return totalPayment;
+  };
+
+  const chooseVoucher = async (voucherCode) => {
+    try {
+      const data = {
+        code: voucherCode,
+        idCustomer: customerInfo.id,
+      };
+      const response = await BillAPI.Choose_Voucher(data);
+
+      if (response) {
+        const { discountAmount, discountPercent, minimumOrder } = response;
+
+        if (discountAmount === 0) {
+          setTotalVoucher(discountPercent);
+        } else if (discountPercent === 0) {
+          setTotalVoucher(discountAmount);
+        } else if (totalPrice < minimumOrder) {
+          setTotalVoucher(0);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching voucher:", error);
+    }
+  };
 
   useEffect(() => {
     const handleShipping = async () => {
       const payload = {
         toDistrictId: selectedDistrict,
         toWardCode: selectedWard,
-        height: totalHeight,
-        length: totalLength,
+        height: 1,
+        length: 1,
         weight: totalWeight,
-        width: totalWidth,
+        width: 1,
         insurance_value: 0,
         coupon: null,
         items: [
@@ -318,12 +354,19 @@ function Checkout(props) {
     };
 
     handleShipping();
-  }, [totalShippingFee, showAddressModal]);
+  }, [
+    totalShippingFee,
+    showAddressModal,
+    selectedDistrict,
+    selectedWard,
+    totalWeight,
+  ]);
 
   useEffect(() => {
     let sum = 0;
     selectedProducts?.forEach((product) => {
-      const discountedPrice = product.price - product.discountAmount;
+      const discountAmount = product.discountAmount || 0;
+      const discountedPrice = Math.max(product.price - discountAmount, 0);
       sum += discountedPrice * product.quantity;
     });
     setTotalPrice(sum);
@@ -346,6 +389,7 @@ function Checkout(props) {
   };
 
   const handleVoucherCodeChange = (e) => {
+    console.log("Voucher Code", e.target.value);
     setVoucherCode(e.target.value);
   };
 
@@ -580,8 +624,9 @@ function Checkout(props) {
                                 {product.price.toLocaleString("en-US")}đ
                               </span>
                               <span style={{ marginLeft: "8px" }}>
-                                {(
-                                  product.price - product.discountAmount
+                                {Math.max(
+                                  product.price - product.discountAmount,
+                                  0
                                 ).toLocaleString("en-US")}
                                 đ
                               </span>
@@ -683,8 +728,8 @@ function Checkout(props) {
                 onChange={handleVoucherCodeChange}
                 style={{ marginRight: "1rem", width: "30%" }}
               />
-              <Button type="primary" onClick={openVoucherModal}>
-                Chọn Voucher
+              <Button type="primary" onClick={() => chooseVoucher(voucherCode)}>
+                Tìm Kiếm
               </Button>
               <Modal
                 title="Chọn Voucher"
@@ -783,16 +828,6 @@ function Checkout(props) {
             key="confirm"
             type="primary"
             onClick={() => {
-              const selectedProvinceName = provinces.find(
-                (p) => p.ProvinceID === selectedProvince
-              )?.ProvinceName;
-              const selectedDistrictName = districts.find(
-                (d) => d.DistrictID === selectedDistrict
-              )?.DistrictName;
-              const selectedWardName = wards.find(
-                (w) => w.WardCode === selectedWard
-              )?.WardName;
-
               const newAddress = {
                 receiver: customerInfo.name,
                 phone: customerInfo.phone,
@@ -803,10 +838,9 @@ function Checkout(props) {
                 isSelected: true,
               };
 
-              const fullAddress = `${newAddress.description}, ${selectedWardName}, ${selectedDistrictName}, ${selectedProvinceName}`;
               setShowAddressNewModal(false);
               setRecorqdSelect(newAddress);
-              setAddressCustom(fullAddress);
+              setAddressCustom(addressFull);
             }}
           >
             Xác nhận

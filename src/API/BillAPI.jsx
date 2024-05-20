@@ -25,6 +25,11 @@ const BillAPI = {
     const url = `/bill/update-bill`;
     return axiosClient.post(url, data);
   },
+
+  Choose_Voucher: (data) => {
+    const url = `/public/customer-voucher/check`;
+    return axiosClient.post(url, data);
+  }
 };
 
 export default BillAPI;

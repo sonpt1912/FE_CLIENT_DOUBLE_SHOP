@@ -306,8 +306,9 @@ function Cart(props) {
                                       {product.price.toLocaleString("en-US")}đ
                                     </span>
                                     <span style={{ marginLeft: "8px" }}>
-                                      {(
-                                        product.price - product.discountAmount
+                                      {Math.max(
+                                        product.price - product.discountAmount,
+                                        0
                                       ).toLocaleString("en-US")}
                                       đ
                                     </span>
