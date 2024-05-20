@@ -303,12 +303,12 @@ function Detail_Product(props) {
                 <div className="mb-4">
                   <Row gutter={[16, 16]}>
                     <Col span={12}>
-                      <div style={{ display: "flex", gap: "3.5rem" }}>
-                        <h6 className="font-semibold mr-2">Brand:</h6>
+                      <div style={{ display: "flex", gap: "1.4rem" }}>
+                        <h6 className="font-semibold mr-2">Hãng:</h6>
                         <span>{brand}</span>
                       </div>
                       <div style={{ display: "flex", gap: "2rem" }}>
-                        <h6 className="font-semibold mr-2">Category:</h6>
+                        <h6 className="font-semibold mr-2">Loại:</h6>
                         <span>{category}</span>
                       </div>
                     </Col>

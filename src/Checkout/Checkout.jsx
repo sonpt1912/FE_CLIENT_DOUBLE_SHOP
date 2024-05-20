@@ -41,6 +41,10 @@ function Checkout(props) {
   const [totalShippingFee, setTotalShippingFee] = useState(0);
   const [totalPayment, setTotalPayment] = useState(0);
   const [quantity, setQuantity] = useState(0);
+  const [totalLength, setTotalLength] = useState(0);
+  const [totalHeight, setTotalHeight] = useState(0);
+  const [totalWidth, setTotalWidth] = useState(0);
+  const [totalWeight, setTotalWeight] = useState(0);
 
   const [customerInfo, setCustomerInfo] = useState([]);
   const [provinces, setProvinces] = useState([]);
@@ -62,6 +66,34 @@ function Checkout(props) {
   const [showAddressNewModal, setShowAddressNewModal] = useState(!token);
 
   useEffect(() => {}, [addressCustom, loadingAddress]);
+  useEffect(() => {
+    const calculateTotals = () => {
+      const totals = selectedProducts.reduce(
+        (acc, product) => {
+          const { length, height, width, weight } = product.product;
+          acc.totalLength += length * product.quantity;
+          acc.totalHeight += height * product.quantity;
+          acc.totalWidth += width * product.quantity;
+          acc.totalWeight += weight * product.quantity;
+          return acc;
+        },
+        {
+          totalLength: 0,
+          totalHeight: 0,
+          totalWidth: 0,
+          totalWeight: 0,
+        }
+      );
+
+      setTotalLength(totals.totalLength);
+      setTotalHeight(totals.totalHeight);
+      setTotalWidth(totals.totalWidth);
+      setTotalWeight(totals.totalWeight);
+    };
+
+    calculateTotals();
+  }, [selectedProducts]);
+
   const fetchProvinces = async () => {
     setIsLoading(true);
     try {
@@ -174,15 +206,6 @@ function Checkout(props) {
     fetchAllAddresses();
   }, []);
 
-  useEffect(() => {
-    const defaultAddress = selectedAddress.find(
-      (address) => address.defaul === 0
-    );
-    if (defaultAddress) {
-      handleSelectAddress(defaultAddress);
-    }
-  }, [loadingAddress]);
-
   const selectDefaultAddress = async (addressList) => {
     setLoadingAddress(true);
 
@@ -195,6 +218,7 @@ function Checkout(props) {
     await fetchWards(address.district);
     const districtId = parseInt(address.district, 10);
     setSelectedDistrict(districtId);
+    setSelectedWard(address.province)
 
     const province = provinces.find(
       (p) => p.ProvinceID === parseInt(address.city, 10)
@@ -219,6 +243,7 @@ function Checkout(props) {
   }, [addressCustom]);
 
   const handleSelectAddress = (record) => {
+    console.log("recoer", record);
     setRecorqdSelect(record);
     const updatedAddresses = selectedAddress.map((address) => ({
       ...address,
@@ -265,12 +290,12 @@ function Checkout(props) {
   useEffect(() => {
     const handleShipping = async () => {
       const payload = {
-        toDistrictId: 202,
-        toWardCode: 50113,
-        height: 2,
-        length: 1,
-        weight: 3,
-        width: 2,
+        toDistrictId: selectedDistrict,
+        toWardCode: selectedWard,
+        height: totalHeight,
+        length: totalLength,
+        weight: totalWeight,
+        width: totalWidth,
         insurance_value: 0,
         coupon: null,
         items: [
@@ -732,7 +757,7 @@ function Checkout(props) {
           <Button
             key="confirm"
             type="primary"
-            disabled={!selectedModalAddress || loadingAddress}
+            disabled={loadingAddress}
             loading={loadingAddress}
             onClick={() => {
               selectDefaultAddress(selectedAddress);
